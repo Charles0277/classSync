@@ -1,0 +1,32 @@
+.button[type='submit'],
+.button[type='button'] {
+    width: 7.5rem;
+    height: 2.75rem;
+    margin-top: 1rem;
+    resize: vertical;
+    border-radius: 10px;
+    border-color: transparent;
+    background-color: #3cb371;
+    outline: none;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: medium;
+    font-family: Inter, sans-serif;
+}
+
+.small {
+    width: 7.5rem;
+    height: 2.75rem;
+    font-size: medium;
+    font-family: Inter, sans-serif;
+}
+
+.medium {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+.large {
+    font-size: 16px;
+    padding: 12px 24px;
+}
