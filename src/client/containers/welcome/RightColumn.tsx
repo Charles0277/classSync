@@ -3,6 +3,8 @@ import styles from './Welcome.module.css';
 import { SHA256 } from 'crypto-js';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { logInRequest } from '../../store/slices/authSlice';
 
 type Mode = 'logIn' | 'signUp' | 'logInAsGuest' | undefined;
 
@@ -35,6 +37,8 @@ const RightColumn: React.FC = () => {
         confirmPassword: ''
     });
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
         switch (mode) {
             case 'logIn':
@@ -51,7 +55,6 @@ const RightColumn: React.FC = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        console.log(e.target);
         setFormData((prevState) => ({
             ...prevState,
             [name]: value
@@ -61,11 +64,9 @@ const RightColumn: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // SHA256(formData.password)
-        // console.log("🚀 ~ SHA256(formData.password):", SHA256(formData.password))
-
         console.log('Form submitted with data:', formData);
-        // TODO: Add your API call here
+
+        mode === 'logIn' ? dispatch(logInRequest(formData)) : null;
     };
 
     const renderGetStarted = () => (
@@ -87,13 +88,15 @@ const RightColumn: React.FC = () => {
     const renderLogInForm = () => (
         <>
             <h2 className={styles.greySectionTitle}>Log in</h2>
-            <form className={styles.formGroup}>
+            <form className={styles.formGroup} onSubmit={handleSubmit}>
                 <label htmlFor="email">Email:</label>
                 <Input
                     type="email"
                     id="email"
                     name="email"
                     placeholder="Email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                 />
                 <label htmlFor="password">Password:</label>
                 <Input
@@ -101,6 +104,8 @@ const RightColumn: React.FC = () => {
                     id="password"
                     name="password"
                     placeholder="Password"
+                    value={formData.password}
+                    onChange={handleInputChange}
                 />
                 <div className={styles.actionButtonGroup}>
                     <Input

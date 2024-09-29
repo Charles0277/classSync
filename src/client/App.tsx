@@ -5,17 +5,21 @@ import { RouterProvider } from 'react-router-dom';
 import router from './routes';
 import { Provider } from 'react-redux';
 import store from './store/store';
+import AuthProvider from 'react-auth-kit';
+import { authStore } from './createStore';
 
 function App() {
     return (
-        <Provider store={store}>
-            <>
-                {/* <Sidebar /> */}
-                <main className="layout">
-                    <RouterProvider router={router} />
-                </main>
-            </>
-        </Provider>
+        <AuthProvider store={authStore}>
+            <Provider store={store}>
+                <>
+                    {/* <Sidebar /> */}
+                    <main className="layout">
+                        <RouterProvider router={router} />
+                    </main>
+                </>
+            </Provider>
+        </AuthProvider>
     );
 }
 
