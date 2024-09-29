@@ -9,6 +9,7 @@
         "build": "vite build"
     },
     "dependencies": {
+        "@auth0/auth0-react": "^2.2.4",
         "@reduxjs/toolkit": "^2.2.7",
         "@types/crypto-js": "^4.2.2",
         "axios": "^1.7.7",

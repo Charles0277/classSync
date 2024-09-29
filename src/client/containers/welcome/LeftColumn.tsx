@@ -7,7 +7,7 @@ const LeftColumn: React.FC = () => {
             <div className={styles.blueSection}>
                 <img
                     loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/b4b8315c3d6487647269b270f7f0a787f582a6f5010c540543d943a6444f7dac?placeholderIfAbsent=true&apiKey=c94df9336f314d7a8ada5b51d69da4b6"
+                    src="src\client\assets\classSyncLogo_scalable.svg"
                     className={styles.logo}
                     alt="Scheduler logo"
                 />

@@ -3,6 +3,7 @@ import styles from './Welcome.module.css';
 import { SHA256 } from 'crypto-js';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
+import { useAuth0 } from '@auth0/auth0-react';
 
 type Mode = 'logIn' | 'signUp' | 'logInAsGuest' | undefined;
 
@@ -26,6 +27,8 @@ const buttons: ButtonConfig[] = [
 ];
 
 const RightColumn: React.FC = () => {
+    const { loginWithRedirect } = useAuth0();
+
     const [mode, setMode] = useState<Mode>(undefined);
     const [formData, setFormData] = useState<SignUpFormData>({
         firstName: '',
@@ -38,10 +41,14 @@ const RightColumn: React.FC = () => {
     useEffect(() => {
         switch (mode) {
             case 'logIn':
-                console.log('log in');
+                loginWithRedirect();
                 break;
             case 'signUp':
-                console.log('signUp');
+                loginWithRedirect({
+                    authorizationParams: {
+                        screen_hint: 'signup'
+                    }
+                });
                 break;
             case 'logInAsGuest':
                 console.log('logInAsGuest');
@@ -191,10 +198,10 @@ const RightColumn: React.FC = () => {
 
     const renderContent = () => {
         switch (mode) {
-            case 'logIn':
-                return renderLogInForm();
-            case 'signUp':
-                return renderSignUpForm();
+            // case 'logIn':
+            //     return renderLogInForm();
+            // case 'signUp':
+            //     return renderSignUpForm();
             default:
                 return renderGetStarted();
         }
