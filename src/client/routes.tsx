@@ -3,17 +3,20 @@ import Home from './containers/Home/Home';
 import Welcome from './containers/welcome/Welcome';
 
 import { useAuth0 } from '@auth0/auth0-react';
+import Loading from './containers/Loading/Loading';
 
 const AppRouter = () => {
-    const { isAuthenticated, isLoading, user } = useAuth0();
-    console.log('🚀 ~ AppRouter ~ user:', user);
-    console.log('🚀 ~ AppRouter ~ isLoading:', isLoading);
-    console.log('🚀 ~ AppRouter ~ isAuthenticated:', isAuthenticated);
-
+    const { isAuthenticated, isLoading } = useAuth0();
     const router = createBrowserRouter([
         {
             path: '/',
-            element: isAuthenticated && !isLoading ? <Home /> : <Welcome />
+            element: isLoading ? (
+                <Loading />
+            ) : isAuthenticated ? (
+                <Home />
+            ) : (
+                <Welcome />
+            )
         }
     ]);
 
