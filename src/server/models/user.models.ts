@@ -18,24 +18,17 @@ const UserSchema: Schema<IUser> = new Schema({
             message: (props) => `${props.value} is not a valid email!`
         }
     },
-    authentication: {
-        salt: { type: String },
-        password: { type: String, required: true }
-    }
+    password: { type: String, required: true }
 });
 
 UserSchema.pre<IUser>('save', async function (next) {
     const user = this as IUser;
 
-    if (!user.isModified('authentication')) return next();
+    if (!user.isModified('password')) return next();
 
     try {
         const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
-        user.authentication.salt = salt;
-        user.authentication.password = await bcrypt.hash(
-            user.authentication.password,
-            salt
-        );
+        user.password = await bcrypt.hash(user.password, salt);
         next();
     } catch (error) {
         next(error as CallbackError);

@@ -31,9 +31,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             firstName,
             lastName,
             email,
-            authentication: {
-                password
-            }
+            password
         });
 
         return res.status(201).send(newUser);
@@ -60,9 +58,7 @@ export const login = async (req: express.Request, res: express.Response) => {
             return res.status(400).send({ error: 'This user does not exist' });
         }
 
-        if (
-            bcrypt.compareSync(password, existingUser.authentication.password)
-        ) {
+        if (bcrypt.compareSync(password, existingUser.password)) {
         } else {
             return res.status(403).send({ error: 'Incorrect password' });
         }
