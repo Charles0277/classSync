@@ -4,7 +4,10 @@ import { SHA256 } from 'crypto-js';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { logInRequest } from '../../store/slices/authSlice';
+import { logInRequest, signUpRequest } from '../../store/slices/authSlice';
+import { RootState } from '../../store/store';
+import useSignIn from 'react-auth-kit/hooks/useSignIn';
+import { refresh } from '../../auth/refresh';
 
 type Mode = 'logIn' | 'signUp' | 'logInAsGuest' | undefined;
 
@@ -19,6 +22,11 @@ interface SignUpFormData {
     email: string;
     password: string;
     confirmPassword: string;
+}
+
+interface IUserData {
+    name: string;
+    uuid?: string;
 }
 
 const buttons: ButtonConfig[] = [
@@ -37,7 +45,24 @@ const RightColumn: React.FC = () => {
         confirmPassword: ''
     });
 
+    const signIn = useSignIn<IUserData>();
     const dispatch = useDispatch();
+    const { user, token } = useSelector((state: RootState) => state.auth);
+
+    useEffect(() => {
+        if (user && token) {
+            console.log('🚀 ~ useEffect ~ token:', token);
+            console.log('🚀 ~ useEffect ~ user:', user);
+            signIn({
+                auth: {
+                    token: token,
+                    type: 'Bearer'
+                },
+                userState: { name: user.firstName }
+                // refresh: refresh.refreshApiCallback()
+            });
+        }
+    }, [user]);
 
     useEffect(() => {
         switch (mode) {
@@ -66,7 +91,9 @@ const RightColumn: React.FC = () => {
 
         console.log('Form submitted with data:', formData);
 
-        mode === 'logIn' ? dispatch(logInRequest(formData)) : null;
+        mode === 'logIn'
+            ? dispatch(logInRequest(formData))
+            : dispatch(signUpRequest(formData));
     };
 
     const renderGetStarted = () => (

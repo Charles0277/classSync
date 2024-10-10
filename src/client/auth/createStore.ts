@@ -1,4 +1,5 @@
 import createStore from 'react-auth-kit/createStore';
+import { refresh } from './refresh';
 
 interface IUserData {
     name: string;
