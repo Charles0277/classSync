@@ -8,9 +8,13 @@ import {
 } from '../slices/userSlice';
 import { fetchUsersApi } from '../../api/usersApi';
 
-function* fetchUsers() {
+function* fetchUsers(action: any) {
     try {
-        const response: AxiosResponse<IUser[]> = yield call(fetchUsersApi);
+        const { token } = action.payload;
+        const response: AxiosResponse<IUser[]> = yield call(
+            fetchUsersApi,
+            token
+        );
         yield put(getUsersSuccess(response.data));
     } catch (error: any) {
         yield put(getUsersFailure(error.message));

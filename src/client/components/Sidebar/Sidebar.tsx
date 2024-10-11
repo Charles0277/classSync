@@ -1,7 +1,10 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import Button from '../Button/Button';
 import styles from './Sidebar.module.css';
 
 const Sidebar: React.FC = () => {
+    const { logout } = useAuth0();
+
     return (
         <div className={styles.sidebar}>
             <div className={styles.topIconButtons}>
@@ -19,7 +22,14 @@ const Sidebar: React.FC = () => {
                 </Button>
             </div>
             <div className={styles.bottomIconButtons}>
-                <Button color="transparent">
+                <Button
+                    color="transparent"
+                    onClick={() =>
+                        logout({
+                            logoutParams: { returnTo: 'http://localhost:3000/' }
+                        })
+                    }
+                >
                     <img src="src\client\assets\vite.svg" />
                 </Button>
             </div>
