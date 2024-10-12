@@ -5,8 +5,8 @@ import { IUser } from '../../common/types/IUser.js';
 const SALT_WORK_FACTOR = 10;
 
 const UserSchema: Schema<IUser> = new Schema({
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
     email: {
         type: String,
         required: true,
@@ -18,7 +18,13 @@ const UserSchema: Schema<IUser> = new Schema({
             message: (props) => `${props.value} is not a valid email!`
         }
     },
-    password: { type: String, required: true }
+    role: {
+        type: String,
+        enum: ['student', 'teacher', 'admin'],
+        default: 'student'
+    },
+    password: { type: String },
+    auth0Id: { type: String, required: true, unique: true }
 });
 
 UserSchema.pre<IUser>('save', async function (next) {
