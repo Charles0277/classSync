@@ -6,10 +6,9 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { RootState } from '../../store/store';
 
 const Home = () => {
-    const { getAccessTokenSilently } = useAuth0();
+    const { getAccessTokenSilently, user } = useAuth0();
     const dispatch = useDispatch();
     const { users } = useSelector((state: RootState) => state.users);
-    console.log('🚀 ~ Home ~ users:', users);
 
     useEffect(() => {
         const fetchTokenAndDispatch = async () => {

@@ -4,9 +4,12 @@ import { IUser } from '../../../common/types/IUser';
 import {
     getUsersRequest,
     getUsersSuccess,
-    getUsersFailure
+    getUsersFailure,
+    checkOrCreateUserSuccess,
+    checkOrCreateUserFailure,
+    checkOrCreateUserRequest
 } from '../slices/userSlice';
-import { fetchUsersApi } from '../../api/usersApi';
+import { checkOrCreateUserApi, fetchUsersApi } from '../../api/usersApi';
 
 function* fetchUsers(action: any) {
     try {
@@ -21,6 +24,22 @@ function* fetchUsers(action: any) {
     }
 }
 
+function* checkOrCreateUser(action: any) {
+    try {
+        const { token, email, auth0Id } = action.payload;
+        const response: AxiosResponse<IUser[]> = yield call(
+            checkOrCreateUserApi,
+            token,
+            email,
+            auth0Id
+        );
+        yield put(checkOrCreateUserSuccess(response.data));
+    } catch (error: any) {
+        yield put(checkOrCreateUserFailure(error.message));
+    }
+}
+
 export default function* userSaga() {
     yield takeLatest(getUsersRequest.type, fetchUsers);
+    yield takeLatest(checkOrCreateUserRequest.type, checkOrCreateUser);
 }

@@ -9,3 +9,20 @@ export const fetchUsersApi = (token: string) => {
         }
     });
 };
+
+export const checkOrCreateUserApi = (
+    token: string,
+    email: string,
+    auth0Id: string
+) => {
+    const requestBody = { email, auth0Id };
+    return axios.post<IUser>(
+        `http://localhost:3000/auth/check-or-create-user`,
+        requestBody,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+};

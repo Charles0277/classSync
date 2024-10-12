@@ -58,3 +58,32 @@ export const login = async (req: express.Request, res: express.Response) => {
         return res.status(400).send(error);
     }
 };
+
+export const checkOrCreateUser = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { email, auth0Id } = req.body;
+
+        if (!email || !auth0Id) {
+            return res.status(400).send({
+                error: 'email and auth0Id is required'
+            });
+        }
+
+        const existingUser = await getUserByEmail(email);
+
+        if (!existingUser) {
+            const newUser = await createUser({
+                email,
+                auth0Id
+            });
+            return res.status(201).send(newUser);
+        }
+
+        return res.status(201).send(existingUser);
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+};
