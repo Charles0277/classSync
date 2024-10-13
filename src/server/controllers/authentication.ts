@@ -34,7 +34,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             password
         });
 
-        return res.status(201).send(newUser);
+        return res.sendStatus(201);
     } catch (error) {
         return res.status(400).send(error);
     }
@@ -42,9 +42,10 @@ export const signUp = async (req: express.Request, res: express.Response) => {
 
 export const login = async (req: express.Request, res: express.Response) => {
     try {
-        const { email, password } = req.body;
-        console.log('🚀 ~ login ~ password:', password);
-        console.log('🚀 ~ login ~ email:', email);
+        const { email, password } = req.body as {
+            email: string;
+            password: string;
+        };
 
         if (!email || !password) {
             return res.status(400).send({
@@ -52,7 +53,7 @@ export const login = async (req: express.Request, res: express.Response) => {
             });
         }
 
-        const existingUser = await getUserByEmail(email);
+        const existingUser = await getUserByEmail(email.toLowerCase());
 
         if (!existingUser) {
             return res.status(400).send({ error: 'This user does not exist' });
@@ -60,16 +61,13 @@ export const login = async (req: express.Request, res: express.Response) => {
 
         if (bcrypt.compareSync(password, existingUser.password)) {
         } else {
-            return res.status(403).send({ error: 'Incorrect password' });
+            return res.status(401).send({ error: 'Incorrect password' });
         }
 
-        const jwtToken = jwt.sign(
-            {
-                expiry: 3600,
-                email: existingUser.email
-            },
-            process.env.JWT_SECRET!
-        );
+        const payload = { userEmail: existingUser.email };
+        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET! as string, {
+            expiresIn: '30d'
+        });
 
         return res.status(201).send({ existingUser, token: jwtToken });
     } catch (error) {

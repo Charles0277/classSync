@@ -1,25 +1,15 @@
 import './App.css';
-
+import { Provider, useSelector } from 'react-redux';
+import store, { RootState } from './store/store';
+import AppRouter from './routes';
 import Sidebar from './components/Sidebar/Sidebar';
-import { RouterProvider } from 'react-router-dom';
-import router from './routes';
-import { Provider } from 'react-redux';
-import store from './store/store';
-import AuthProvider from 'react-auth-kit';
-import { authStore } from './auth/createStore';
+import MainContent from './MainContent';
 
 function App() {
     return (
-        <AuthProvider store={authStore}>
-            <Provider store={store}>
-                <>
-                    {/* <Sidebar /> */}
-                    <main className="layout">
-                        <RouterProvider router={router} />
-                    </main>
-                </>
-            </Provider>
-        </AuthProvider>
+        <Provider store={store}>
+            <MainContent />
+        </Provider>
     );
 }
 

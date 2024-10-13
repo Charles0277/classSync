@@ -2,6 +2,9 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
 import { IUser } from '../../../common/types/IUser';
 import {
+    checkAuthenticationFailure,
+    checkAuthenticationRequest,
+    checkAuthenticationSuccess,
     logInFailure,
     logInRequest,
     logInSuccess,
@@ -10,6 +13,7 @@ import {
     signUpSuccess
 } from '../slices/authSlice';
 import { logInApi, signUpApi } from '../../api/authApi';
+import { getUserApi } from '../../api/usersApi';
 
 function* signUp(action: any) {
     try {
@@ -43,7 +47,18 @@ function* logIn(action: any) {
     }
 }
 
+function* checkAuthentication(action: any) {
+    try {
+        const { email } = action.payload;
+        const response: AxiosResponse<IUser> = yield call(getUserApi, email);
+        yield put(checkAuthenticationSuccess(response.data));
+    } catch (error: any) {
+        yield put(checkAuthenticationFailure(error.message));
+    }
+}
+
 export default function* authSaga() {
     yield takeLatest(signUpRequest.type, signUp);
     yield takeLatest(logInRequest.type, logIn);
+    yield takeLatest(checkAuthenticationRequest.type, checkAuthentication);
 }

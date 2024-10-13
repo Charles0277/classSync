@@ -6,11 +6,11 @@ import {
     getUsersSuccess,
     getUsersFailure
 } from '../slices/userSlice';
-import { fetchUsersApi } from '../../api/usersApi';
+import { getUsersApi } from '../../api/usersApi';
 
 function* fetchUsers() {
     try {
-        const response: AxiosResponse<IUser[]> = yield call(fetchUsersApi);
+        const response: AxiosResponse<IUser[]> = yield call(getUsersApi);
         yield put(getUsersSuccess(response.data));
     } catch (error: any) {
         yield put(getUsersFailure(error.message));

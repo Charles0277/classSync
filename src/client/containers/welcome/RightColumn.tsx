@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Welcome.module.css';
-import { SHA256 } from 'crypto-js';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { logInRequest, signUpRequest } from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
-import useSignIn from 'react-auth-kit/hooks/useSignIn';
-import { refresh } from '../../auth/refresh';
 
 type Mode = 'logIn' | 'signUp' | 'logInAsGuest' | undefined;
 
@@ -37,6 +34,7 @@ const buttons: ButtonConfig[] = [
 
 const RightColumn: React.FC = () => {
     const [mode, setMode] = useState<Mode>(undefined);
+    console.log('🚀 ~ mode:', mode);
     const [formData, setFormData] = useState<SignUpFormData>({
         firstName: '',
         lastName: '',
@@ -45,24 +43,16 @@ const RightColumn: React.FC = () => {
         confirmPassword: ''
     });
 
-    const signIn = useSignIn<IUserData>();
     const dispatch = useDispatch();
-    const { user, token } = useSelector((state: RootState) => state.auth);
+    const { user, token, isAuthenticated, isLoading } = useSelector(
+        (state: RootState) => state.auth
+    );
 
     useEffect(() => {
-        if (user && token) {
-            console.log('🚀 ~ useEffect ~ token:', token);
-            console.log('🚀 ~ useEffect ~ user:', user);
-            signIn({
-                auth: {
-                    token: token,
-                    type: 'Bearer'
-                },
-                userState: { name: user.firstName }
-                // refresh: refresh.refreshApiCallback()
-            });
+        if (user && token && isAuthenticated) {
+            localStorage.setItem('token', token);
         }
-    }, [user]);
+    }, [user, token, isAuthenticated]);
 
     useEffect(() => {
         switch (mode) {
@@ -100,14 +90,14 @@ const RightColumn: React.FC = () => {
         <>
             <h2 className={styles.greySectionTitle}>Get started</h2>
             {buttons.map(({ mode, text }, index) => (
-                <button
+                <Button
                     key={index}
-                    className={styles.button}
+                    className="getStarted"
                     type="button"
                     onClick={() => setMode(mode)}
                 >
                     {text}
-                </button>
+                </Button>
             ))}
         </>
     );
@@ -167,6 +157,13 @@ const RightColumn: React.FC = () => {
                     placeholder="First name"
                     value={formData.firstName}
                     onChange={handleInputChange}
+                    required
+                    minLength={2}
+                    maxLength={50}
+                    pattern={'^[a-zA-Z]+$'}
+                    title={
+                        'Please enter a valid name (letters only, 2-50 characters)'
+                    }
                 />
                 <label htmlFor="lastName">Last name:</label>
                 <Input
@@ -176,6 +173,13 @@ const RightColumn: React.FC = () => {
                     placeholder="Last name"
                     value={formData.lastName}
                     onChange={handleInputChange}
+                    required
+                    minLength={2}
+                    maxLength={50}
+                    pattern={'^[a-zA-Z]+$'}
+                    title={
+                        'Please enter a valid name (letters only, 2-50 characters)'
+                    }
                 />
                 <label htmlFor="email">Email:</label>
                 <Input
@@ -185,6 +189,9 @@ const RightColumn: React.FC = () => {
                     placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
+                    required
+                    pattern={'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}'}
+                    title={'Please enter a valid email address.'}
                 />
                 <label htmlFor="password">Password:</label>
                 <Input
@@ -194,6 +201,13 @@ const RightColumn: React.FC = () => {
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleInputChange}
+                    required
+                    pattern={
+                        '(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}'
+                    }
+                    title={
+                        'Password must be at least 8 characters, include an uppercase letter, a number, and a special character.'
+                    }
                 />
                 <label htmlFor="confirmPassword">Confirm password:</label>
                 <Input
@@ -203,19 +217,35 @@ const RightColumn: React.FC = () => {
                     placeholder="Confirm password"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
+                    required
+                    pattern={`${formData.password}`}
                 />
                 <div className={styles.actionButtonGroup}>
-                    <Button
+                    {/* <Button
                         size="small"
                         type="button"
                         color="#CC4B4B"
                         onClick={() => setMode(undefined)}
                     >
                         Back
-                    </Button>
-                    <Button size="small" type="submit" color="#3CB371">
+                    </Button> */}
+                    <Input
+                        type="button"
+                        id="back"
+                        name="back"
+                        value="Back"
+                        onClick={() => setMode(undefined)}
+                    />
+                    <Input
+                        type="submit"
+                        id="signUp"
+                        name="signUp"
+                        value="Sign Up"
+                        // style={{ color: '#3CB371' }}
+                    />
+                    {/* <Button size="small" type="submit" color="#3CB371">
                         Sign up
-                    </Button>
+                    </Button> */}
                 </div>
             </form>
         </>

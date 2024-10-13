@@ -9,6 +9,12 @@ interface inputProps {
     value?: string;
     onClick?: React.MouseEventHandler;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    required?: boolean;
+    pattern?: string;
+    minLength?: number;
+    maxLength?: number;
+    title?: string;
+    style?: React.CSSProperties;
 }
 
 const Input: React.FC<inputProps> = ({
@@ -18,7 +24,13 @@ const Input: React.FC<inputProps> = ({
     placeholder,
     value,
     onClick,
-    onChange
+    onChange,
+    required,
+    pattern,
+    minLength,
+    maxLength,
+    title,
+    style
 }) => {
     return (
         <>
@@ -31,6 +43,12 @@ const Input: React.FC<inputProps> = ({
                 value={value}
                 onClick={onClick}
                 onChange={onChange}
+                required={required}
+                pattern={pattern}
+                minLength={minLength}
+                maxLength={maxLength}
+                title={title}
+                style={style}
             />
         </>
     );

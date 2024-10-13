@@ -1,10 +1,10 @@
 import express from 'express';
 import {
     deleteUserById,
+    getUserByEmail,
     getUsers,
     updateUserById
 } from '../services/user.services.js';
-import mongoose from 'mongoose';
 
 export const getallUsers = async (
     req: express.Request,
@@ -19,13 +19,23 @@ export const getallUsers = async (
     }
 };
 
+export const getUser = async (req: express.Request, res: express.Response) => {
+    try {
+        const { email } = req.params;
+        const user = await getUserByEmail(email);
+        return res.status(201).send(user);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
 export const deleteUser = async (
     req: express.Request,
     res: express.Response
 ) => {
     try {
         const { id } = req.params;
-        console.log('🚀 ~ id:', id);
         const deletedUser = await deleteUserById(id);
 
         return res.status(201).send(deletedUser);

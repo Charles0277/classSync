@@ -1,17 +1,37 @@
-.button[type='submit'],
-.button[type='button'] {
-    width: 7.5rem;
-    height: 2.75rem;
-    margin-top: 1rem;
-    resize: vertical;
-    border-radius: 10px;
-    border-color: transparent;
-    background-color: #3cb371;
+@import '../../theme.css';
+
+.btn {
     outline: none;
-    font-weight: 400;
     color: #ffffff;
     font-size: medium;
+    font-weight: 400;
     font-family: Inter, sans-serif;
+    border-color: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.getStarted {
+    border-radius: 40px;
+    background-color: var(--darkBlue-color);
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: 600;
+    width: 55%;
+    text-wrap: nowrap;
+    align-items: center;
+    padding: 0.6em 1.2em;
+    min-width: 200px;
+}
+
+.sidebar {
+    background-color: transparent;
+    transition-duration: 0.5s;
+    border-style: solid;
+}
+
+.sidebar:hover {
+    border-color: #ffffff;
 }
 
 .small {

@@ -1,10 +1,27 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './containers/Home/Home';
 import Welcome from './containers/welcome/Welcome';
+import { RootState } from './store/store';
+import { useSelector } from 'react-redux';
 
-const router = createBrowserRouter([
-    { path: '/', element: <Welcome /> },
-    { path: 'home', element: <Home /> }
-]);
+const AppRouter = () => {
+    const { user, token, isAuthenticated, isLoading } = useSelector(
+        (state: RootState) => state.auth
+    );
+    const router = createBrowserRouter([
+        {
+            path: '/',
+            element: isLoading ? (
+                <Home />
+            ) : isAuthenticated ? (
+                <Home />
+            ) : (
+                <Welcome />
+            )
+        }
+    ]);
 
-export default router;
+    return <RouterProvider router={router} />;
+};
+
+export default AppRouter;
