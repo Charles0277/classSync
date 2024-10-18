@@ -10,8 +10,10 @@ const Sidebar: React.FC = () => {
             <div className={styles.topIconButtons}>
                 <Button type="button" className="sidebar">
                     <img
-                        src="src\client\assets\classSyncLogo.svg"
+                        src="src/client/assets/classSyncLogo.svg"
                         className={styles.classSyncLogo}
+                        width="64"
+                        height="64"
                     />
                 </Button>
                 <Button type="button" className="sidebar">

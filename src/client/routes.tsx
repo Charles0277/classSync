@@ -3,6 +3,7 @@ import Home from './containers/Home/Home';
 import Welcome from './containers/welcome/Welcome';
 import { RootState } from './store/store';
 import { useSelector } from 'react-redux';
+import Configuration from './containers/Configurations/Configuration';
 
 const AppRouter = () => {
     const { user, token, isAuthenticated, isLoading } = useSelector(
@@ -18,6 +19,10 @@ const AppRouter = () => {
             ) : (
                 <Welcome />
             )
+        },
+        {
+            path: '/configurations',
+            element: <Configuration />
         }
     ]);
 

@@ -13,9 +13,13 @@
     align-items: center;
 }
 
-.classSyncLogo {
+/* .classSyncLogo {
     width: 4rem;
-}
+    height: auto;
+    margin-bottom: -1rem;
+    object-fit: contain;
+    object-position: center;
+} */
 
 .bottomIconButtons {
     display: flex;

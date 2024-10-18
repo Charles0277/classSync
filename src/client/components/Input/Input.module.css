@@ -1,43 +1,49 @@
-.input[type="submit"] {
-  width: 7.5rem;
-  height: 2.75rem;
-  margin-top: 1rem;
-  resize: vertical;
-  border-radius: 10px;
-  border-color: transparent;
-  background-color: #3cb371;
-  outline: none;
-  font-weight: 400;
-  color: #ffffff;
-  font-size: medium;
-  font-family: Inter, sans-serif;
+.input[type='submit'] {
+    width: 7.5rem;
+    height: 2.75rem;
+    margin-top: 1rem;
+    resize: vertical;
+    border-radius: 10px;
+    border-color: transparent;
+    background-color: #3cb371;
+    outline: none;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: medium;
+    font-family: Inter, sans-serif;
 }
 
-.input[type="button"] {
-  width: 7.5rem;
-  height: 2.75rem;
-  margin-top: 1rem;
-  resize: vertical;
-  border-radius: 10px;
-  border-color: transparent;
-  background-color: #cc4b4b;
-  outline: none;
-  font-weight: 400;
-  color: #ffffff;
-  font-size: medium;
-  font-family: Inter, sans-serif;
+.input[type='button'] {
+    width: 7.5rem;
+    height: 2.75rem;
+    margin-top: 1rem;
+    resize: vertical;
+    border-radius: 10px;
+    border-color: transparent;
+    background-color: #cc4b4b;
+    outline: none;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: medium;
+    font-family: Inter, sans-serif;
 }
 
-.input[type="text"],
-.input[type="email"],
-.input[type="password"] {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  resize: vertical;
-  border-color: #34495e;
-  border-width: 2px;
-  background-color: transparent;
-  outline: none;
+.input[type='text'],
+.input[type='email'],
+.input[type='password'] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    resize: vertical;
+    border-color: #34495e;
+    border-width: 2px;
+    background-color: transparent;
+    outline: none;
+}
+
+.rightSideControl {
+    width: 5.5rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
 }
