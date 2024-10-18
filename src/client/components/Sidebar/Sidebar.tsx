@@ -12,8 +12,8 @@ const Sidebar: React.FC = () => {
                     <img
                         src="src/client/assets/classSyncLogo.svg"
                         className={styles.classSyncLogo}
-                        width="64"
-                        height="64"
+                        width="50"
+                        height="50"
                     />
                 </Button>
                 <Button type="button" className="sidebar">

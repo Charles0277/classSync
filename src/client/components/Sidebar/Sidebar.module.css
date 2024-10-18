@@ -11,15 +11,8 @@
     flex-direction: column;
     gap: 1rem;
     align-items: center;
+    margin-top: 0.5rem;
 }
-
-/* .classSyncLogo {
-    width: 4rem;
-    height: auto;
-    margin-bottom: -1rem;
-    object-fit: contain;
-    object-position: center;
-} */
 
 .bottomIconButtons {
     display: flex;
