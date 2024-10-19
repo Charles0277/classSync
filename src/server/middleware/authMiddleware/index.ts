@@ -17,3 +17,16 @@ export const authenticateToken = (
         next();
     });
 };
+
+export const checkAdmin = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    const user = req.body;
+    if (user && user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).send('Forbidden: Admins only');
+    }
+};

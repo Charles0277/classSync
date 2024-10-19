@@ -20,6 +20,11 @@ const UserSchema: Schema<IUser> = new Schema({
             message: (props) => `${props.value} is not a valid email!`
         }
     },
+    role: {
+        type: String,
+        enum: ['student', 'teacher', 'admin'],
+        default: 'student'
+    },
     password: { type: String, required: true }
 });
 

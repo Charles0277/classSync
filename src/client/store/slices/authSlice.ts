@@ -52,7 +52,7 @@ const authSlice = createSlice({
             state.isLoading = true;
         },
         checkAuthenticationSuccess: (state, action) => {
-            const { user } = action.payload;
+            const user = action.payload;
             state.isLoading = false;
             state.user = user;
             state.isAuthenticated = true;
