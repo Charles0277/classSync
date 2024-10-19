@@ -1,13 +1,18 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './store/store';
-import Sidebar from './components/Sidebar/Sidebar';
-import AppRouter from './routes';
-import { useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Sidebar from './components/Sidebar/Sidebar';
+import Configuration from './containers/Configurations/Configuration';
+import Home from './containers/Home/Home';
+import Welcome from './containers/welcome/Welcome';
 import { checkAuthenticationRequest, logOut } from './store/slices/authSlice';
+import { RootState } from './store/store';
 
 function MainContent() {
-    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { isAuthenticated, isLoading, user } = useSelector(
+        (state: RootState) => state.auth
+    );
 
     const dispatch = useDispatch();
 
@@ -28,12 +33,37 @@ function MainContent() {
     }, []);
 
     return (
-        <>
+        <BrowserRouter>
             {isAuthenticated && <Sidebar />}
             <main className="layout">
-                <AppRouter />
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            isLoading ? (
+                                <Home />
+                            ) : isAuthenticated ? (
+                                <Home />
+                            ) : (
+                                <Welcome />
+                            )
+                        }
+                    ></Route>
+                    <Route
+                        path="/configurations"
+                        element={
+                            isLoading ? (
+                                <Configuration />
+                            ) : isAuthenticated && user?.role === 'admin' ? (
+                                <Configuration />
+                            ) : (
+                                <Home />
+                            )
+                        }
+                    ></Route>
+                </Routes>
             </main>
-        </>
+        </BrowserRouter>
     );
 }
 
