@@ -64,8 +64,9 @@ export const updateUser = async (
                 .send(`Invalid fields: ${invalidFields.join(', ')}`);
         }
 
-        const { firstName, lastName, email, password } = req.body;
-        const updatedValues = { firstName, lastName, email, password };
+        const updatedValues = Object.fromEntries(
+            Object.entries(req.body).filter(([_, value]) => value !== undefined)
+        );
 
         const updatedUser = await updateUserById(id, updatedValues);
 
