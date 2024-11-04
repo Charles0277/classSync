@@ -17,6 +17,13 @@ interface CardProps {
     max?: number;
 }
 
+const configMap = {
+    'Days per week': 'daysPerWeek',
+    'Hours per day': 'hoursPerDay',
+    'Start hour': 'startHour',
+    'End hour': 'endHour'
+} as const;
+
 const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
     const { token } = useSelector((state: RootState) => state.auth);
     const { schoolWeekConfig } = useSelector(
@@ -24,68 +31,53 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
     );
 
     const [value, setValue] = useState<string>('');
-    const [initialValue, setInitialValue] = useState<string>(''); // New state for the original value
+    const [initialValue, setInitialValue] = useState<string>('');
     const [showPopup, setShowPopup] = useState(false);
 
     const dispatch = useDispatch();
+    const configKey = configMap[title as keyof typeof configMap];
+
     const handleOpenPopup = () => setShowPopup(true);
     const handleClosePopup = () => setShowPopup(false);
 
     useEffect(() => {
-        token && dispatch(getConfigRequest({ token: token }));
+        if (token) {
+            dispatch(getConfigRequest({ token }));
+        }
     }, [token]);
 
     useEffect(() => {
-        if (schoolWeekConfig && title === 'Days per week') {
-            const days = schoolWeekConfig.daysPerWeek.toString();
-            setValue(days);
-            setInitialValue(days);
+        if (schoolWeekConfig && configKey) {
+            const currentValue = schoolWeekConfig[configKey]?.toString() || '';
+            setValue(currentValue);
+            setInitialValue(currentValue);
         }
-        if (schoolWeekConfig && title === 'Hours per day') {
-            const hours = schoolWeekConfig.hoursPerDay.toString();
-            setValue(hours);
-            setInitialValue(hours);
-        }
-    }, [schoolWeekConfig]);
+    }, [schoolWeekConfig, configKey]);
 
     useEffect(() => {
-        if (value !== initialValue && token && schoolWeekConfig) {
-            if (title === 'Days per week') {
-                const updatedConfig = {
-                    ...schoolWeekConfig,
-                    ...{ daysPerWeek: Number(value) }
-                };
-                dispatch(updateConfigRequest({ token, updatedConfig }));
-            }
-            if (title === 'Hours per day') {
-                const updatedConfig = {
-                    ...schoolWeekConfig,
-                    ...{ hoursPerDay: Number(value) }
-                };
-                dispatch(updateConfigRequest({ token, updatedConfig }));
-            }
+        if (value !== initialValue && token && schoolWeekConfig && configKey) {
+            const updatedConfig = {
+                ...schoolWeekConfig,
+                [configKey]: Number(value)
+            };
+            dispatch(updateConfigRequest({ token, updatedConfig }));
         }
-    }, [value, initialValue, token, title, dispatch]);
+    }, [value, initialValue, token, configKey, dispatch]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-
         const wholeNumberPattern = /^-?\d*$/;
 
-        if (!wholeNumberPattern.test(newValue)) {
-            return;
-        }
+        if (!wholeNumberPattern.test(newValue)) return;
 
         const numericValue = parseFloat(newValue);
-
         if (!isNaN(numericValue)) {
-            if (min !== undefined && numericValue < min) {
-                setValue(min.toString());
-            } else if (max !== undefined && numericValue > max) {
-                setValue(max.toString());
-            } else {
-                setValue(newValue);
-            }
+            setValue(
+                Math.min(
+                    Math.max(numericValue, min || numericValue),
+                    max || numericValue
+                ).toString()
+            );
         } else {
             setValue(newValue);
         }
@@ -97,7 +89,6 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                 <ManageCardConfig
                     title={`Manage ${title}`}
                     onCancel={handleClosePopup}
-                    onConfirm={handleClosePopup}
                 />
             )}
             <div className={styles.panel}>
@@ -105,9 +96,7 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                 {rightSideControl === 'button' ? (
                     <Button
                         className="rightSideControl"
-                        onClick={() => {
-                            handleOpenPopup();
-                        }}
+                        onClick={handleOpenPopup}
                     >
                         Manage
                     </Button>
@@ -123,8 +112,8 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                         onChange={handleChange}
                         step={1}
                         pattern={`^-?[${min}-${max}]+$`}
-                        title={`Only whole numbers between ${min}-${max} are allowed`} // Message that appears if the pattern is not met
-                    ></Input>
+                        title={`Only whole numbers between ${min}-${max} are allowed`}
+                    />
                 )}
             </div>
         </>
