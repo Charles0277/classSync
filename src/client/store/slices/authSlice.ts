@@ -3,7 +3,7 @@ import { IUser } from '../../../common/types/IUser';
 
 interface AuthState {
     user?: IUser;
-    token?: string;
+    token: string | null;
     isLoading: boolean;
     error: string | null;
     isAuthenticated: boolean;
@@ -11,7 +11,7 @@ interface AuthState {
 
 const initialState: AuthState = {
     user: undefined,
-    token: undefined,
+    token: localStorage.getItem('token'),
     isLoading: false,
     error: null,
     isAuthenticated: false
@@ -62,7 +62,7 @@ const authSlice = createSlice({
         },
         logOut: (state) => {
             state.user = undefined;
-            state.token = undefined;
+            state.token = null;
             state.isAuthenticated = false;
             localStorage.removeItem('token');
         }

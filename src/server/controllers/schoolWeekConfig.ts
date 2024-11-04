@@ -17,7 +17,7 @@ export const getSchoolWeekConfig = async (req: Request, res: Response) => {
 };
 
 export const createSchoolWeekConfig = async (req: Request, res: Response) => {
-    const { daysInWeek, hoursPerDay, startHour, endHour } = req.body;
+    const { daysPerWeek, hoursPerDay, startHour, endHour } = req.body;
 
     const existingConfig = await fetchSchoolWeekConfig();
 
@@ -27,7 +27,7 @@ export const createSchoolWeekConfig = async (req: Request, res: Response) => {
 
     try {
         const config = await initialiseSchoolWeekConfig({
-            daysInWeek,
+            daysPerWeek,
             hoursPerDay,
             startHour,
             endHour
@@ -41,28 +41,48 @@ export const createSchoolWeekConfig = async (req: Request, res: Response) => {
 };
 
 export const updateSchoolWeekConfig = async (req: Request, res: Response) => {
-    const allowedFields = ['daysInWeek', 'hoursPerDay', 'startHour', 'endHour'];
+    const allowedFields = [
+        'daysPerWeek',
+        'hoursPerDay',
+        'startHour',
+        'endHour'
+    ];
 
-    const invalidFields = Object.keys(req.body).filter(
-        (key) => !allowedFields.includes(key)
+    // Filter out invalid fields
+    const filteredBody = Object.fromEntries(
+        Object.entries(req.body).filter(
+            ([key, value]) => allowedFields.includes(key) && value !== undefined
+        )
     );
 
+    // Identify any disallowed fields
+    const invalidFields = Object.keys(req.body).filter(
+        (key) => !allowedFields.includes(key) && key !== '_id' && key !== '__v'
+    );
+
+    // If there are invalid fields, respond with a 400 error
     if (invalidFields.length > 0) {
-        return res
-            .status(400)
-            .send(`Invalid fields: ${invalidFields.join(', ')}`);
+        return res.status(400).json({
+            message: `Invalid fields: ${invalidFields.join(', ')}`
+        });
     }
 
-    const updatedValues = Object.fromEntries(
-        Object.entries(req.body).filter(([_, value]) => value !== undefined)
-    );
-
+    // Proceed with updating if valid
     try {
-        const updatedConfig = await modifySchoolWeekConfig(updatedValues);
-        res.status(200).json(updatedConfig);
+        const updatedConfig = await modifySchoolWeekConfig(filteredBody);
+
+        // Return success response with updated configuration
+        return res.status(200).json({
+            message: 'School week configuration updated successfully.',
+            data: updatedConfig
+        });
     } catch (error) {
-        res.status(500).json({
-            message: 'Failed to update school week configuration.'
+        console.error('Error updating school week configuration:', error);
+
+        // Return a 500 error with details
+        return res.status(500).json({
+            message: 'Failed to update school week configuration.',
+            error: error || 'Unknown error'
         });
     }
 };

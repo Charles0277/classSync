@@ -6,5 +6,5 @@ export const getUsersApi = () => {
 };
 
 export const getUserApi = (email: string) => {
-    return axios.get<IUser[]>(`http://localhost:3000/user/${email}`);
+    return axios.get<IUser>(`http://localhost:3000/user/${email}`);
 };
