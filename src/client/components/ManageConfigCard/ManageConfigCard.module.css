@@ -33,3 +33,11 @@
     align-items: center;
     padding-top: 1rem;
 }
+
+.closeIcon {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    margin-bottom: -2rem;
+    padding-top: 0.5rem;
+}

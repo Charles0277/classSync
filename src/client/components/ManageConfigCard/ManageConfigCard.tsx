@@ -1,7 +1,8 @@
-// components/Popup.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './ManageConfigCard.module.css';
 import Panel from '../Panels/Panel';
+import closeIcon from '../../assets/closeIcon.svg';
+import Button from '../Button/Button';
 
 interface ManageCardConfigProps {
     title: string;
@@ -26,6 +27,18 @@ const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
         }
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onCancel();
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [onCancel]);
+
     const panelConfigs: PanelConfig[] = [
         { title: 'Days per week', rightSideControl: 'input', min: 3, max: 7 },
         { title: 'Hours per day', rightSideControl: 'input', min: 5, max: 10 },
@@ -39,6 +52,16 @@ const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
                 className={styles.popupCard}
                 onClick={(e) => e.stopPropagation()}
             >
+                <div className={styles.closeIcon}>
+                    <Button
+                        type="button"
+                        onClick={() => {
+                            onCancel();
+                        }}
+                    >
+                        <img src={closeIcon} />
+                    </Button>
+                </div>
                 <h2 className={styles.popupTitle}>{title}</h2>
                 {title === 'Manage School Week' && (
                     <div className={styles.schoolWeek}>
