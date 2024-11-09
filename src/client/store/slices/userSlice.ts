@@ -17,7 +17,7 @@ const userSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
-        getUsersRequest: (state) => {
+        getUsersRequest: (state, action) => {
             state.loading = true;
             state.error = null;
         },

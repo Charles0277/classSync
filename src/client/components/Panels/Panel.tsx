@@ -3,12 +3,12 @@ import Button from '../Button/Button';
 import Input from '../Input/Input';
 import styles from './Panel.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getConfigRequest,
-    updateConfigRequest
-} from '../../store/slices/schoolWeekConfigSlice';
+import { updateConfigRequest } from '../../store/slices/schoolWeekConfigSlice';
 import { RootState } from '../../store/store';
 import ManageCardConfig from '../ManageConfigCard/ManageConfigCard';
+import ManageSchoolWeek from '../ManageSchoolWeek/ManageSchoolWeek';
+import ManageEntities from '../ManageRooms/ManageRooms';
+import ManageUsers from '../ManageUsers/ManageUsers';
 
 interface CardProps {
     title: string;
@@ -39,12 +39,6 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
 
     const handleOpenPopup = () => setShowPopup(true);
     const handleClosePopup = () => setShowPopup(false);
-
-    useEffect(() => {
-        if (token) {
-            dispatch(getConfigRequest({ token }));
-        }
-    }, [token]);
 
     useEffect(() => {
         if (schoolWeekConfig && configKey) {
@@ -89,7 +83,11 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                 <ManageCardConfig
                     title={`Manage ${title}`}
                     onCancel={handleClosePopup}
-                />
+                >
+                    {title === 'Rooms' && <ManageEntities />}
+                    {title === 'School Week' && <ManageSchoolWeek />}
+                    {title === 'Users' && <ManageUsers />}
+                </ManageCardConfig>
             )}
             <div className={styles.panel}>
                 {title}

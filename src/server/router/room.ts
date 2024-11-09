@@ -9,7 +9,7 @@ import {
     getAllRooms,
     getRoom,
     updateRoom
-} from '../controllers/rooms.js';
+} from '../controllers/room.js';
 
 export default (router: express.Router) => {
     router.get('/rooms', authenticateToken, getAllRooms);

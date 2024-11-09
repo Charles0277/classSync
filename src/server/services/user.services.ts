@@ -2,7 +2,13 @@ import { UserModel } from '../models/user.models.js';
 
 export const getUsers = () => UserModel.find();
 
-export const getUserByEmail = (email: string) => UserModel.findOne({ email });
+// export const getUserByEmail = (email: string) => UserModel.findOne({ email });
+
+export const getUserByEmail = (email: string) =>
+    UserModel.findOne({ email })
+        .populate('course')
+        // .populate('courseUnits')
+        .exec();
 
 export const createUser = (values: Record<string, any>) =>
     new UserModel(values).save().then((user) => user.toObject());

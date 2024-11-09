@@ -1,0 +1,14 @@
+.roomContainer {
+    border-top: 1px solid black; /* line above each room */
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    padding-left: 1rem;
+    font-size: 18px;
+}
+
+.lastRoom {
+    border-bottom: 1px solid black; /* line below the last room */
+}

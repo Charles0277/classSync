@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import styles from './ManageConfigCard.module.css';
-import Panel from '../Panels/Panel';
 import closeIcon from '../../assets/closeIcon.svg';
 import Button from '../Button/Button';
 
 interface ManageCardConfigProps {
     title: string;
     onCancel: () => void;
+    children: React.ReactNode;
 }
 
 interface PanelConfig {
@@ -18,7 +18,8 @@ interface PanelConfig {
 
 const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
     title,
-    onCancel
+    onCancel,
+    children
 }) => {
     const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
         // Close the popup if clicking outside the popup card
@@ -63,19 +64,7 @@ const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
                     </Button>
                 </div>
                 <h2 className={styles.popupTitle}>{title}</h2>
-                {title === 'Manage School Week' && (
-                    <div className={styles.schoolWeek}>
-                        {panelConfigs.map((config) => (
-                            <Panel
-                                key={config.title}
-                                title={config.title}
-                                rightSideControl={config.rightSideControl}
-                                min={config.min}
-                                max={config.max}
-                            />
-                        ))}
-                    </div>
-                )}
+                {children}
             </div>
         </div>
     );

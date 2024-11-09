@@ -25,7 +25,9 @@ const UserSchema: Schema<IUser> = new Schema({
         enum: ['student', 'teacher', 'admin'],
         default: 'student'
     },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
+    courseUnits: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CourseUnit' }]
 });
 
 UserSchema.pre<IUser>('save', async function (next) {

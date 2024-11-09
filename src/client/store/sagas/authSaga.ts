@@ -13,7 +13,7 @@ import {
     signUpSuccess
 } from '../slices/authSlice';
 import { logInApi, signUpApi } from '../../api/authApi';
-import { getUserApi } from '../../api/usersApi';
+import { getUserApi } from '../../api/userApi';
 
 function* signUp(action: any) {
     try {
