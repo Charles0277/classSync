@@ -9,13 +9,6 @@ interface ManageCardConfigProps {
     children: React.ReactNode;
 }
 
-interface PanelConfig {
-    title: string;
-    rightSideControl: 'input' | 'button';
-    min?: number;
-    max?: number;
-}
-
 const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
     title,
     onCancel,
@@ -39,13 +32,6 @@ const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [onCancel]);
-
-    const panelConfigs: PanelConfig[] = [
-        { title: 'Days per week', rightSideControl: 'input', min: 3, max: 7 },
-        { title: 'Hours per day', rightSideControl: 'input', min: 5, max: 10 },
-        { title: 'Start hour', rightSideControl: 'input', min: 6, max: 13 },
-        { title: 'End hour', rightSideControl: 'input', min: 10, max: 19 }
-    ];
 
     return (
         <div className={styles.overlay} onClick={handleBackgroundClick}>

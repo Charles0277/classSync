@@ -3,6 +3,7 @@ import { IUser } from '../../../common/types/IUser';
 
 interface UserState {
     users: IUser[];
+    user?: IUser;
     loading: boolean;
     error: string | null;
 }
@@ -28,11 +29,47 @@ const userSlice = createSlice({
         getUsersFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        updateUserRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        updateUserSuccess: (state, action) => {
+            state.loading = false;
+            state.user = action.payload;
+        },
+        updateUserFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        deleteUserRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        deleteUserSuccess: (state, action) => {
+            state.loading = false;
+            const deletedUserId = action.payload._id;
+            state.users = state.users.filter(
+                (user) => user._id !== deletedUserId
+            );
+        },
+        deleteUserFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
 
-export const { getUsersRequest, getUsersSuccess, getUsersFailure } =
-    userSlice.actions;
+export const {
+    getUsersRequest,
+    getUsersSuccess,
+    getUsersFailure,
+    updateUserRequest,
+    updateUserSuccess,
+    updateUserFailure,
+    deleteUserRequest,
+    deleteUserSuccess,
+    deleteUserFailure
+} = userSlice.actions;
 
 export default userSlice.reducer;

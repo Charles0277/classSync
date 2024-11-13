@@ -1,0 +1,58 @@
+.formTitle {
+    color: var(--darkBlue-color);
+    font-size: 40px;
+    margin-bottom: 0px;
+}
+
+.formGroup {
+    width: 55%;
+}
+
+.actionButtonGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 1rem;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notSignUp {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 0.5rem;
+    font:
+        600 20px/1.3 Inter,
+        sans-serif;
+}
+
+.notSignUp label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+    margin-bottom: -8px;
+}
+
+.select {
+    width: 110%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    border-color: #34495e;
+    border-width: 2px;
+    background-color: transparent;
+    box-sizing: border-box;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDE2IDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEgMmw3IDYgNy02IiBzdHJva2U9IiMzNDQ5NWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtY2FwbT0ic3F1YXJlIi8+PC9zdmc+');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    cursor: pointer;
+}

@@ -9,6 +9,7 @@
     border-color: transparent;
     border-radius: 10px;
     cursor: pointer;
+    background-color: transparent;
 }
 
 .btn:active {

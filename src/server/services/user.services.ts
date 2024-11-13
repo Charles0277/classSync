@@ -18,8 +18,8 @@ export const deleteUserById = (id: string) => UserModel.findByIdAndDelete(id);
 export const updateUserById = (id: string, values: Record<string, any>) =>
     UserModel.findByIdAndUpdate(id, values, { new: true });
 
-export const deleteUserByName = (email: string) =>
+export const deleteUserByEmail = (email: string) =>
     UserModel.findOneAndDelete({ email });
 
-export const updateUserByName = (email: string, values: Record<string, any>) =>
+export const updateUserByEmail = (email: string, values: Record<string, any>) =>
     UserModel.findOneAndUpdate({ email }, values, { new: true });

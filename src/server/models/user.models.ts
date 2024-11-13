@@ -13,9 +13,7 @@ const UserSchema: Schema<IUser> = new Schema({
         unique: true,
         validate: {
             validator: (email: string) => {
-                return /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(
-                    email
-                );
+                return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
             },
             message: (props) => `${props.value} is not a valid email!`
         }

@@ -3,6 +3,7 @@ import {
     deleteUserById,
     getUserByEmail,
     getUsers,
+    updateUserByEmail,
     updateUserById
 } from '../services/user.services.js';
 
@@ -50,9 +51,16 @@ export const updateUser = async (
     res: express.Response
 ) => {
     try {
-        const { id } = req.params;
+        const { email } = req.params;
 
-        const allowedFields = ['firstName', 'lastName', 'email', 'password'];
+        const allowedFields = [
+            'firstName',
+            'lastName',
+            'email',
+            'course',
+            'password',
+            'confirmPassword'
+        ];
 
         const invalidFields = Object.keys(req.body).filter(
             (key) => !allowedFields.includes(key)
@@ -68,11 +76,10 @@ export const updateUser = async (
             Object.entries(req.body).filter(([_, value]) => value !== undefined)
         );
 
-        const updatedUser = await updateUserById(id, updatedValues);
+        const updatedUser = await updateUserByEmail(email, updatedValues);
 
         return res.status(201).send(updatedUser);
     } catch (error) {
-        console.log(error);
         return res.sendStatus(400);
     }
 };

@@ -9,6 +9,9 @@ import ManageCardConfig from '../ManageConfigCard/ManageConfigCard';
 import ManageSchoolWeek from '../ManageSchoolWeek/ManageSchoolWeek';
 import ManageEntities from '../ManageRooms/ManageRooms';
 import ManageUsers from '../ManageUsers/ManageUsers';
+import ManageCourses from '../ManageCourses/ManageCourses';
+import { IUser } from '../../../common/types/IUser';
+import EditUserForm from '../EditUserCard/EditUserCard';
 
 interface CardProps {
     title: string;
@@ -33,12 +36,27 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
     const [value, setValue] = useState<string>('');
     const [initialValue, setInitialValue] = useState<string>('');
     const [showPopup, setShowPopup] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [editingUser, setEditingUser] = useState<IUser>();
 
     const dispatch = useDispatch();
     const configKey = configMap[title as keyof typeof configMap];
 
     const handleOpenPopup = () => setShowPopup(true);
     const handleClosePopup = () => setShowPopup(false);
+    const handleEditUser = (user: IUser) => {
+        handleClosePopup();
+        setEditingUser(user);
+        setShowEditForm(true); // Show edit form as overlay
+    };
+    const handleSaveEditUser = () => {
+        setShowEditForm(false); // Hide edit form, return to users popup
+        handleOpenPopup();
+    };
+    const handleCancelEditUser = () => {
+        setShowEditForm(false);
+        handleOpenPopup();
+    };
 
     useEffect(() => {
         if (schoolWeekConfig && configKey) {
@@ -86,8 +104,22 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                 >
                     {title === 'Rooms' && <ManageEntities />}
                     {title === 'School Week' && <ManageSchoolWeek />}
-                    {title === 'Users' && <ManageUsers />}
+                    {title === 'Users' && (
+                        <ManageUsers
+                            onEditUser={handleEditUser}
+                            onCancel={handleClosePopup}
+                        />
+                    )}
+                    {title === 'Courses' && <ManageCourses />}
                 </ManageCardConfig>
+            )}
+            {showEditForm && (
+                <EditUserForm
+                    user={editingUser!}
+                    onSave={handleSaveEditUser}
+                    onCancel={handleCancelEditUser}
+                    editUser
+                />
             )}
             <div className={styles.panel}>
                 {title}

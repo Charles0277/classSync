@@ -27,7 +27,6 @@ const ManageRooms = () => {
                             index === rooms.length - 1 ? styles.lastRoom : ''
                         }`}
                     >
-                        {/* Render each room detail here */}
                         {room.name}
                     </div>
                 ))}

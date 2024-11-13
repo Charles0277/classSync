@@ -10,3 +10,20 @@ export const getUsersApi = (token: string) => {
 export const getUserApi = (email: string) => {
     return axios.get<IUser>(`http://localhost:3000/user/${email}`);
 };
+
+export const updateUserApi = (formData: any, token: string) => {
+    const { email } = formData;
+    return axios.put<IUser>(
+        `http://localhost:3000/update-user/${email}`,
+        formData,
+        {
+            headers: { Authorization: `Bearer ${token}` }
+        }
+    );
+};
+
+export const deleteUserApi = (id: string, token: string) => {
+    return axios.delete<IUser>(`http://localhost:3000/delete-user/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+};

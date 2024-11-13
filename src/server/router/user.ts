@@ -13,11 +13,6 @@ import {
 export default (router: express.Router) => {
     router.get('/users', authenticateToken, getallUsers);
     router.get('/user/:email', getUser);
-    router.delete(
-        '/delete-user/:id',
-        authenticateToken,
-        checkAdmin,
-        deleteUser
-    );
-    router.put('/update-user/:id', authenticateToken, checkAdmin, updateUser);
+    router.delete('/delete-user/:id', authenticateToken, deleteUser);
+    router.put('/update-user/:email', authenticateToken, updateUser);
 };
