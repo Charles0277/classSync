@@ -9,9 +9,9 @@ import ManageCardConfig from '../ManageConfigCard/ManageConfigCard';
 import ManageSchoolWeek from '../ManageSchoolWeek/ManageSchoolWeek';
 import ManageEntities from '../ManageRooms/ManageRooms';
 import ManageUsers from '../ManageUsers/ManageUsers';
-import ManageCourses from '../ManageCourses/ManageCourses';
 import { IUser } from '../../../common/types/IUser';
 import EditUserForm from '../EditUserCard/EditUserCard';
+import ManageCourses from '../ManageCourses/ManageCourses';
 
 interface CardProps {
     title: string;
@@ -37,6 +37,7 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
     const [initialValue, setInitialValue] = useState<string>('');
     const [showPopup, setShowPopup] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
+    const [showAddForm, setShowAddForm] = useState(false);
     const [editingUser, setEditingUser] = useState<IUser>();
 
     const dispatch = useDispatch();
@@ -44,6 +45,19 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
 
     const handleOpenPopup = () => setShowPopup(true);
     const handleClosePopup = () => setShowPopup(false);
+
+    const handleAddUser = () => {
+        handleClosePopup();
+        setShowAddForm(true); // Show Add form as overlay
+    };
+    const handleSaveAddUser = () => {
+        setShowAddForm(false); // Hide Add form, return to users popup
+        handleOpenPopup();
+    };
+    const handleCancelAddUser = () => {
+        setShowAddForm(false);
+        handleOpenPopup();
+    };
     const handleEditUser = (user: IUser) => {
         handleClosePopup();
         setEditingUser(user);
@@ -106,6 +120,7 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                     {title === 'School Week' && <ManageSchoolWeek />}
                     {title === 'Users' && (
                         <ManageUsers
+                            onAddUser={handleAddUser}
                             onEditUser={handleEditUser}
                             onCancel={handleClosePopup}
                         />
@@ -114,6 +129,14 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                 </ManageCardConfig>
             )}
             {showEditForm && (
+                <EditUserForm
+                    user={editingUser!}
+                    onSave={handleSaveEditUser}
+                    onCancel={handleCancelEditUser}
+                    editUser
+                />
+            )}
+            {showAddForm && (
                 <EditUserForm
                     user={editingUser!}
                     onSave={handleSaveEditUser}

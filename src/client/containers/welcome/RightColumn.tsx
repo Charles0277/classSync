@@ -21,6 +21,9 @@ interface SignUpFormData {
     email: string;
     password: string;
     confirmPassword: string;
+    role: 'student' | 'teacher';
+    course: string;
+    courseUnits: string[];
 }
 
 const buttons: ButtonConfig[] = [
@@ -36,7 +39,10 @@ const RightColumn: React.FC = () => {
         lastName: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        role: 'student',
+        course: '',
+        courseUnits: []
     });
 
     const dispatch = useDispatch();
@@ -67,11 +73,34 @@ const RightColumn: React.FC = () => {
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
-        const { name, value } = e.target;
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: value
-        }));
+        const { name, value, type } = e.target;
+
+        // Type guard for checkbox inputs
+        if (
+            type === 'checkbox' &&
+            name === 'courseUnits' &&
+            e.target instanceof HTMLInputElement
+        ) {
+            const checked = e.target.checked;
+
+            setFormData((prevState) => {
+                const currentUnits = prevState.courseUnits || [];
+                const updatedUnits = checked
+                    ? [...currentUnits, value] // Add value if checked
+                    : currentUnits.filter((unit) => unit !== value); // Remove value if unchecked
+
+                return {
+                    ...prevState,
+                    courseUnits: updatedUnits
+                };
+            });
+        } else {
+            // Default handling for other inputs
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: value
+            }));
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {

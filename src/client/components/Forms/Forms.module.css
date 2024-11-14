@@ -5,7 +5,7 @@
 }
 
 .formGroup {
-    width: 55%;
+    width: 100%;
 }
 
 .actionButtonGroup {
@@ -13,12 +13,14 @@
     flex-direction: row;
     justify-content: start;
     gap: 1rem;
+    width: 100%;
 }
 
 .formContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 55%;
 }
 
 .notSignUp {
@@ -38,6 +40,7 @@
 }
 
 .select {
+    display: flex;
     width: 110%;
     padding: 12px;
     border: 1px solid #ccc;
@@ -55,4 +58,8 @@
     background-position: right 10px center;
     background-size: 12px;
     cursor: pointer;
+}
+
+.checkBox label {
+    padding: 0 !important;
 }

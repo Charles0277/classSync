@@ -12,7 +12,7 @@ import {
 } from '../middleware/authMiddleware/index.js';
 
 export default (router: express.Router) => {
-    router.get('/courses', authenticateToken, getAllCourses);
+    router.get('/courses', getAllCourses);
     router.get('/course/:code', getCourse);
     router.post('/create-course', authenticateToken, createNewCourse);
     router.delete(

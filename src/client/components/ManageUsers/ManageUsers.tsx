@@ -11,11 +11,12 @@ import { IUser } from '../../../common/types/IUser';
 import addIcon from '../../assets/addIcon.svg';
 
 interface ManageRoomsProps {
+    onAddUser: () => void;
     onEditUser: (user: IUser) => void;
     onCancel: () => void;
 }
 
-const ManageRooms: React.FC<ManageRoomsProps> = ({ onEditUser, onCancel }) => {
+const ManageRooms: React.FC<ManageRoomsProps> = ({ onEditUser, onAddUser }) => {
     const { token } = useSelector((state: RootState) => state.auth);
     const { users } = useSelector((state: RootState) => state.user);
 
@@ -77,7 +78,7 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onEditUser, onCancel }) => {
                         Teachers
                     </Button>
                 </div>
-                <Button type="button" onClick={() => console.log('Add User')}>
+                <Button type="button" onClick={() => onAddUser()}>
                     <img src={addIcon} alt="Edit" /> Add User
                 </Button>
             </div>

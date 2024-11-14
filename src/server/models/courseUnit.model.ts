@@ -13,14 +13,11 @@ const courseUnitSchema = new Schema<ICourseUnit>({
     instructor: {
         type: String,
         required: true
-    },
-    schedule: {
-        type: String,
-        required: false
     }
 });
 
 export const CourseUnitModel: Model<ICourseUnit> = mongoose.model<ICourseUnit>(
     'CourseUnit',
-    courseUnitSchema
+    courseUnitSchema,
+    'course_units'
 );

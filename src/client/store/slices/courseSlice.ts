@@ -17,7 +17,7 @@ const courseSlice = createSlice({
     name: 'course',
     initialState,
     reducers: {
-        fetchAllCoursesRequest: (state, action) => {
+        fetchAllCoursesRequest: (state) => {
             state.loading = true;
             state.error = null;
         },

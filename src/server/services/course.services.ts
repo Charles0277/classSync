@@ -1,6 +1,6 @@
 import { CourseModel } from '../models/course.model.js';
 
-export const getCourses = () => CourseModel.find();
+export const getCourses = () => CourseModel.find().populate('courseUnits');
 
 export const getCourseByCode = (code: string) => CourseModel.findOne({ code });
 

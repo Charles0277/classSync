@@ -7,7 +7,7 @@ export const getUsers = () => UserModel.find();
 export const getUserByEmail = (email: string) =>
     UserModel.findOne({ email })
         .populate('course')
-        // .populate('courseUnits')
+        .populate('courseUnits')
         .exec();
 
 export const createUser = (values: Record<string, any>) =>
