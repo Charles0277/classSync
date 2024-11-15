@@ -24,6 +24,18 @@ const UserSchema: Schema<IUser> = new Schema({
         default: 'student'
     },
     password: { type: String, required: true },
+    yearOfStudy: {
+        type: Number,
+        required: true,
+        validate: {
+            validator: (yearOfStudy: number) => {
+                return yearOfStudy >= 1 && yearOfStudy <= 7;
+            },
+            message: (props) =>
+                `${props.value} is not a valid year of study! It should be between 1 and 7.`
+        },
+        set: (value: any) => parseInt(value, 10) // Convert to number during assignment
+    },
     course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
     courseUnits: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CourseUnit' }]
 });

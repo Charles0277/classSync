@@ -6,6 +6,11 @@ import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
 import { ICourseUnit } from '../../../../common/types/ICourseUnit';
 
+const findFirstDigit = (input: string): string | null => {
+    const match = input.match(/\d/); // Match the first single digit
+    return match ? match[0] : null; // Return the digit as a string or null
+};
+
 interface SignUpFormProps {
     formData: {
         firstName: string;
@@ -13,8 +18,9 @@ interface SignUpFormProps {
         email: string;
         password?: string;
         confirmPassword?: string;
-        course: string;
         role: 'student' | 'teacher';
+        yearOfStudy: 1 | 2 | 3 | 4 | 5 | 6 | 7 | undefined;
+        course: string;
         courseUnits: string[];
     };
     handleInputChange: (
@@ -51,7 +57,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     useEffect(() => {
         if (formData.course) {
             const selectedCourse = courses?.find(
-                (course) => course.name === formData.course
+                (course) => course._id === formData.course
             );
             setSelectedCourseUnits(
                 selectedCourse
@@ -65,6 +71,22 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 
     const handleNext = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const { firstName, lastName, email, password, confirmPassword } =
+            formData;
+
+        // Check for missing or invalid fields
+        if (
+            !firstName.trim() ||
+            !lastName.trim() ||
+            !email.trim() ||
+            (password && !password.trim) ||
+            (confirmPassword && !confirmPassword.trim)
+        ) {
+            alert('All fields are required. Please fill out all the fields.');
+            return;
+        }
+
         setStep(2);
     };
 
@@ -190,6 +212,25 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             </option>
                         </select>
 
+                        <label htmlFor="yearOfStudy">Year of Study:</label>
+                        <select
+                            id="yearOfStudy"
+                            name="yearOfStudy"
+                            value={formData.yearOfStudy || ''}
+                            onChange={handleInputChange}
+                            required
+                            className={styles.select}
+                        >
+                            <option value="" disabled>
+                                Select a Year of Study
+                            </option>
+                            {Array.from({ length: 7 }, (_, index) => (
+                                <option value={index + 1} key={index + 1}>
+                                    {index + 1}
+                                </option>
+                            ))}
+                        </select>
+
                         <label htmlFor="course">Course:</label>
                         <select
                             id="course"
@@ -205,7 +246,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             {courses &&
                                 courses.map((course) => (
                                     <option
-                                        value={course.name}
+                                        value={course._id as string}
                                         key={course.code}
                                     >
                                         {course.name}
@@ -215,20 +256,30 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 
                         <label htmlFor="courseUnits">Course Units:</label>
                         <div className={styles.checkBox}>
-                            {selectedCourseUnits.map((courseUnit) => (
-                                <div key={courseUnit.code}>
-                                    <input
-                                        type="checkbox"
-                                        id={courseUnit.code}
-                                        name="courseUnits"
-                                        value={courseUnit._id as string}
-                                        onChange={handleInputChange}
-                                    />
-                                    <label htmlFor={courseUnit.code}>
-                                        {courseUnit.name}
-                                    </label>
-                                </div>
-                            ))}
+                            {formData.yearOfStudy &&
+                                selectedCourseUnits
+                                    .filter(
+                                        (courseUnit) =>
+                                            findFirstDigit(courseUnit.code) ===
+                                            formData.yearOfStudy!.toString()
+                                    )
+                                    .map((courseUnit) => (
+                                        <div key={courseUnit.code}>
+                                            <input
+                                                type="checkbox"
+                                                id={courseUnit.code}
+                                                name="courseUnits"
+                                                value={courseUnit._id as string}
+                                                onChange={handleInputChange}
+                                                disabled={
+                                                    formData.course === ''
+                                                }
+                                            />
+                                            <label htmlFor={courseUnit.code}>
+                                                {courseUnit.name}
+                                            </label>
+                                        </div>
+                                    ))}
                         </div>
                         <div className={styles.actionButtonGroup}>
                             <Input

@@ -17,15 +17,28 @@ import { getUserApi } from '../../api/userApi';
 
 function* signUp(action: any) {
     try {
-        const { firstName, lastName, email, password, confirmPassword } =
-            action.payload;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            role,
+            yearOfStudy,
+            course,
+            courseUnits
+        } = action.payload;
         const response: AxiosResponse<IUser> = yield call(
             signUpApi,
             firstName,
             lastName,
             email,
             password,
-            confirmPassword
+            confirmPassword,
+            role,
+            yearOfStudy,
+            course,
+            courseUnits
         );
         yield put(signUpSuccess(response.data));
     } catch (error: any) {

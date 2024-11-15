@@ -22,6 +22,7 @@ interface SignUpFormData {
     password: string;
     confirmPassword: string;
     role: 'student' | 'teacher';
+    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 6 | 7 | undefined;
     course: string;
     courseUnits: string[];
 }
@@ -41,6 +42,7 @@ const RightColumn: React.FC = () => {
         password: '',
         confirmPassword: '',
         role: 'student',
+        yearOfStudy: undefined,
         course: '',
         courseUnits: []
     });
@@ -107,6 +109,34 @@ const RightColumn: React.FC = () => {
         e.preventDefault();
 
         console.log('Form submitted with data:', formData);
+
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            role,
+            yearOfStudy,
+            course,
+            courseUnits
+        } = formData;
+
+        // Check for missing or invalid fields
+        if (
+            !firstName.trim() ||
+            !lastName.trim() ||
+            !email.trim() ||
+            !password.trim() ||
+            !confirmPassword.trim() ||
+            !role.trim() ||
+            yearOfStudy === undefined ||
+            !course.trim() ||
+            courseUnits.length === 0
+        ) {
+            alert('All fields are required. Please fill out all the fields.');
+            return;
+        }
 
         mode === 'logIn'
             ? dispatch(logInRequest(formData))

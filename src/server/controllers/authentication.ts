@@ -6,18 +6,31 @@ import { createUser, getUserByEmail } from '../services/user.services.js';
 
 export const signUp = async (req: express.Request, res: express.Response) => {
     try {
-        const { firstName, lastName, email, password, confirmPassword } =
-            req.body;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            role,
+            yearOfStudy,
+            course,
+            courseUnits
+        } = req.body;
 
         if (
             !firstName ||
             !lastName ||
             !email ||
             !password ||
-            !confirmPassword
+            !confirmPassword ||
+            !role ||
+            !yearOfStudy ||
+            !course ||
+            !courseUnits
         ) {
             return res.status(400).send({
-                error: 'Please provide a first name, last name, email and password'
+                error: 'Please fill in all fields'
             });
         }
 
@@ -31,7 +44,11 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             firstName,
             lastName,
             email,
-            password
+            password,
+            role,
+            yearOfStudy,
+            course,
+            courseUnits
         });
 
         return res.sendStatus(201);

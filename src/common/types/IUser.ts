@@ -6,6 +6,7 @@ export interface IUser extends Document {
     email: string;
     role: string;
     password: string;
+    yearOfStudy: number;
     course: Types.ObjectId;
     courseUnits: Types.ObjectId[];
 }

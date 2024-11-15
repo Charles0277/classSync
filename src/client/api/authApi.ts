@@ -6,14 +6,22 @@ export const signUpApi = async (
     lastName: string,
     email: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
+    role: string,
+    yearOfStudy: number,
+    course: string,
+    courseUnits: string
 ): Promise<AxiosResponse<IUser>> => {
     const requestBody = {
         firstName,
         lastName,
         email,
         password,
-        confirmPassword
+        confirmPassword,
+        role,
+        yearOfStudy,
+        course,
+        courseUnits
     };
     return axios.post<IUser>('http://localhost:3000/auth/signup', requestBody);
 };
