@@ -15,11 +15,11 @@ export default (router: express.Router) => {
     router.get('/rooms', authenticateToken, getAllRooms);
     router.get('/room/:name', getRoom);
     router.delete(
-        '/delete-room/:name',
+        '/delete-room/:id',
         authenticateToken,
-        checkAdmin,
+        // checkAdmin,
         deleteRoom
     );
-    router.put('/update-room/:name', authenticateToken, checkAdmin, updateRoom);
+    router.put('/update-room/:id', authenticateToken, updateRoom);
     router.post('/create-room', authenticateToken, createNewRoom);
 };

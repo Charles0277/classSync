@@ -17,6 +17,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 100%;
 }
 
 /* Filter Buttons */
@@ -128,4 +129,12 @@
 
 .confirmDeleteButtonGroup button:focus {
     outline: 2px solid #0056b3;
+}
+
+.userList {
+    max-height: 22rem;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
 }

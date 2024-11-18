@@ -20,7 +20,7 @@ const LogInForm: React.FC<LogInFormProps> = ({
     handleSubmit,
     setMode
 }) => (
-    <>
+    <div className={styles.formContainer}>
         <h2 className={styles.formTitle}>Log in</h2>
         <form className={styles.formGroup} onSubmit={handleSubmit}>
             <label htmlFor="email">Email:</label>
@@ -52,7 +52,7 @@ const LogInForm: React.FC<LogInFormProps> = ({
                 <Input type="submit" id="logIn" name="logIn" value="Log in" />
             </div>
         </form>
-    </>
+    </div>
 );
 
 export default LogInForm;

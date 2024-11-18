@@ -7,6 +7,7 @@ interface AuthState {
     isLoading: boolean;
     error: string | null;
     isAuthenticated: boolean;
+    signUpSuccess?: boolean;
 }
 
 const initialState: AuthState = {
@@ -43,6 +44,7 @@ const authSlice = createSlice({
         },
         signUpSuccess: (state, action) => {
             state.isLoading = false;
+            state.signUpSuccess = true;
         },
         signUpFailure: (state, action) => {
             state.isLoading = false;

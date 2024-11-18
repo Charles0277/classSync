@@ -7,8 +7,8 @@ export const getRoomByName = (name: string) => RoomModel.findOne({ name });
 export const createRoom = (values: Record<string, any>) =>
     new RoomModel(values).save().then((room) => room.toObject());
 
-export const deleteRoomByName = (name: string) =>
-    RoomModel.findOneAndDelete({ name });
+export const deleteRoomById = (id: string) =>
+    RoomModel.findByIdAndDelete({ _id: id });
 
-export const updateRoomByName = (name: string, values: Record<string, any>) =>
-    RoomModel.findOneAndUpdate({ name }, values, { new: true });
+export const updateRoomById = (id: string, values: Record<string, any>) =>
+    RoomModel.findByIdAndUpdate({ _id: id }, values, { new: true });

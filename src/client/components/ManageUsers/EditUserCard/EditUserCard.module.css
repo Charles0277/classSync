@@ -12,6 +12,8 @@
 }
 
 .popupCard {
+    display: flex;
+    flex-direction: column;
     background: #f4f4f4;
     width: 33rem;
     height: 35rem;
@@ -32,4 +34,9 @@
     justify-content: end;
     margin-bottom: -2rem;
     padding-top: 0.5rem;
+}
+
+.contentContainer {
+    width: 55%;
+    align-self: center;
 }

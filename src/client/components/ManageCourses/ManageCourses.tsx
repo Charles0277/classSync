@@ -12,7 +12,7 @@ const ManageCourses = () => {
 
     useEffect(() => {
         if (token) {
-            dispatch(fetchAllCoursesRequest({ token }));
+            dispatch(fetchAllCoursesRequest());
         }
     }, [token]);
 

@@ -3,8 +3,7 @@ import {
     deleteUserById,
     getUserByEmail,
     getUsers,
-    updateUserByEmail,
-    updateUserById
+    updateUserByEmail
 } from '../services/user.services.js';
 
 export const getallUsers = async (
@@ -57,9 +56,10 @@ export const updateUser = async (
             'firstName',
             'lastName',
             'email',
+            'role',
+            'yearOfStudy',
             'course',
-            'password',
-            'confirmPassword'
+            'courseUnits'
         ];
 
         const invalidFields = Object.keys(req.body).filter(

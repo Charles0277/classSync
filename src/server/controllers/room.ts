@@ -1,10 +1,10 @@
 import express from 'express';
 import {
     createRoom,
-    deleteRoomByName,
+    deleteRoomById,
     getRoomByName,
     getRooms,
-    updateRoomByName
+    updateRoomById
 } from '../services/room.services.js';
 
 export const getAllRooms = async (
@@ -36,8 +36,8 @@ export const deleteRoom = async (
     res: express.Response
 ) => {
     try {
-        const { name } = req.params;
-        const deleteRoom = await deleteRoomByName(name);
+        const { id } = req.params;
+        const deleteRoom = await deleteRoomById(id);
 
         return res.status(201).send(deleteRoom);
     } catch (error) {
@@ -51,7 +51,7 @@ export const updateRoom = async (
     res: express.Response
 ) => {
     try {
-        const { name } = req.params;
+        const { id } = req.params;
 
         const allowedFields = ['name', 'type', 'capacity', 'chairs', 'tables'];
 
@@ -69,7 +69,7 @@ export const updateRoom = async (
             Object.entries(req.body).filter(([_, value]) => value !== undefined)
         );
 
-        const updatedRoom = await updateRoomByName(name, updatedValues);
+        const updatedRoom = await updateRoomById(id, updatedValues);
 
         return res.status(201).send(updatedRoom);
     } catch (error) {
