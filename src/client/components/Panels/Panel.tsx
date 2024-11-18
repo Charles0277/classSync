@@ -1,20 +1,21 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { IRoom } from '../../../common/types/IRoom';
+import { IUser } from '../../../common/types/IUser';
+import { updateConfigRequest } from '../../store/slices/schoolWeekConfigSlice';
+import { RootState } from '../../store/store';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import ManageCardConfig from '../ManageConfigCard/ManageConfigCard';
+import ManageCourses from '../ManageCourses/ManageCourses';
+import AddEditRoomCard from '../ManageRooms/AddEditRoomCard/AddEditRoomCard';
+import ManageRooms from '../ManageRooms/ManageRooms';
 import ManageSchoolWeek from '../ManageSchoolWeek/ManageSchoolWeek';
 import ManageUsers from '../ManageUsers/ManageUsers';
-import ManageCourses from '../ManageCourses/ManageCourses';
-import EditUserForm from '../ManageUsers/EditUserCard/EditUserCard';
-import AddUserCard from '../ManageUsers/AddUserCard/AddUserCard';
-import { updateConfigRequest } from '../../store/slices/schoolWeekConfigSlice';
-import { RootState } from '../../store/store';
-import { IUser } from '../../../common/types/IUser';
 import styles from './Panel.module.css';
-import { IRoom } from '../../../common/types/IRoom';
-import ManageRooms from '../ManageRooms/ManageRooms';
-import AddEditRoomCard from '../ManageRooms/AddEditRoomCard/AddEditRoomCard';
+import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
+import { ICourse } from '../../../common/types/ICourse';
+import AddEditCourseCard from '../ManageCourses/AddEditCourseCard/AddEditCourseCard';
 
 interface CardProps {
     title: string;
@@ -30,242 +31,190 @@ const CONFIG_MAP = {
     'End hour': 'endHour'
 } as const;
 
-// Utility type for CONFIG_MAP keys
 type ConfigTitle = keyof typeof CONFIG_MAP;
 
-// Validation utilities
-const isWholeNumber = (value: string): boolean => /^-?\d*$/.test(value);
+const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
+    // Redux hooks
+    const dispatch = useDispatch();
+    const { token } = useSelector((state: RootState) => state.auth);
+    const { schoolWeekConfig } = useSelector(
+        (state: RootState) => state.schoolWeekConfig
+    );
 
-const clampValue = (value: number, min?: number, max?: number): number =>
-    Math.min(Math.max(value, min ?? value), max ?? value);
+    // State hooks
+    const [inputState, setInputState] = useState({ current: '', initial: '' });
+    const [modalState, setModalState] = useState({
+        showPopup: false,
+        showEditUserForm: false,
+        showAddUserForm: false,
+        showAddEditRoom: false,
+        showAddEditCourse: false,
+        editingUser: undefined as IUser | undefined,
+        editingCourse: undefined as ICourse | undefined,
+        editingRoom: undefined as IRoom | undefined
+    });
 
-const Panel: React.FC<CardProps> = React.memo(
-    ({ title, rightSideControl, min, max }) => {
-        // State
-        const [{ value, initialValue }, setValue] = React.useState({
-            value: '',
-            initialValue: ''
-        });
-        const [modalState, setModalState] = React.useState({
-            showPopup: false,
-            showEditUserForm: false,
-            showAddUserForm: false,
-            showAddEditRoom: false,
-            editingUser: undefined as IUser | undefined,
-            editingRoom: undefined as IRoom | undefined
-        });
+    const configKey = CONFIG_MAP[title as ConfigTitle];
 
-        // Redux
-        const dispatch = useDispatch();
-        const { token } = useSelector((state: RootState) => state.auth);
-        const { schoolWeekConfig } = useSelector(
-            (state: RootState) => state.schoolWeekConfig
-        );
+    // Modal handlers
+    const openModal = (key: keyof typeof modalState, payload?: any) => {
+        setModalState((prev) => ({
+            ...prev,
+            [key]: true,
+            ...payload
+        }));
+    };
 
-        // Computed values
-        const configKey = useMemo(
-            () => CONFIG_MAP[title as ConfigTitle],
-            [title]
-        );
+    const closeModal = (key: keyof typeof modalState) => {
+        setModalState((prev) => ({ ...prev, [key]: false }));
+    };
 
-        // Modal handlers
-        const modalHandlers = useMemo(
-            () => ({
-                openPopup: () =>
-                    setModalState((prev) => ({ ...prev, showPopup: true })),
-                closePopup: () =>
-                    setModalState((prev) => ({ ...prev, showPopup: false })),
-                openAddUser: () =>
-                    setModalState((prev) => ({
-                        ...prev,
-                        showPopup: false,
-                        showAddUserForm: true
-                    })),
-                closeAddUser: (returnToPopup: boolean = true) =>
-                    setModalState((prev) => ({
-                        ...prev,
-                        showAddUserForm: false,
-                        showPopup: returnToPopup
-                    })),
-                openEditUser: (user: IUser) =>
-                    setModalState((prev) => ({
-                        ...prev,
-                        showPopup: false,
-                        showEditUserForm: true,
-                        editingUser: user
-                    })),
-                closeEditUser: (returnToPopup: boolean = true) =>
-                    setModalState((prev) => ({
-                        ...prev,
-                        showEditUserForm: false,
-                        editingUser: undefined,
-                        showPopup: returnToPopup
-                    })),
-                openAddEditRoom: (room?: IRoom) =>
-                    setModalState((prev) => ({
-                        ...prev,
-                        showPopup: false,
-                        showAddEditRoom: true,
-                        editingRoom: room
-                    })),
-                closeAddEditRoom: (returnToPopup: boolean = true) =>
-                    setModalState((prev) => ({
-                        ...prev,
-                        showAddEditRoom: false,
-                        editingRoom: undefined,
-                        showPopup: returnToPopup
-                    }))
-            }),
-            []
-        );
-
-        // Effects
-        useEffect(() => {
-            if (schoolWeekConfig && configKey) {
-                const currentValue =
-                    schoolWeekConfig[configKey]?.toString() || '';
-                setValue({ value: currentValue, initialValue: currentValue });
-            }
-        }, [schoolWeekConfig, configKey]);
-
-        useEffect(() => {
-            if (
-                value !== initialValue &&
-                token &&
-                schoolWeekConfig &&
-                configKey
-            ) {
-                dispatch(
-                    updateConfigRequest({
-                        token,
-                        updatedConfig: {
-                            ...schoolWeekConfig,
-                            [configKey]: Number(value)
-                        }
-                    })
-                );
-            }
-        }, [value, initialValue, token, configKey, dispatch, schoolWeekConfig]);
-
-        // Input handler
-        const handleInputChange = useCallback(
-            (e: React.ChangeEvent<HTMLInputElement>) => {
-                const newValue = e.target.value;
-
-                if (!isWholeNumber(newValue)) return;
-
+    // Input change handler
+    const handleInputChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newValue = e.target.value;
+            if (/^-?\d*$/.test(newValue)) {
                 const numericValue = parseFloat(newValue);
                 if (!isNaN(numericValue)) {
-                    setValue((prev) => ({
+                    setInputState((prev) => ({
                         ...prev,
-                        value: clampValue(numericValue, min, max).toString()
+                        current: Math.min(
+                            Math.max(numericValue, min || numericValue),
+                            max || numericValue
+                        ).toString()
                     }));
                 } else {
-                    setValue((prev) => ({ ...prev, value: newValue }));
+                    setInputState((prev) => ({ ...prev, current: newValue }));
                 }
-            },
-            [min, max]
-        );
-
-        // Memoized content components
-        const PopupContent = useMemo(() => {
-            switch (title) {
-                case 'Rooms':
-                    return (
-                        <ManageRooms
-                            onAddEditRoom={modalHandlers.openAddEditRoom}
-                        />
-                    );
-                case 'School Week':
-                    return <ManageSchoolWeek />;
-                case 'Users':
-                    return (
-                        <ManageUsers
-                            onAddUser={modalHandlers.openAddUser}
-                            onEditUser={modalHandlers.openEditUser}
-                        />
-                    );
-                case 'Courses':
-                    return <ManageCourses />;
-                default:
-                    return null;
             }
-        }, [title, modalHandlers]);
+        },
+        [min, max]
+    );
 
-        // Memoized control component
-        const Control = useMemo(
-            () =>
-                rightSideControl === 'button' ? (
-                    <Button
-                        className="rightSideControl"
-                        onClick={modalHandlers.openPopup}
-                    >
-                        Manage
-                    </Button>
-                ) : (
-                    <Input
-                        id="input"
-                        name="input"
-                        type="number"
-                        className="rightSideControl"
-                        min={min}
-                        max={max}
-                        value={value}
-                        onChange={handleInputChange}
-                        step={1}
-                        pattern={`^-?[${min}-${max}]+$`}
-                        title={`Only whole numbers between ${min}-${max} are allowed`}
+    useEffect(() => {
+        if (schoolWeekConfig && configKey) {
+            const currentValue = schoolWeekConfig[configKey]?.toString() || '';
+            setInputState({ current: currentValue, initial: currentValue });
+        }
+    }, [schoolWeekConfig, configKey]);
+
+    useEffect(() => {
+        const { current, initial } = inputState;
+        if (current !== initial && token && configKey) {
+            dispatch(
+                updateConfigRequest({
+                    token,
+                    updatedConfig: {
+                        ...schoolWeekConfig,
+                        [configKey]: Number(current)
+                    }
+                })
+            );
+        }
+    }, [inputState, token, configKey, dispatch, schoolWeekConfig]);
+
+    const PopupContent = useMemo(() => {
+        switch (title) {
+            case 'Rooms':
+                return (
+                    <ManageRooms
+                        onAddEditRoom={(room) =>
+                            openModal('showAddEditRoom', { editingRoom: room })
+                        }
                     />
-                ),
-            [
-                rightSideControl,
-                min,
-                max,
-                value,
-                handleInputChange,
-                modalHandlers
-            ]
+                );
+            case 'School Week':
+                return <ManageSchoolWeek />;
+            case 'Users':
+                return (
+                    <ManageUsers
+                        onAddUser={() => openModal('showAddUserForm')}
+                        onEditUser={(user) =>
+                            openModal('showEditUserForm', { editingUser: user })
+                        }
+                    />
+                );
+            case 'Courses':
+                return (
+                    <ManageCourses
+                        onAddEditCourse={(course) =>
+                            openModal('showAddEditCourse', {
+                                editingCourse: course
+                            })
+                        }
+                    />
+                );
+            default:
+                return null;
+        }
+    }, [title]);
+
+    const RightControl = useMemo(() => {
+        return rightSideControl === 'button' ? (
+            <Button
+                className={'rightSideControl'}
+                onClick={() => openModal('showPopup')}
+            >
+                Manage
+            </Button>
+        ) : (
+            <Input
+                type="number"
+                className="small"
+                min={min}
+                max={max}
+                value={inputState.current}
+                onChange={handleInputChange}
+                step={1}
+            />
         );
+    }, [rightSideControl, inputState, handleInputChange, min, max]);
 
-        return (
-            <>
-                {modalState.showPopup && (
-                    <ManageCardConfig
-                        title={`Manage ${title}`}
-                        onCancel={modalHandlers.closePopup}
-                    >
-                        {PopupContent}
-                    </ManageCardConfig>
-                )}
-                {modalState.showEditUserForm && modalState.editingUser && (
-                    <EditUserForm
-                        user={modalState.editingUser}
-                        onSave={() => modalHandlers.closeEditUser(true)}
-                        onCancel={() => modalHandlers.closeEditUser(true)}
-                    />
-                )}
-                {modalState.showAddUserForm && (
-                    <AddUserCard
-                        onSave={() => modalHandlers.closeAddUser(true)}
-                        onCancel={() => modalHandlers.closeAddUser(true)}
-                    />
-                )}
-                {modalState.showAddEditRoom && (
-                    <AddEditRoomCard
-                        onSave={() => modalHandlers.closeAddEditRoom(true)}
-                        onCancel={() => modalHandlers.closeAddEditRoom(true)}
-                        room={modalState.editingRoom}
-                    />
-                )}
-                <div className={styles.panel}>
-                    {title}
-                    {Control}
-                </div>
-            </>
-        );
-    }
-);
+    return (
+        <>
+            {modalState.showPopup && (
+                <ManageCardConfig
+                    title={`Manage ${title}`}
+                    onCancel={() => closeModal('showPopup')}
+                >
+                    {PopupContent}
+                </ManageCardConfig>
+            )}
+            {modalState.showEditUserForm && modalState.editingUser && (
+                <AddEditUserCard
+                    user={modalState.editingUser}
+                    onSave={() => closeModal('showEditUserForm')}
+                    onCancel={() => closeModal('showEditUserForm')}
+                    mode="edit"
+                />
+            )}
+            {modalState.showAddUserForm && (
+                <AddEditUserCard
+                    onSave={() => closeModal('showAddUserForm')}
+                    onCancel={() => closeModal('showAddUserForm')}
+                    mode="add"
+                />
+            )}
+            {modalState.showAddEditRoom && (
+                <AddEditRoomCard
+                    room={modalState.editingRoom}
+                    onSave={() => closeModal('showAddEditRoom')}
+                    onCancel={() => closeModal('showAddEditRoom')}
+                />
+            )}
+            {modalState.showAddEditCourse && (
+                <AddEditCourseCard
+                    course={modalState.editingCourse}
+                    onSave={() => closeModal('showAddEditCourse')}
+                    onCancel={() => closeModal('showAddEditCourse')}
+                />
+            )}
+            <div className={styles.panel}>
+                <div>{title}</div>
+                {RightControl}
+            </div>
+        </>
+    );
+};
 
-Panel.displayName = 'Panel';
-
-export default Panel;
+export default React.memo(Panel);

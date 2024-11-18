@@ -10,7 +10,9 @@ interface RoomFormProps {
         chairs: number | undefined;
         tables: number | undefined;
     };
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleInputChange: (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => void;
     handleSubmit: (e: React.FormEvent) => void;
     handleBack: () => void;
     edit?: boolean;
@@ -35,14 +37,19 @@ const RoomForm: React.FC<RoomFormProps> = ({
                 onChange={handleInputChange}
             />
             <label htmlFor="type">Type:</label>
-            <Input
-                type="text"
+            <select
                 id="type"
                 name="type"
-                placeholder="Type"
                 value={formData.type}
                 onChange={handleInputChange}
-            />
+                required
+                className={styles.select}
+            >
+                <option value="Lecture Theatre">Lecture Theatre</option>
+                <option value="Laboratory">Laboratory</option>
+                <option value="Office">Office</option>
+                <option value="Computer Cluster">Computer Cluster</option>
+            </select>
             <div>
                 <label htmlFor="capacity">Capacity:</label>
                 <Input

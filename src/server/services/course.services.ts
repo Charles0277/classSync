@@ -12,3 +12,6 @@ export const updateCourseByCode = (code: string, values: Record<string, any>) =>
 
 export const deleteCourseByCode = (code: string) =>
     CourseModel.findOneAndDelete({ code });
+
+export const deleteCourseById = (id: string) =>
+    CourseModel.findByIdAndDelete({ _id: id });

@@ -15,12 +15,7 @@ export default (router: express.Router) => {
     router.get('/courses', getAllCourses);
     router.get('/course/:code', getCourse);
     router.post('/create-course', authenticateToken, createNewCourse);
-    router.delete(
-        '/delete-course/:code',
-        authenticateToken,
-        checkAdmin,
-        deleteCourse
-    );
+    router.delete('/delete-course/:id', authenticateToken, deleteCourse);
     router.put(
         '/update-course/:code',
         authenticateToken,

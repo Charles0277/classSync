@@ -48,3 +48,7 @@
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
 }
+
+.small {
+    width: 5rem !important;
+}

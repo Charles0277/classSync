@@ -2,46 +2,46 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../Button/Button.js';
 import closeIcon from '../../../assets/closeIcon.svg';
-import styles from './AddEditRoomCard.module.css';
-import { IRoom } from '../../../../common/types/IRoom.js';
-import RoomForm from '../../Forms/RoomForm/RoomForm.js';
-import {
-    createRoomRequest,
-    updateRoomRequest
-} from '../../../store/slices/roomSlice.js';
+import styles from './AddEditCourseCard.module.css';
+import { ICourse } from '../../../../common/types/ICourse.js';
+// import CourseForm from '../../Forms/CourseForm/CourseForm.js'; // Create this form for handling course-specific inputs
+// import {
+//     createCourseRequest,
+//     updateCourseRequest
+// } from '../../../store/slices/courseSlice.js'; // Update actions for courses
 import { RootState } from '../../../store/store.js';
+import CourseForm from '../../Forms/CourseForm/CourseForm.js';
 
-interface AddEditRoomFormProps {
+interface AddEditCourseFormProps {
     onSave: () => void;
     onCancel: () => void;
-    room?: IRoom;
+    course?: ICourse;
 }
 
-interface RoomFormData {
+interface CourseFormData {
     name: string;
-    type: string;
-    capacity: number | undefined;
-    chairs: number | undefined;
-    tables: number | undefined;
+    code: string;
+    courseUnits: string[]; // IDs of course units
 }
 
-const validateForm = (formData: RoomFormData): boolean => {
-    const { name, type, capacity, chairs, tables } = formData;
+const validateForm = (formData: CourseFormData): boolean => {
+    const { name, code, courseUnits } = formData;
 
-    return Boolean(name && type && capacity && chairs && tables);
+    return Boolean(name && code && Array.isArray(courseUnits));
 };
 
-const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
+const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
     onSave,
     onCancel,
-    room
+    course
 }) => {
-    const [formData, setFormData] = useState<RoomFormData>({
-        name: room ? room.name : '',
-        type: room ? room.type : '',
-        capacity: room ? room.capacity : undefined,
-        chairs: room ? room.chairs : undefined,
-        tables: room ? room.tables : undefined
+    const [courseUnits, setCourseUnits] = useState([]);
+    const [formData, setFormData] = useState<CourseFormData>({
+        name: course ? course.name : '',
+        code: course ? course.code : '',
+        courseUnits: course
+            ? course.courseUnits.map((unit) => unit.toString())
+            : []
     });
 
     const { token } = useSelector((state: RootState) => state.auth);
@@ -53,8 +53,13 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
             const target = e.target;
             const { name, value } = target;
 
-            // Handle all other inputs
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            // Handle array inputs for courseUnits
+            if (name === 'courseUnits') {
+                const courseUnits = value.split(',').map((unit) => unit.trim());
+                setFormData((prev) => ({ ...prev, courseUnits }));
+            } else {
+                setFormData((prev) => ({ ...prev, [name]: value }));
+            }
         },
         []
     );
@@ -70,12 +75,14 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
                 return;
             }
 
-            room
-                ? dispatch(updateRoomRequest({ id: room._id, formData, token }))
-                : dispatch(createRoomRequest({ formData, token }));
-            onSave();
+            // course
+            //     ? dispatch(
+            //           updateCourseRequest({ id: course._id, formData, token })
+            //       )
+            //     : dispatch(createCourseRequest({ formData, token }));
+            // onSave();
         },
-        [dispatch, formData, onSave]
+        [dispatch, formData, course, onSave, token]
     );
 
     const handleBackgroundClick = useCallback(
@@ -104,6 +111,7 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
             handleInputChange,
             handleSubmit,
             handleBack: onCancel,
+            // courseUnits: CourseUnits,
             edit: true
         }),
         [formData, handleInputChange, handleSubmit]
@@ -121,20 +129,20 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
                 className={styles.popupCard}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
-                aria-labelledby="add-room-title"
+                aria-labelledby="add-course-title"
             >
                 <div className={styles.closeIcon}>
                     <CloseButton />
                 </div>
-                <h2 id="add/edit-room-title" className={styles.popupTitle}>
-                    {room ? `Edit ${room.name}` : 'Add a New Room'}
+                <h2 id="add/edit-course-title" className={styles.popupTitle}>
+                    {course ? `Edit ${course.name}` : 'Add a New Course'}
                 </h2>
                 <div className={styles.contentContainer}>
-                    <RoomForm {...formProps} />
+                    <CourseForm {...formProps} />
                 </div>
             </div>
         </div>
     );
 };
 
-export default memo(AddEditRoomForm);
+export default memo(AddEditCourseForm);

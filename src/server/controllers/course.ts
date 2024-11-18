@@ -1,7 +1,7 @@
 import express from 'express';
 import {
     createCourse,
-    deleteCourseByCode,
+    deleteCourseById,
     getCourseByCode,
     getCourses,
     updateCourseByCode
@@ -39,8 +39,8 @@ export const deleteCourse = async (
     res: express.Response
 ) => {
     try {
-        const { code } = req.params;
-        const deleteCourse = await deleteCourseByCode(code);
+        const { id } = req.params;
+        const deleteCourse = await deleteCourseById(id);
 
         return res.status(201).send(deleteCourse);
     } catch (error) {
