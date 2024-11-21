@@ -44,6 +44,32 @@ const courseSlice = createSlice({
         deleteCourseFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        updateCourseRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        updateCourseSuccess: (state, action) => {
+            state.course = action.payload;
+            state.loading = false;
+        },
+        updateCourseFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        createCourseRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        createCourseSuccess: (state, action) => {
+            const newCourse = action.payload;
+            state.course = newCourse;
+            state.courses = [...state.courses, newCourse];
+            state.loading = false;
+        },
+        createCourseFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
@@ -54,7 +80,13 @@ export const {
     fetchAllCoursesFailure,
     deleteCourseRequest,
     deleteCourseSuccess,
-    deleteCourseFailure
+    deleteCourseFailure,
+    updateCourseRequest,
+    updateCourseSuccess,
+    updateCourseFailure,
+    createCourseRequest,
+    createCourseSuccess,
+    createCourseFailure
 } = courseSlice.actions;
 
 export default courseSlice.reducer;

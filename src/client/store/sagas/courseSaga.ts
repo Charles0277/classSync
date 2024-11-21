@@ -1,14 +1,25 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
 import {
+    createCourseFailure,
+    createCourseRequest,
+    createCourseSuccess,
     deleteCourseFailure,
     deleteCourseRequest,
     deleteCourseSuccess,
     fetchAllCoursesFailure,
     fetchAllCoursesRequest,
-    fetchAllCoursesSuccess
+    fetchAllCoursesSuccess,
+    updateCourseFailure,
+    updateCourseRequest,
+    updateCourseSuccess
 } from '../slices/courseSlice';
-import { deleteCourseApi, fetchCoursesApi } from '../../api/courseApi';
+import {
+    createCourseApi,
+    deleteCourseApi,
+    fetchCoursesApi,
+    updateCourseApi
+} from '../../api/courseApi';
 import { ICourse } from '../../../common/types/ICourse';
 
 function* handleFetchAllCourses(action: any) {
@@ -34,7 +45,38 @@ function* handleDeleteCourse(action: any) {
     }
 }
 
+function* handleUpdateCourse(action: any) {
+    const { id, formData, token } = action.payload;
+    try {
+        const response: AxiosResponse<ICourse> = yield call(
+            updateCourseApi,
+            id,
+            formData,
+            token
+        );
+        yield put(updateCourseSuccess(response.data));
+    } catch (error: any) {
+        yield put(updateCourseFailure(error.message));
+    }
+}
+
+function* handleCreateCourse(action: any) {
+    const { formData, token } = action.payload;
+    try {
+        const response: AxiosResponse<ICourse> = yield call(
+            createCourseApi,
+            formData,
+            token
+        );
+        yield put(createCourseSuccess(response.data));
+    } catch (error: any) {
+        yield put(createCourseFailure(error.message));
+    }
+}
+
 export default function* courseSaga() {
     yield takeLatest(fetchAllCoursesRequest.type, handleFetchAllCourses);
     yield takeLatest(deleteCourseRequest.type, handleDeleteCourse);
+    yield takeLatest(updateCourseRequest.type, handleUpdateCourse);
+    yield takeLatest(createCourseRequest.type, handleCreateCourse);
 }

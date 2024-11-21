@@ -3,8 +3,9 @@ import {
     createCourse,
     deleteCourseById,
     getCourseByCode,
+    getCourseById,
     getCourses,
-    updateCourseByCode
+    updateCourseById
 } from '../services/course.services.js';
 
 export const getAllCourses = async (
@@ -25,8 +26,8 @@ export const getCourse = async (
     res: express.Response
 ) => {
     try {
-        const { code } = req.params;
-        const course = await getCourseByCode(code);
+        const { id } = req.params;
+        const course = await getCourseById(id);
         return res.status(201).send(course);
     } catch (error) {
         console.log(error);
@@ -54,7 +55,7 @@ export const updateCourse = async (
     res: express.Response
 ) => {
     try {
-        const { code } = req.params;
+        const { id } = req.params;
 
         const allowedFields = ['name', 'code', 'courseUnits'];
 
@@ -72,7 +73,7 @@ export const updateCourse = async (
             Object.entries(req.body).filter(([_, value]) => value !== undefined)
         );
 
-        const updatedCourse = await updateCourseByCode(code, updatedValues);
+        const updatedCourse = await updateCourseById(id, updatedValues);
 
         return res.status(201).send(updatedCourse);
     } catch (error) {

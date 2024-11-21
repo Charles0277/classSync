@@ -4,13 +4,12 @@ import Button from '../../Button/Button.js';
 import closeIcon from '../../../assets/closeIcon.svg';
 import styles from './AddEditCourseCard.module.css';
 import { ICourse } from '../../../../common/types/ICourse.js';
-// import CourseForm from '../../Forms/CourseForm/CourseForm.js'; // Create this form for handling course-specific inputs
-// import {
-//     createCourseRequest,
-//     updateCourseRequest
-// } from '../../../store/slices/courseSlice.js'; // Update actions for courses
 import { RootState } from '../../../store/store.js';
 import CourseForm from '../../Forms/CourseForm/CourseForm.js';
+import {
+    createCourseRequest,
+    updateCourseRequest
+} from '../../../store/slices/courseSlice.js';
 
 interface AddEditCourseFormProps {
     onSave: () => void;
@@ -35,12 +34,11 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
     onCancel,
     course
 }) => {
-    const [courseUnits, setCourseUnits] = useState([]);
     const [formData, setFormData] = useState<CourseFormData>({
         name: course ? course.name : '',
         code: course ? course.code : '',
         courseUnits: course
-            ? course.courseUnits.map((unit) => unit.toString())
+            ? course.courseUnits.map((unit) => unit._id as string)
             : []
     });
 
@@ -49,16 +47,29 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
     const dispatch = useDispatch();
 
     const handleInputChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-            const target = e.target;
-            const { name, value } = target;
-
-            // Handle array inputs for courseUnits
-            if (name === 'courseUnits') {
-                const courseUnits = value.split(',').map((unit) => unit.trim());
-                setFormData((prev) => ({ ...prev, courseUnits }));
-            } else {
+        (
+            e:
+                | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+                | { name: string; value: any }
+        ) => {
+            if ('name' in e) {
+                // Handle custom input for Select
+                const { name, value } = e;
                 setFormData((prev) => ({ ...prev, [name]: value }));
+            } else {
+                // Handle regular inputs
+                const target = e.target;
+                const { name, value } = target;
+
+                // Handle array inputs for courseUnits
+                if (name === 'courseUnits') {
+                    const courseUnits = value
+                        .split(',')
+                        .map((unit) => unit.trim());
+                    setFormData((prev) => ({ ...prev, courseUnits }));
+                } else {
+                    setFormData((prev) => ({ ...prev, [name]: value }));
+                }
             }
         },
         []
@@ -75,12 +86,12 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
                 return;
             }
 
-            // course
-            //     ? dispatch(
-            //           updateCourseRequest({ id: course._id, formData, token })
-            //       )
-            //     : dispatch(createCourseRequest({ formData, token }));
-            // onSave();
+            course
+                ? dispatch(
+                      updateCourseRequest({ id: course._id, formData, token })
+                  )
+                : dispatch(createCourseRequest({ formData, token }));
+            onSave();
         },
         [dispatch, formData, course, onSave, token]
     );
@@ -111,7 +122,6 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
             handleInputChange,
             handleSubmit,
             handleBack: onCancel,
-            // courseUnits: CourseUnits,
             edit: true
         }),
         [formData, handleInputChange, handleSubmit]

@@ -4,6 +4,7 @@ import authSaga from './sagas/authSaga';
 import schoolWeekConfigSaga from './sagas/schoolWeekConfigSaga';
 import roomSaga from './sagas/roomSaga';
 import courseSaga from './sagas/courseSaga';
+import courseUnitSaga from './sagas/courseUnitSaga';
 
 export default function* rootSaga() {
     yield all([
@@ -11,6 +12,7 @@ export default function* rootSaga() {
         fork(authSaga),
         fork(schoolWeekConfigSaga),
         fork(roomSaga),
-        fork(courseSaga)
+        fork(courseSaga),
+        fork(courseUnitSaga)
     ]);
 }

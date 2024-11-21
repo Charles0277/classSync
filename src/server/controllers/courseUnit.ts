@@ -1,46 +1,47 @@
 import express from 'express';
-import { createCourse } from '../services/course.services.js';
 import {
     createCourseUnit,
-    deleteCourseUnitByCode,
-    getCourseUnit,
-    updateCourseUnitByCode
+    deleteCourseUnitById,
+    getCourseUnitByCode,
+    getCourseUnitById,
+    getCourseUnits,
+    updateCourseUnitById
 } from '../services/courseUnits.services.js';
 
-// export const getAllCourses = async (
-//     req: express.Request,
-//     res: express.Response
-// ) => {
-//     try {
-//         const courses = await getCourses();
-//         return res.status(201).send(courses);
-//     } catch (error) {
-//         console.log(error);
-//         return res.sendStatus(400);
-//     }
-// };
+export const getAllCourseUnits = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const courseUnits = await getCourseUnits();
+        return res.status(201).send(courseUnits);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
 
-// export const getCourseUnit = async (
-//     req: express.Request,
-//     res: express.Response
-// ) => {
-//     try {
-//         const { code } = req.params;
-//         const course = await getCourseByCode(code);
-//         return res.status(201).send(course);
-//     } catch (error) {
-//         console.log(error);
-//         return res.sendStatus(400);
-//     }
-// };
+export const getCourseUnit = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { id } = req.params;
+        const course = await getCourseUnitById(id);
+        return res.status(201).send(course);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
 
 export const deleteCourseUnit = async (
     req: express.Request,
     res: express.Response
 ) => {
     try {
-        const { code } = req.params;
-        const deletedCourseUnit = await deleteCourseUnitByCode(code);
+        const { id } = req.params;
+        const deletedCourseUnit = await deleteCourseUnitById(id);
 
         return res.status(201).send(deletedCourseUnit);
     } catch (error) {
@@ -54,7 +55,7 @@ export const updateCourseUnit = async (
     res: express.Response
 ) => {
     try {
-        const { code } = req.params;
+        const { id } = req.params;
 
         const allowedFields = ['name', 'code', 'instructor'];
 
@@ -72,10 +73,7 @@ export const updateCourseUnit = async (
             Object.entries(req.body).filter(([_, value]) => value !== undefined)
         );
 
-        const updatedCourseUnit = await updateCourseUnitByCode(
-            code,
-            updatedValues
-        );
+        const updatedCourseUnit = await updateCourseUnitById(id, updatedValues);
 
         return res.status(201).send(updatedCourseUnit);
     } catch (error) {
@@ -97,7 +95,7 @@ export const createNewCourseUnit = async (
             });
         }
 
-        const existingCourseUnit = await getCourseUnit(code);
+        const existingCourseUnit = await getCourseUnitByCode(code);
 
         if (existingCourseUnit) {
             return res

@@ -6,20 +6,12 @@ import {
     getCourse,
     updateCourse
 } from '../controllers/course.js';
-import {
-    authenticateToken,
-    checkAdmin
-} from '../middleware/authMiddleware/index.js';
+import { authenticateToken } from '../middleware/authMiddleware/index.js';
 
 export default (router: express.Router) => {
     router.get('/courses', getAllCourses);
-    router.get('/course/:code', getCourse);
+    router.get('/course/:id', getCourse);
     router.post('/create-course', authenticateToken, createNewCourse);
     router.delete('/delete-course/:id', authenticateToken, deleteCourse);
-    router.put(
-        '/update-course/:code',
-        authenticateToken,
-        checkAdmin,
-        updateCourse
-    );
+    router.put('/update-course/:id', authenticateToken, updateCourse);
 };

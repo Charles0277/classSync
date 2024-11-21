@@ -66,7 +66,7 @@ const roomSlice = createSlice({
         createRoomSuccess: (state, action) => {
             const newRoom = action.payload;
             state.room = newRoom;
-            state.rooms = [...state.rooms, ...newRoom];
+            state.rooms = [...state.rooms, newRoom];
             state.loading = false;
         },
         createRoomFailure: (state, action) => {

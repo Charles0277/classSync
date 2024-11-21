@@ -4,11 +4,13 @@ export const getCourses = () => CourseModel.find().populate('courseUnits');
 
 export const getCourseByCode = (code: string) => CourseModel.findOne({ code });
 
+export const getCourseById = (id: string) => CourseModel.findById({ _id: id });
+
 export const createCourse = (values: Record<string, any>) =>
     new CourseModel(values).save().then((course) => course.toObject());
 
-export const updateCourseByCode = (code: string, values: Record<string, any>) =>
-    CourseModel.findOneAndUpdate({ code: code }, values, { new: true });
+export const updateCourseById = (id: string, values: Record<string, any>) =>
+    CourseModel.findByIdAndUpdate({ _id: id }, values, { new: true });
 
 export const deleteCourseByCode = (code: string) =>
     CourseModel.findOneAndDelete({ code });

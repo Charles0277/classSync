@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './ManageCourses.module.css'; // Update the stylesheet as necessary
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store.js';
@@ -18,6 +18,7 @@ interface ManageCoursesProps {
 const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
     const { token } = useSelector((state: RootState) => state.auth);
     const { courses } = useSelector((state: RootState) => state.course);
+    console.log('🚀 ~ courses:', courses);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [courseToDelete, setCourseToDelete] = useState<ICourse | null>(null);
@@ -40,9 +41,11 @@ const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
         }
     };
 
-    const filteredCourses = courses?.filter((course) =>
-        course.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredCourses = useMemo(() => {
+        return courses?.filter((course) =>
+            course.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [courses, searchTerm]);
 
     return (
         <div>
