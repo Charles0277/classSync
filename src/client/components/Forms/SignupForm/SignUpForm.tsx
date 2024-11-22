@@ -5,6 +5,7 @@ import styles from '../Forms.module.css';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
 import { ICourseUnit } from '../../../../common/types/ICourseUnit';
+import { ICourse } from '../../../../common/types/ICourse';
 
 // Separate types into their own interfaces
 interface FormData {
@@ -81,7 +82,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     const selectedCourseUnits = useMemo(() => {
         if (!formData.course || !courses) return [];
         const selectedCourse = courses.find(
-            (course) => course._id === formData.course
+            (course: ICourse) => course._id === formData.course
         );
         return selectedCourse
             ? (selectedCourse.courseUnits as ICourseUnit[])
@@ -124,7 +125,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 
     // Fetch courses on mount
     useEffect(() => {
-        if (!courses) {
+        if (courses.length === 0) {
             dispatch(fetchAllCoursesRequest());
         }
     }, [dispatch, courses]);

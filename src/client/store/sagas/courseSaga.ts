@@ -22,7 +22,7 @@ import {
 } from '../../api/courseApi';
 import { ICourse } from '../../../common/types/ICourse';
 
-function* handleFetchAllCourses(action: any) {
+function* handleFetchAllCourses() {
     try {
         const response: AxiosResponse<ICourse[]> = yield call(fetchCoursesApi);
         yield put(fetchAllCoursesSuccess(response.data));

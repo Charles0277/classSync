@@ -98,7 +98,7 @@ const CourseForm: React.FC<RoomFormProps> = ({
                     type="text"
                     id="code"
                     name="code"
-                    placeholder="code"
+                    placeholder="Code"
                     value={formData.code}
                     onChange={handleInputChange}
                 />
@@ -117,6 +117,16 @@ const CourseForm: React.FC<RoomFormProps> = ({
                             onChange={(selected) => {
                                 handleSelectedChange(selected);
                             }}
+                            placeholder="Select Course Units"
+                            styles={{
+                                container(base, props) {
+                                    return {
+                                        ...base,
+                                        width: '110%'
+                                    };
+                                }
+                            }}
+                            maxMenuHeight={200}
                         />
                     )}
                 </div>

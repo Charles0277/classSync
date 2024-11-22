@@ -45,6 +45,9 @@ const RoomForm: React.FC<RoomFormProps> = ({
                 required
                 className={styles.select}
             >
+                <option value="" disabled>
+                    Select a Room Type
+                </option>
                 <option value="Lecture Theatre">Lecture Theatre</option>
                 <option value="Laboratory">Laboratory</option>
                 <option value="Office">Office</option>

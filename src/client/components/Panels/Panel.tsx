@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRoom } from '../../../common/types/IRoom';
 import { IUser } from '../../../common/types/IUser';
@@ -217,4 +217,4 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
     );
 };
 
-export default React.memo(Panel);
+export default memo(Panel);

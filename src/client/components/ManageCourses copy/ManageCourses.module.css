@@ -1,0 +1,135 @@
+.courseContainer {
+    border-top: 1px solid black; /* line above each user */
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    padding-left: 1rem;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.filterAndAddContainer {
+    display: flex;
+    justify-content: end;
+    padding: 0 0.5rem;
+    margin-top: -1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.filterAndAddContainer button {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    gap: 0.3rem;
+    border: none;
+    color: rgb(0, 0, 0);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Filter Buttons */
+.filterButtons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filterButtons button {
+    padding: 8px 16px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 400;
+}
+
+.filterButtons button:hover {
+    background-color: #0056b3;
+}
+
+.filterButtons button:focus {
+    outline: 2px solid #0056b3;
+}
+
+/* Search Bar */
+.searchBar {
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.searchBar input {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+.searchBar input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.courseContainer:hover {
+    background-color: #e0e0e0;
+}
+
+.noResults {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin-top: 20px;
+}
+
+.rightSideControl {
+    display: flex;
+}
+
+.confirmDeleteContainer {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1rem;
+}
+
+.confirmDeleteButtonGroup {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.confirmDeleteButtonGroup button {
+    padding: 4px 8px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.confirmDeleteButtonGroup button:hover {
+    background-color: #0056b3;
+}
+
+.confirmDeleteButtonGroup button:focus {
+    outline: 2px solid #0056b3;
+}
+
+.courseList {
+    max-height: 22rem;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
