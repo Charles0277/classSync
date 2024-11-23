@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchTeachersRequest } from '../../../store/slices/userSlice';
-import { RootState } from '../../../store/store.js';
-import Input from '../../Input/Input.js';
+import { RootState } from '../../../store/store';
+import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
 
 interface CourseFormProps {
@@ -27,53 +27,60 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
     handleBack,
     edit
 }) => {
+    const dispatch = useDispatch();
     const { teachers } = useSelector((state: RootState) => state.user);
     const { token } = useSelector((state: RootState) => state.auth);
 
     const [selectedTeacher, setSelectedTeacher] = useState<{
         value: string;
         label: string;
-    } | null>(() => {
-        const teacher = teachers?.find(
-            ({ _id }) => _id === formData.instructor
-        );
-        return teacher
+    } | null>(() =>
+        teachers?.find(({ _id }) => _id === formData.instructor)
             ? {
-                  value: teacher._id as string,
-                  label: `${teacher.firstName} ${teacher.lastName}`
+                  value: formData.instructor,
+                  label: teachers
+                      .filter(({ _id }) => _id === formData.instructor)
+                      .map(
+                          ({ firstName, lastName }) =>
+                              `${firstName} ${lastName}`
+                      )[0]
               }
-            : null;
-    });
+            : null
+    );
 
     useEffect(() => {
-        if (!!!selectedTeacher) {
+        if (!selectedTeacher && formData.instructor) {
             const teacher = teachers?.find(
                 ({ _id }) => _id === formData.instructor
             );
             if (teacher) {
                 setSelectedTeacher({
-                    value: teacher?._id as string,
-                    label: `${teacher?.firstName} ${teacher?.lastName}`
+                    value: teacher._id as string,
+                    label: `${teacher.firstName} ${teacher.lastName}`
                 });
             }
         }
-    }, [teachers, formData.instructor]);
-
-    const dispatch = useDispatch();
+    }, [teachers, formData.instructor, selectedTeacher]);
 
     useEffect(() => {
-        if (!teachers || teachers.length === 0) {
+        if (!teachers?.length) {
             dispatch(fetchTeachersRequest({ token }));
         }
-    }, []);
+    }, [dispatch, teachers, token]);
 
     const handleSelectedChange = (selected: any) => {
         setSelectedTeacher(selected);
         handleInputChange({
             name: 'instructor',
-            value: selected?.value || null
+            value: selected?.value || ''
         });
     };
+
+    const teacherOptions =
+        teachers?.map((teacher) => ({
+            value: teacher._id as string,
+            label: `${teacher.firstName} ${teacher.lastName}`
+        })) || [];
 
     return (
         <div className={`${styles.formContainer} ${styles.notSignUp}`}>
@@ -87,6 +94,7 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
                     value={formData.name}
                     onChange={handleInputChange}
                 />
+
                 <label htmlFor="code">Code:</label>
                 <Input
                     type="text"
@@ -96,34 +104,23 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
                     value={formData.code}
                     onChange={handleInputChange}
                 />
-                <div>
-                    <label htmlFor="instructor">Instructor:</label>
-                    {!!selectedTeacher || !edit ? (
-                        <Select
-                            options={teachers?.map((teacher) => ({
-                                value: teacher._id as string,
-                                label:
-                                    teacher.firstName + ' ' + teacher.lastName
-                            }))}
-                            isClearable
-                            defaultValue={selectedTeacher}
-                            onChange={(selected) => {
-                                handleSelectedChange(selected);
-                            }}
-                            placeholder="Select an Instructor"
-                            styles={{
-                                container(base, props) {
-                                    return {
-                                        ...base,
-                                        width: '110%'
-                                    };
-                                }
-                            }}
-                            maxMenuHeight={200}
-                            required
-                        />
-                    ) : null}
-                </div>
+
+                <label htmlFor="instructor">Instructor:</label>
+                <Select
+                    options={teacherOptions}
+                    isClearable
+                    value={selectedTeacher}
+                    onChange={handleSelectedChange}
+                    placeholder="Select an Instructor"
+                    styles={{
+                        container: (base) => ({
+                            ...base,
+                            width: '110%'
+                        })
+                    }}
+                    maxMenuHeight={200}
+                />
+
                 <div className={styles.actionButtonGroup}>
                     <Input
                         type="button"

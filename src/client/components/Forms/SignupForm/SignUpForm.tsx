@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ICourse } from '../../../../common/types/ICourse';
-import { ICourseUnit } from '../../../../common/types/ICourseUnit';
 import { findFirstDigit } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
+import { ICourseUnit } from '../../../../common/types/ICourseUnit';
 
-// Separate types into their own interfaces
 interface FormData {
     firstName: string;
     lastName: string;
@@ -34,7 +32,6 @@ interface SignUpFormProps {
     handleBack?: () => void;
 }
 
-// Extract form validation logic
 const validateForm = (formData: FormData, signUp: boolean): string | null => {
     const { firstName, lastName, email, password, confirmPassword } = formData;
 
@@ -49,15 +46,14 @@ const validateForm = (formData: FormData, signUp: boolean): string | null => {
     return null;
 };
 
-// Create reusable form field components
-const FormField: React.FC<{
-    label: string;
-    children: React.ReactNode;
-}> = ({ label, children }) => (
-    <>
+const FormField: React.FC<{ label: string; children: React.ReactNode }> = ({
+    label,
+    children
+}) => (
+    <div className={styles.formField}>
         <label>{label}:</label>
         {children}
-    </>
+    </div>
 );
 
 const SignUpForm: React.FC<SignUpFormProps> = ({
@@ -70,31 +66,25 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 }) => {
     const [step, setStep] = useState(1);
     const dispatch = useDispatch();
-
     const { courses } = useSelector((state: RootState) => state.course);
 
-    // Memoize selected course units computation
     const selectedCourseUnits = useMemo(() => {
         if (!formData.course || !courses) return [];
         const selectedCourse = courses.find(
-            (course: ICourse) => course._id === formData.course
+            (course) => course._id === formData.course
         );
-        return selectedCourse
-            ? (selectedCourse.courseUnits as ICourseUnit[])
-            : [];
+        return selectedCourse ? selectedCourse.courseUnits || [] : [];
     }, [formData.course, courses]);
 
-    // Memoize filtered course units
     const filteredCourseUnits = useMemo(() => {
         if (!formData.yearOfStudy) return [];
         return selectedCourseUnits.filter(
             (courseUnit) =>
-                findFirstDigit(courseUnit.code) ===
-                formData.yearOfStudy!.toString()
+                findFirstDigit((courseUnit as ICourseUnit).code) ===
+                (formData.yearOfStudy ?? '').toString()
         );
     }, [selectedCourseUnits, formData.yearOfStudy]);
 
-    // Use callbacks for event handlers
     const handleNext = useCallback(
         (e: React.FormEvent) => {
             e.preventDefault();
@@ -103,30 +93,30 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 alert(error);
                 return;
             }
+
+            if (signUp && formData.password !== formData.confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
             setStep(2);
         },
         [formData, signUp]
     );
 
     const handlePrevious = useCallback(() => setStep(1), []);
-
     const handleBackClick = useCallback(() => {
-        if (setMode) {
-            setMode(undefined);
-        } else if (handleBack) {
-            handleBack();
-        }
+        if (setMode) setMode(undefined);
+        else handleBack?.();
     }, [setMode, handleBack]);
 
-    // Fetch courses on mount
     useEffect(() => {
-        if (courses.length === 0) {
+        if (!courses.length) {
             dispatch(fetchAllCoursesRequest());
         }
     }, [dispatch, courses]);
 
-    // Split form into separate components
-    const PersonalInfoFields = (
+    const renderPersonalInfoFields = () => (
         <>
             <FormField label="First name">
                 <Input
@@ -143,7 +133,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     title="Please enter a valid name (letters only, 2-50 characters)"
                 />
             </FormField>
-
             <FormField label="Last name">
                 <Input
                     type="text"
@@ -159,7 +148,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     title="Please enter a valid name (letters only, 2-50 characters)"
                 />
             </FormField>
-
             <FormField label="Email">
                 <Input
                     type="email"
@@ -173,7 +161,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     title="Please enter a valid email address."
                 />
             </FormField>
-
             {signUp && (
                 <>
                     <FormField label="Password">
@@ -186,10 +173,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             onChange={handleInputChange}
                             required
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}"
-                            title="Password must be at least 8 characters, include an uppercase letter, a number, and a special character."
+                            title="Password must be at least 8 characters, include uppercase, number, and special character."
                         />
                     </FormField>
-
                     <FormField label="Confirm password">
                         <Input
                             type="password"
@@ -199,7 +185,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
                             required
-                            pattern={`${formData.password}`}
                         />
                     </FormField>
                 </>
@@ -207,7 +192,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         </>
     );
 
-    const AcademicInfoFields = (
+    const renderAcademicInfoFields = () => (
         <>
             <FormField label="Role">
                 <select
@@ -222,7 +207,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     <option value="teacher">Teacher</option>
                 </select>
             </FormField>
-
             <FormField label="Year of Study">
                 <select
                     id="yearOfStudy"
@@ -242,7 +226,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     ))}
                 </select>
             </FormField>
-
             <FormField label="Course">
                 <select
                     id="course"
@@ -255,21 +238,23 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     <option value="" disabled>
                         Select a course
                     </option>
-                    {courses?.map((course) => (
-                        <option key={course.code} value={course._id as string}>
+                    {courses.map((course) => (
+                        <option
+                            key={course._id as string}
+                            value={course._id as string}
+                        >
                             {course.name}
                         </option>
                     ))}
                 </select>
             </FormField>
-
             <FormField label="Course Units">
                 <div className={styles.checkBox}>
                     {filteredCourseUnits.map((courseUnit) => (
-                        <div key={courseUnit.code}>
+                        <div key={courseUnit._id as string}>
                             <input
                                 type="checkbox"
-                                id={courseUnit.code}
+                                id={courseUnit._id as string}
                                 name="courseUnits"
                                 value={courseUnit._id as string}
                                 onChange={handleInputChange}
@@ -278,8 +263,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                                     courseUnit._id as string
                                 )}
                             />
-                            <label htmlFor={courseUnit.code}>
-                                {courseUnit.name}
+                            <label htmlFor={courseUnit._id as string}>
+                                {(courseUnit as ICourseUnit).name}
                             </label>
                         </div>
                     ))}
@@ -292,11 +277,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <div
             className={`${styles.formContainer} ${!signUp && styles.notSignUp}`}
         >
-            {signUp && setMode && <h2 className={styles.formTitle}>Sign up</h2>}
+            {signUp && setMode && <h2 className={styles.formTitle}>Sign Up</h2>}
             <form className={styles.formGroup} onSubmit={handleSubmit}>
                 {step === 1 ? (
                     <>
-                        {PersonalInfoFields}
+                        {renderPersonalInfoFields()}
                         <div className={styles.actionButtonGroup}>
                             <Input
                                 type="button"
@@ -311,13 +296,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                                 name="next"
                                 value="Next"
                                 onClick={handleNext}
-                                style={{ backgroundColor: 'green' }}
+                                style={{ backgroundColor: '#28a745' }}
                             />
                         </div>
                     </>
                 ) : (
                     <>
-                        {AcademicInfoFields}
+                        {renderAcademicInfoFields()}
                         <div className={styles.actionButtonGroup}>
                             <Input
                                 type="button"

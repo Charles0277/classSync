@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { IUser } from '../../../common/types/IUser';
 
 interface AuthState {
@@ -7,7 +7,7 @@ interface AuthState {
     isLoading: boolean;
     error: string | null;
     isAuthenticated: boolean;
-    signUpSuccess?: boolean;
+    createdUser?: IUser;
 }
 
 const initialState: AuthState = {
@@ -43,8 +43,8 @@ const authSlice = createSlice({
             state.error = null;
         },
         signUpSuccess: (state, action) => {
+            state.createdUser = action.payload;
             state.isLoading = false;
-            state.signUpSuccess = true;
         },
         signUpFailure: (state, action) => {
             state.isLoading = false;

@@ -37,14 +37,12 @@ const CONFIG_MAP = {
 type ConfigTitle = keyof typeof CONFIG_MAP;
 
 const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
-    // Redux hooks
     const dispatch = useDispatch();
     const { token } = useSelector((state: RootState) => state.auth);
     const { schoolWeekConfig } = useSelector(
         (state: RootState) => state.schoolWeekConfig
     );
 
-    // State hooks
     const [inputState, setInputState] = useState({ current: '', initial: '' });
     const [modalState, setModalState] = useState({
         showPopup: false,
@@ -61,36 +59,28 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
 
     const configKey = CONFIG_MAP[title as ConfigTitle];
 
-    // Modal handlers
     const openModal = (key: keyof typeof modalState, payload?: any) => {
-        setModalState((prev) => ({
-            ...prev,
-            [key]: true,
-            ...payload
-        }));
+        setModalState((prev) => ({ ...prev, [key]: true, ...payload }));
     };
 
     const closeModal = (key: keyof typeof modalState) => {
         setModalState((prev) => ({ ...prev, [key]: false }));
     };
 
-    // Input change handler
     const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const newValue = e.target.value;
             if (/^-?\d*$/.test(newValue)) {
                 const numericValue = parseFloat(newValue);
-                if (!isNaN(numericValue)) {
-                    setInputState((prev) => ({
-                        ...prev,
-                        current: Math.min(
-                            Math.max(numericValue, min || numericValue),
-                            max || numericValue
-                        ).toString()
-                    }));
-                } else {
-                    setInputState((prev) => ({ ...prev, current: newValue }));
-                }
+                setInputState((prev) => ({
+                    ...prev,
+                    current: !isNaN(numericValue)
+                        ? Math.min(
+                              Math.max(numericValue, min || numericValue),
+                              max || numericValue
+                          ).toString()
+                        : newValue
+                }));
             }
         },
         [min, max]
@@ -119,55 +109,49 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
     }, [inputState, token, configKey, dispatch, schoolWeekConfig]);
 
     const PopupContent = useMemo(() => {
-        switch (title) {
-            case 'Rooms':
-                return (
-                    <ManageRooms
-                        onAddEditRoom={(room) =>
-                            openModal('showAddEditRoom', { editingRoom: room })
-                        }
-                    />
-                );
-            case 'School Week':
-                return <ManageSchoolWeek />;
-            case 'Users':
-                return (
-                    <ManageUsers
-                        onAddUser={() => openModal('showAddUserForm')}
-                        onEditUser={(user) =>
-                            openModal('showEditUserForm', { editingUser: user })
-                        }
-                    />
-                );
-            case 'Courses':
-                return (
-                    <ManageCourses
-                        onAddEditCourse={(course) =>
-                            openModal('showAddEditCourse', {
-                                editingCourse: course
-                            })
-                        }
-                    />
-                );
-            case 'Course Units':
-                return (
-                    <ManageCourseUnits
-                        onAddEditCourseUnit={(courseUnit) =>
-                            openModal('showAddEditCourseUnit', {
-                                editingCourseUnit: courseUnit
-                            })
-                        }
-                    />
-                );
-            default:
-                return null;
-        }
+        const modalComponents = {
+            Rooms: (
+                <ManageRooms
+                    onAddEditRoom={(room) =>
+                        openModal('showAddEditRoom', { editingRoom: room })
+                    }
+                />
+            ),
+            'School Week': <ManageSchoolWeek />,
+            Users: (
+                <ManageUsers
+                    onAddUser={() => openModal('showAddUserForm')}
+                    onEditUser={(user) =>
+                        openModal('showEditUserForm', { editingUser: user })
+                    }
+                />
+            ),
+            Courses: (
+                <ManageCourses
+                    onAddEditCourse={(course) =>
+                        openModal('showAddEditCourse', {
+                            editingCourse: course
+                        })
+                    }
+                />
+            ),
+            'Course Units': (
+                <ManageCourseUnits
+                    onAddEditCourseUnit={(courseUnit) =>
+                        openModal('showAddEditCourseUnit', {
+                            editingCourseUnit: courseUnit
+                        })
+                    }
+                />
+            )
+        };
+        return modalComponents[title as keyof typeof modalComponents] || null;
     }, [title]);
 
     const RightControl = useMemo(() => {
         return rightSideControl === 'button' ? (
             <Button
-                className={'rightSideControl'}
+                className="rightSideControl"
                 onClick={() => openModal('showPopup')}
             >
                 Manage

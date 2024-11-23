@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IUser } from '../../../common/types/IUser';
+import { signUpSuccess } from './authSlice';
 
 interface UserState {
     users: IUser[];
@@ -73,6 +74,11 @@ const userSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         }
+    },
+    extraReducers(builder) {
+        builder.addCase(signUpSuccess, (state, action) => {
+            state.users.push(action.payload);
+        });
     }
 });
 

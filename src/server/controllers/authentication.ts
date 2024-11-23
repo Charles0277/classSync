@@ -51,7 +51,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             courseUnits
         });
 
-        return res.sendStatus(201);
+        return res.status(201).send(newUser);
     } catch (error) {
         return res.status(400).send(error);
     }

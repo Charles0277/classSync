@@ -1,6 +1,8 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import { IUser } from '../../../common/types/IUser';
+import { logInApi, signUpApi } from '../../api/authApi';
+import { getUserApi } from '../../api/userApi';
 import {
     checkAuthenticationFailure,
     checkAuthenticationRequest,
@@ -12,8 +14,6 @@ import {
     signUpRequest,
     signUpSuccess
 } from '../slices/authSlice';
-import { logInApi, signUpApi } from '../../api/authApi';
-import { getUserApi } from '../../api/userApi';
 
 function* signUp(action: any) {
     try {
