@@ -50,7 +50,10 @@ const courseSlice = createSlice({
             state.error = null;
         },
         updateCourseSuccess: (state, action) => {
-            state.course = action.payload;
+            const updatedCourse = action.payload;
+            state.courses = state.courses.map((course) =>
+                course._id === updatedCourse._id ? updatedCourse : course
+            );
             state.loading = false;
         },
         updateCourseFailure: (state, action) => {
@@ -63,7 +66,6 @@ const courseSlice = createSlice({
         },
         createCourseSuccess: (state, action) => {
             const newCourse = action.payload;
-            state.course = newCourse;
             state.courses = [...state.courses, newCourse];
             state.loading = false;
         },

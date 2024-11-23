@@ -1,15 +1,15 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '../../Button/Button.js';
-import closeIcon from '../../../assets/closeIcon.svg';
-import styles from './AddEditRoomCard.module.css';
 import { IRoom } from '../../../../common/types/IRoom.js';
-import RoomForm from '../../Forms/RoomForm/RoomForm.js';
+import closeIcon from '../../../assets/closeIcon.svg';
 import {
     createRoomRequest,
     updateRoomRequest
 } from '../../../store/slices/roomSlice.js';
 import { RootState } from '../../../store/store.js';
+import Button from '../../Button/Button.js';
+import RoomForm from '../../Forms/RoomForm/RoomForm.js';
+import styles from './AddEditRoomCard.module.css';
 
 interface AddEditRoomFormProps {
     onSave: () => void;
@@ -104,7 +104,7 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
             handleInputChange,
             handleSubmit,
             handleBack: onCancel,
-            edit: true
+            edit: !!room
         }),
         [formData, handleInputChange, handleSubmit]
     );

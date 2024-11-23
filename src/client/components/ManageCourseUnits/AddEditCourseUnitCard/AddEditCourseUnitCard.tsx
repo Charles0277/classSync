@@ -1,45 +1,43 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '../../Button/Button.js';
+import { ICourseUnit } from '../../../../common/types/ICourseUnit.js';
 import closeIcon from '../../../assets/closeIcon.svg';
-import styles from './AddEditCourseCard.module.css';
-import { ICourse } from '../../../../common/types/ICourse.js';
-import { RootState } from '../../../store/store.js';
-import CourseForm from '../../Forms/CourseForm/CourseForm.js';
 import {
-    createCourseRequest,
-    updateCourseRequest
-} from '../../../store/slices/courseSlice.js';
+    createCourseUnitRequest,
+    updateCourseUnitRequest
+} from '../../../store/slices/courseUnitSlice.js';
+import { RootState } from '../../../store/store.js';
+import Button from '../../Button/Button.js';
+import CourseUnitForm from '../../Forms/CourseUnitForm/CourseUnitForm.js';
+import styles from './AddEditCourseUnitCard.module.css';
 
-interface AddEditCourseFormProps {
+interface AddEditCourseUnitFormProps {
     onSave: () => void;
     onCancel: () => void;
-    course?: ICourse;
+    courseUnit?: ICourseUnit;
 }
 
-interface CourseFormData {
+interface CourseUnitFormData {
     name: string;
     code: string;
-    courseUnits: string[]; // IDs of course units
+    instructor: string;
 }
 
-const validateForm = (formData: CourseFormData): boolean => {
-    const { name, code, courseUnits } = formData;
+const validateForm = (formData: CourseUnitFormData): boolean => {
+    const { name, code, instructor } = formData;
 
-    return Boolean(name && code && Array.isArray(courseUnits));
+    return Boolean(name && code && instructor);
 };
 
-const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
+const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
     onSave,
     onCancel,
-    course
+    courseUnit
 }) => {
-    const [formData, setFormData] = useState<CourseFormData>({
-        name: course ? course.name : '',
-        code: course ? course.code : '',
-        courseUnits: course
-            ? course.courseUnits.map((unit) => unit._id as string)
-            : []
+    const [formData, setFormData] = useState<CourseUnitFormData>({
+        name: courseUnit ? courseUnit.name : '',
+        code: courseUnit ? courseUnit.code : '',
+        instructor: courseUnit ? courseUnit.instructor._id.toString() : ''
     });
 
     const { token } = useSelector((state: RootState) => state.auth);
@@ -49,27 +47,15 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
     const handleInputChange = useCallback(
         (
             e:
-                | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+                | React.ChangeEvent<HTMLInputElement>
                 | { name: string; value: any }
         ) => {
-            if ('name' in e) {
-                // Handle custom input for Select
-                const { name, value } = e;
+            const { name, value } = 'target' in e ? e.target : e;
+
+            if (name === 'instructor') {
                 setFormData((prev) => ({ ...prev, [name]: value }));
             } else {
-                // Handle regular inputs
-                const target = e.target;
-                const { name, value } = target;
-
-                // Handle array inputs for courseUnits
-                if (name === 'courseUnits') {
-                    const courseUnits = value
-                        .split(',')
-                        .map((unit) => unit.trim());
-                    setFormData((prev) => ({ ...prev, courseUnits }));
-                } else {
-                    setFormData((prev) => ({ ...prev, [name]: value }));
-                }
+                setFormData((prev) => ({ ...prev, [name]: value }));
             }
         },
         []
@@ -86,14 +72,18 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
                 return;
             }
 
-            course
+            courseUnit
                 ? dispatch(
-                      updateCourseRequest({ id: course._id, formData, token })
+                      updateCourseUnitRequest({
+                          id: courseUnit._id,
+                          formData,
+                          token
+                      })
                   )
-                : dispatch(createCourseRequest({ formData, token }));
+                : dispatch(createCourseUnitRequest({ formData, token }));
             onSave();
         },
-        [dispatch, formData, course, onSave, token]
+        [dispatch, formData, courseUnit, onSave, token]
     );
 
     const handleBackgroundClick = useCallback(
@@ -122,7 +112,7 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
             handleInputChange,
             handleSubmit,
             handleBack: onCancel,
-            edit: true
+            edit: !!courseUnit
         }),
         [formData, handleInputChange, handleSubmit]
     );
@@ -139,20 +129,25 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
                 className={styles.popupCard}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
-                aria-labelledby="add-course-title"
+                aria-labelledby="add-course-unit-title"
             >
                 <div className={styles.closeIcon}>
                     <CloseButton />
                 </div>
-                <h2 id="add/edit-course-title" className={styles.popupTitle}>
-                    {course ? `Edit ${course.name}` : 'Add a New Course'}
+                <h2
+                    id="add/edit-couse-unit-title"
+                    className={styles.popupTitle}
+                >
+                    {courseUnit
+                        ? `Edit ${courseUnit.name}`
+                        : 'Add a New Course Unit'}
                 </h2>
                 <div className={styles.contentContainer}>
-                    <CourseForm {...formProps} />
+                    <CourseUnitForm {...formProps} />
                 </div>
             </div>
         </div>
     );
 };
 
-export default memo(AddEditCourseForm);
+export default memo(AddEditCourseUnitForm);

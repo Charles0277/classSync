@@ -1,36 +1,51 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { IUser } from '../../../common/types/IUser';
+import { ICourseUnit } from '../../../common/types/ICourseUnit';
+import { findFirstDigit } from '../../../common/utils';
 import addIcon from '../../assets/addIcon.svg';
 import {
-    deleteUserRequest,
-    fetchUsersRequest
-} from '../../store/slices/userSlice';
+    deleteCourseUnitRequest,
+    fetchAllCourseUnitsRequest
+} from '../../store/slices/courseUnitSlice';
 import { RootState } from '../../store/store.js';
 import Button from '../Button/Button';
-import styles from './ManageUsers.module.css';
+import styles from './ManageCourseUnits.module.css'; // Update the stylesheet as necessary
 
-interface ManageUsersProps {
-    onAddUser: () => void;
-    onEditUser: (user: IUser) => void;
+interface ManageCourseUnitsProps {
+    onAddEditCourseUnit: (courseUnit?: ICourseUnit) => void;
 }
 
-const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
+const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
+    onAddEditCourseUnit
+}) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { users } = useSelector((state: RootState) => state.user);
+    const { courseUnits } = useSelector((state: RootState) => state.courseUnit);
 
-    const [filter, setFilter] = useState<'all' | 'student' | 'teacher'>('all');
+    const [filter, setFilter] = useState<
+        'all' | 'Year 1' | 'Year 2' | 'Year 3' | 'Year 4' | 'Year 5' | 'Year 7'
+    >('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [userToDelete, setUserToDelete] = useState<IUser | null>(null); // Track user for confirmation
+    const [courseUnitToDelete, setCourseUnitToDelete] =
+        useState<ICourseUnit | null>(null);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (token) {
-            dispatch(fetchUsersRequest({ token }));
+        if (token && courseUnits.length === 0) {
+            dispatch(fetchAllCourseUnitsRequest());
         }
     }, [token]);
 
-    const handleFilterChange = (newFilter: 'all' | 'student' | 'teacher') => {
+    const handleFilterChange = (
+        newFilter:
+            | 'all'
+            | 'Year 1'
+            | 'Year 2'
+            | 'Year 3'
+            | 'Year 4'
+            | 'Year 5'
+            | 'Year 7'
+    ) => {
         setFilter(newFilter);
     };
 
@@ -38,25 +53,26 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
         setSearchTerm(event.target.value);
     };
 
-    const onDeleteUser = (user: IUser) => {
+    const onDeleteCourseUnit = (courseUnit: ICourseUnit) => {
         if (token) {
-            dispatch(deleteUserRequest({ id: user._id, token }));
-            setUserToDelete(null);
+            dispatch(deleteCourseUnitRequest({ id: courseUnit._id, token }));
+            setCourseUnitToDelete(null);
         }
     };
 
-    const filteredUsers = users?.filter((user) => {
-        const matchesFilter = filter === 'all' || user.role === filter;
-        const matchesSearch =
-            user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.lastName.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredCourseUnits = courseUnits?.filter((unit) => {
+        const matchesFilter =
+            filter === 'all' ||
+            findFirstDigit(unit.code) === findFirstDigit(filter);
+        const matchesSearch = unit.name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
         return matchesFilter && matchesSearch;
     });
 
     return (
         <div>
             <div className={styles.filterAndAddContainer}>
-                {/* Filter Buttons */}
                 <div className={styles.filterButtons}>
                     <Button
                         type="button"
@@ -66,52 +82,72 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                     </Button>
                     <Button
                         type="button"
-                        onClick={() => handleFilterChange('student')}
+                        onClick={() => handleFilterChange('Year 1')}
                     >
-                        Students
+                        Year 1
                     </Button>
                     <Button
                         type="button"
-                        onClick={() => handleFilterChange('teacher')}
+                        onClick={() => handleFilterChange('Year 2')}
                     >
-                        Teachers
+                        Year 2
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={() => handleFilterChange('Year 3')}
+                    >
+                        Year 3
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={() => handleFilterChange('Year 4')}
+                    >
+                        Year 4
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={() => handleFilterChange('Year 5')}
+                    >
+                        Year 5
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={() => handleFilterChange('Year 7')}
+                    >
+                        Year 7
                     </Button>
                 </div>
-                <div>
-                    <Button type="button" onClick={() => onAddUser()}>
-                        <img src={addIcon} alt="Edit" /> Add User
-                    </Button>
-                </div>
+                <Button type="button" onClick={() => onAddEditCourseUnit()}>
+                    <img src={addIcon} alt="Add" /> Add Course Unit
+                </Button>
             </div>
 
-            {/* Search Bar */}
             <div className={styles.searchBar}>
                 <input
                     type="text"
-                    placeholder="Search by first or last name"
+                    placeholder="Search by course unit name"
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
             </div>
 
-            {/* User List */}
-            <div className={styles.userList}>
-                {filteredUsers && filteredUsers.length > 0 ? (
-                    filteredUsers.map((user, index) => (
+            <div className={styles.courseUnitList}>
+                {filteredCourseUnits && filteredCourseUnits.length > 0 ? (
+                    filteredCourseUnits.map((courseUnit, index) => (
                         <div
-                            key={user.email}
-                            className={`${styles.userContainer} ${
-                                index === users.length - 1
-                                    ? styles.lastUser
+                            key={courseUnit.name}
+                            className={`${styles.courseUnitContainer} ${
+                                index === filteredCourseUnits.length - 1
+                                    ? styles.lastCourse
                                     : ''
                             }`}
                         >
-                            {user.firstName} {user.lastName}
+                            {courseUnit.name}
                             <div className={styles.rightSideControl}>
                                 <Button
                                     type="button"
                                     onClick={() => {
-                                        onEditUser(user);
+                                        onAddEditCourseUnit(courseUnit);
                                     }}
                                 >
                                     <img
@@ -119,8 +155,8 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                                         alt="Edit"
                                     />
                                 </Button>
-                                {userToDelete?.email === user.email ? (
-                                    // Confirmation UI
+                                {courseUnitToDelete?.name ===
+                                courseUnit.name ? (
                                     <div
                                         className={
                                             styles.confirmDeleteContainer
@@ -135,7 +171,9 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                                             <Button
                                                 type="button"
                                                 onClick={() =>
-                                                    onDeleteUser(user)
+                                                    onDeleteCourseUnit(
+                                                        courseUnit
+                                                    )
                                                 }
                                             >
                                                 Yes
@@ -143,18 +181,19 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                                             <Button
                                                 type="button"
                                                 onClick={() =>
-                                                    setUserToDelete(null)
-                                                } // Cancel confirmation
+                                                    setCourseUnitToDelete(null)
+                                                }
                                             >
                                                 No
                                             </Button>
                                         </div>
                                     </div>
                                 ) : (
-                                    // Trash icon to initiate confirmation
                                     <Button
                                         type="button"
-                                        onClick={() => setUserToDelete(user)}
+                                        onClick={() =>
+                                            setCourseUnitToDelete(courseUnit)
+                                        }
                                     >
                                         <img
                                             src="src/client/assets/trashIcon.svg"
@@ -166,11 +205,13 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                         </div>
                     ))
                 ) : (
-                    <div className={styles.noResults}>No users found</div>
+                    <div className={styles.noResults}>
+                        No course units found
+                    </div>
                 )}
             </div>
         </div>
     );
 };
 
-export default ManageUsers;
+export default ManageCourseUnits;

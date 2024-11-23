@@ -1,5 +1,5 @@
-import mongoose, { Schema, Model, CallbackError } from 'mongoose';
 import bcrypt from 'bcrypt';
+import mongoose, { CallbackError, Model, Schema } from 'mongoose';
 import { IUser } from '../../common/types/IUser.js';
 
 const SALT_WORK_FACTOR = 10;
@@ -29,10 +29,11 @@ const UserSchema: Schema<IUser> = new Schema({
         required: true,
         validate: {
             validator: (yearOfStudy: number) => {
-                return yearOfStudy >= 1 && yearOfStudy <= 7;
+                const validYears = [1, 2, 3, 4, 5, 7];
+                return validYears.includes(yearOfStudy);
             },
             message: (props) =>
-                `${props.value} is not a valid year of study! It should be between 1 and 7.`
+                `${props.value} is not a valid year of study! Valid years are 1, 2, 3, 4, 5, and 7.`
         },
         set: (value: any) => parseInt(value, 10) // Convert to number during assignment
     },

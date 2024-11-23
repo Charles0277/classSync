@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import closeIcon from '../../../assets/closeIcon.svg';
-import styles from './AddEditUserCard.module.css';
 import { IUser } from '../../../../common/types/IUser';
-import { RootState } from '../../../store/store';
+import closeIcon from '../../../assets/closeIcon.svg';
 import { signUpRequest } from '../../../store/slices/authSlice';
 import { updateUserRequest } from '../../../store/slices/userSlice';
+import { RootState } from '../../../store/store';
 import Button from '../../Button/Button';
 import SignUpForm from '../../Forms/SignupForm/SignUpForm';
+import styles from './AddEditUserCard.module.css';
 
 interface UserCardProps {
     mode: 'add' | 'edit';
@@ -21,7 +21,7 @@ interface SignUpFormData {
     lastName: string;
     email: string;
     role: 'student' | 'teacher';
-    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 6 | 7 | undefined;
+    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
     course: string;
     courseUnits: string[];
 }
@@ -79,7 +79,6 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                       | 3
                       | 4
                       | 5
-                      | 6
                       | 7
                       | undefined,
                   course: user.course?.toString() || '',

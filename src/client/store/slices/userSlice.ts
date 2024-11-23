@@ -6,6 +6,7 @@ interface UserState {
     user?: IUser;
     loading: boolean;
     error: string | null;
+    teachers?: IUser[];
 }
 
 const initialState: UserState = {
@@ -18,15 +19,27 @@ const userSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
-        getUsersRequest: (state, action) => {
+        fetchUsersRequest: (state, action) => {
             state.loading = true;
             state.error = null;
         },
-        getUsersSuccess: (state, action) => {
+        fetchUsersSuccess: (state, action) => {
             state.loading = false;
             state.users = action.payload;
         },
-        getUsersFailure: (state, action) => {
+        fetchUsersFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        fetchTeachersRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        fetchTeachersSuccess: (state, action) => {
+            state.loading = false;
+            state.teachers = action.payload;
+        },
+        fetchTeachersFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },
@@ -35,8 +48,11 @@ const userSlice = createSlice({
             state.error = null;
         },
         updateUserSuccess: (state, action) => {
+            const updatedUser = action.payload;
+            state.users = state.users.map((user) =>
+                user._id === updatedUser._id ? updatedUser : user
+            );
             state.loading = false;
-            state.user = action.payload;
         },
         updateUserFailure: (state, action) => {
             state.loading = false;
@@ -61,9 +77,12 @@ const userSlice = createSlice({
 });
 
 export const {
-    getUsersRequest,
-    getUsersSuccess,
-    getUsersFailure,
+    fetchUsersRequest,
+    fetchUsersSuccess,
+    fetchUsersFailure,
+    fetchTeachersRequest,
+    fetchTeachersSuccess,
+    fetchTeachersFailure,
     updateUserRequest,
     updateUserSuccess,
     updateUserFailure,

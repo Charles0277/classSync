@@ -1,5 +1,12 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
+import { call, put, takeLatest } from 'redux-saga/effects';
+import { ICourse } from '../../../common/types/ICourse';
+import {
+    createCourseApi,
+    deleteCourseApi,
+    fetchCoursesApi,
+    updateCourseApi
+} from '../../api/courseApi';
 import {
     createCourseFailure,
     createCourseRequest,
@@ -14,13 +21,6 @@ import {
     updateCourseRequest,
     updateCourseSuccess
 } from '../slices/courseSlice';
-import {
-    createCourseApi,
-    deleteCourseApi,
-    fetchCoursesApi,
-    updateCourseApi
-} from '../../api/courseApi';
-import { ICourse } from '../../../common/types/ICourse';
 
 function* handleFetchAllCourses() {
     try {

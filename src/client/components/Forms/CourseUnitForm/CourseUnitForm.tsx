@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import { fetchAllCourseUnitsRequest } from '../../../store/slices/courseUnitSlice';
-import { RootState } from '../../../store/store';
-import Input from '../../Input/Input';
+import { fetchTeachersRequest } from '../../../store/slices/userSlice';
+import { RootState } from '../../../store/store.js';
+import Input from '../../Input/Input.js';
 import styles from '../Forms.module.css';
 
 interface CourseFormProps {
     formData: {
         name: string;
         code: string;
-        courseUnits: string[];
+        instructor: string;
     };
     handleInputChange: (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | any
@@ -20,64 +20,59 @@ interface CourseFormProps {
     edit?: boolean;
 }
 
-const CourseForm: React.FC<CourseFormProps> = ({
+const CourseUnitForm: React.FC<CourseFormProps> = ({
     formData,
     handleInputChange,
     handleSubmit,
     handleBack,
     edit
 }) => {
-    const { courseUnits } = useSelector((state: RootState) => state.courseUnit);
+    const { teachers } = useSelector((state: RootState) => state.user);
+    const { token } = useSelector((state: RootState) => state.auth);
 
-    const [selectedCourseUnits, setSelectedCourseUnits] = useState<
-        { value: string; label: string }[]
-    >(
-        formData.courseUnits
-            ?.map((id) => courseUnits?.find((unit) => unit._id === id))
-            .filter(
-                (unit): unit is NonNullable<typeof unit> =>
-                    unit !== undefined && unit !== null
-            )
-            .map((unit) => ({ value: unit._id as string, label: unit.name })) ||
-            []
-    );
+    const [selectedTeacher, setSelectedTeacher] = useState<{
+        value: string;
+        label: string;
+    } | null>(() => {
+        const teacher = teachers?.find(
+            ({ _id }) => _id === formData.instructor
+        );
+        return teacher
+            ? {
+                  value: teacher._id as string,
+                  label: `${teacher.firstName} ${teacher.lastName}`
+              }
+            : null;
+    });
 
     useEffect(() => {
-        if (selectedCourseUnits.length === 0) {
-            const mappedUnits =
-                formData.courseUnits
-                    ?.map((id) => courseUnits.find((unit) => unit._id === id))
-                    .filter(
-                        (unit): unit is NonNullable<typeof unit> =>
-                            unit !== undefined && unit !== null
-                    )
-                    .map((unit) => ({
-                        value: unit._id as string,
-                        label: unit.name
-                    })) || [];
-            setSelectedCourseUnits(mappedUnits);
+        if (!!!selectedTeacher) {
+            const teacher = teachers?.find(
+                ({ _id }) => _id === formData.instructor
+            );
+            if (teacher) {
+                setSelectedTeacher({
+                    value: teacher?._id as string,
+                    label: `${teacher?.firstName} ${teacher?.lastName}`
+                });
+            }
         }
-    }, [courseUnits, formData.courseUnits]);
+    }, [teachers, formData.instructor]);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (courseUnits.length === 0) {
-            dispatch(fetchAllCourseUnitsRequest());
+        if (!teachers || teachers.length === 0) {
+            dispatch(fetchTeachersRequest({ token }));
         }
     }, []);
 
     const handleSelectedChange = (selected: any) => {
-        // Map selected options to an array of IDs (value)
-        const courseUnits = selected
-            ? selected.map((option: any) => option.value)
-            : [];
-
-        // Update the selectedCourseUnits state
-        setSelectedCourseUnits(selected);
-
-        // Update the parent formData via handleInputChange
-        handleInputChange({ name: 'courseUnits', value: courseUnits });
+        setSelectedTeacher(selected);
+        handleInputChange({
+            name: 'instructor',
+            value: selected?.value || null
+        });
     };
 
     return (
@@ -102,21 +97,20 @@ const CourseForm: React.FC<CourseFormProps> = ({
                     onChange={handleInputChange}
                 />
                 <div>
-                    <label htmlFor="courseUnits">Course Units:</label>
-                    {formData.courseUnits.length ===
-                        selectedCourseUnits.length && (
+                    <label htmlFor="instructor">Instructor:</label>
+                    {!!selectedTeacher || !edit ? (
                         <Select
-                            options={courseUnits.map((unit) => ({
-                                value: unit._id as string,
-                                label: unit.name
+                            options={teachers?.map((teacher) => ({
+                                value: teacher._id as string,
+                                label:
+                                    teacher.firstName + ' ' + teacher.lastName
                             }))}
                             isClearable
-                            isMulti
-                            defaultValue={selectedCourseUnits}
+                            defaultValue={selectedTeacher}
                             onChange={(selected) => {
                                 handleSelectedChange(selected);
                             }}
-                            placeholder="Select Course Units"
+                            placeholder="Select an Instructor"
                             styles={{
                                 container(base, props) {
                                     return {
@@ -128,7 +122,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                             maxMenuHeight={200}
                             required
                         />
-                    )}
+                    ) : null}
                 </div>
                 <div className={styles.actionButtonGroup}>
                     <Input
@@ -150,4 +144,4 @@ const CourseForm: React.FC<CourseFormProps> = ({
     );
 };
 
-export default CourseForm;
+export default CourseUnitForm;

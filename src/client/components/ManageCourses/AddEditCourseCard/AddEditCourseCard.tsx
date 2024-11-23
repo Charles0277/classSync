@@ -1,15 +1,15 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '../../Button/Button.js';
-import closeIcon from '../../../assets/closeIcon.svg';
-import styles from './AddEditCourseCard.module.css';
 import { ICourse } from '../../../../common/types/ICourse.js';
-import { RootState } from '../../../store/store.js';
-import CourseForm from '../../Forms/CourseForm/CourseForm.js';
+import closeIcon from '../../../assets/closeIcon.svg';
 import {
     createCourseRequest,
     updateCourseRequest
 } from '../../../store/slices/courseSlice.js';
+import { RootState } from '../../../store/store.js';
+import Button from '../../Button/Button.js';
+import CourseForm from '../../Forms/CourseForm/CourseForm.js';
+import styles from './AddEditCourseCard.module.css';
 
 interface AddEditCourseFormProps {
     onSave: () => void;
@@ -49,7 +49,7 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
     const handleInputChange = useCallback(
         (
             e:
-                | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+                | React.ChangeEvent<HTMLInputElement>
                 | { name: string; value: any }
         ) => {
             if ('name' in e) {
@@ -88,7 +88,11 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
 
             course
                 ? dispatch(
-                      updateCourseRequest({ id: course._id, formData, token })
+                      updateCourseRequest({
+                          id: course._id,
+                          formData,
+                          token
+                      })
                   )
                 : dispatch(createCourseRequest({ formData, token }));
             onSave();
@@ -122,7 +126,7 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
             handleInputChange,
             handleSubmit,
             handleBack: onCancel,
-            edit: true
+            edit: !!course
         }),
         [formData, handleInputChange, handleSubmit]
     );

@@ -10,10 +10,7 @@ const courseUnitSchema = new Schema<ICourseUnit>({
         type: String,
         required: true
     },
-    instructor: {
-        type: String,
-        required: true
-    }
+    instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 export const CourseUnitModel: Model<ICourseUnit> = mongoose.model<ICourseUnit>(

@@ -2,7 +2,7 @@ import { UserModel } from '../models/user.models.js';
 
 export const getUsers = () => UserModel.find();
 
-// export const getUserByEmail = (email: string) => UserModel.findOne({ email });
+export const getTeachers = () => UserModel.find({ role: 'teacher' });
 
 export const getUserByEmail = (email: string) =>
     UserModel.findOne({ email })

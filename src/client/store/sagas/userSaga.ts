@@ -1,27 +1,49 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import { IUser } from '../../../common/types/IUser';
 import {
-    getUsersRequest,
-    getUsersSuccess,
-    getUsersFailure,
-    updateUserSuccess,
+    deleteUserApi,
+    getTeachersApi,
+    getUsersApi,
+    updateUserApi
+} from '../../api/userApi';
+import {
+    deleteUserFailure,
+    deleteUserRequest,
+    deleteUserSuccess,
+    fetchTeachersFailure,
+    fetchTeachersRequest,
+    fetchTeachersSuccess,
+    fetchUsersFailure,
+    fetchUsersRequest,
+    fetchUsersSuccess,
     updateUserFailure,
     updateUserRequest,
-    deleteUserSuccess,
-    deleteUserFailure,
-    deleteUserRequest
+    updateUserSuccess
 } from '../slices/userSlice';
-import { deleteUserApi, getUsersApi, updateUserApi } from '../../api/userApi';
 
-function* fetchUsers(action: any) {
+function* handleFetchUsers(action: any) {
     const { token } = action.payload;
 
     try {
         const response: AxiosResponse<IUser[]> = yield call(getUsersApi, token);
-        yield put(getUsersSuccess(response.data));
+        yield put(fetchUsersSuccess(response.data));
     } catch (error: any) {
-        yield put(getUsersFailure(error.message));
+        yield put(fetchUsersFailure(error.message));
+    }
+}
+
+function* handleFetchTeachers(action: any) {
+    const { token } = action.payload;
+
+    try {
+        const response: AxiosResponse<IUser[]> = yield call(
+            getTeachersApi,
+            token
+        );
+        yield put(fetchTeachersSuccess(response.data));
+    } catch (error: any) {
+        yield put(fetchTeachersFailure(error.message));
     }
 }
 
@@ -54,7 +76,8 @@ function* handleDeleteUser(action: any) {
 }
 
 export default function* userSaga() {
-    yield takeLatest(getUsersRequest.type, fetchUsers);
+    yield takeLatest(fetchUsersRequest.type, handleFetchUsers);
+    yield takeLatest(fetchTeachersRequest.type, handleFetchTeachers);
     yield takeLatest(updateUserRequest.type, handleUpdateUser);
     yield takeLatest(deleteUserRequest.type, handleDeleteUser);
 }

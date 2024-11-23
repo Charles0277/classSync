@@ -1,11 +1,11 @@
-import React, { useEffect, useCallback, useMemo, memo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './Welcome.module.css';
 import Button from '../../components/Button/Button';
-import SignUpForm from '../../components/Forms/SignupForm/SignUpForm';
 import LogInForm from '../../components/Forms/LogInForm/LogInForm';
+import SignUpForm from '../../components/Forms/SignupForm/SignUpForm';
 import { logInRequest, signUpRequest } from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
+import styles from './Welcome.module.css';
 
 // Move types to separate file (e.g., types.ts)
 type Mode = 'logIn' | 'signUp' | 'logInAsGuest' | undefined;
@@ -22,7 +22,7 @@ export interface SignUpFormData {
     password: string;
     confirmPassword: string;
     role: 'student' | 'teacher';
-    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 6 | 7 | undefined;
+    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
     course: string;
     courseUnits: string[];
 }

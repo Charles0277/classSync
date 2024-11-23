@@ -1,11 +1,7 @@
 import { CourseUnitModel } from '../models/courseUnit.model.js';
 
-// export const getCourseUnitsByCourse = (course: string) =>
-//     CourseUnitModel.find({
-//         code: { $regex: `^${course}`, $options: 'i' }
-//     });
-
-export const getCourseUnits = () => CourseUnitModel.find();
+export const getCourseUnits = () =>
+    CourseUnitModel.find().populate('instructor');
 
 export const getCourseUnitByCode = (code: string) =>
     CourseUnitModel.findOne({ code });
@@ -16,6 +12,7 @@ export const getCourseUnitById = (id: string) =>
 export const createCourseUnit = (values: Record<string, any>) =>
     new CourseUnitModel(values)
         .save()
+        .then((courseUnit) => courseUnit.populate('instructor'))
         .then((courseUnit) => courseUnit.toObject());
 
 export const deleteCourseUnitByCode = (code: string) =>
@@ -25,4 +22,6 @@ export const deleteCourseUnitById = (id: string) =>
     CourseUnitModel.findByIdAndDelete({ _id: id });
 
 export const updateCourseUnitById = (id: string, values: Record<string, any>) =>
-    CourseUnitModel.findByIdAndUpdate({ _id: id }, values, { new: true });
+    CourseUnitModel.findByIdAndUpdate({ _id: id }, values, {
+        new: true
+    }).populate('instructor');

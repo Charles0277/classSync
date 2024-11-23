@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Input from '../../Input/Input';
-import styles from '../Forms.module.css';
+import { ICourse } from '../../../../common/types/ICourse';
+import { ICourseUnit } from '../../../../common/types/ICourseUnit';
+import { findFirstDigit } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
-import { ICourseUnit } from '../../../../common/types/ICourseUnit';
-import { ICourse } from '../../../../common/types/ICourse';
+import Input from '../../Input/Input';
+import styles from '../Forms.module.css';
 
 // Separate types into their own interfaces
 interface FormData {
@@ -15,7 +16,7 @@ interface FormData {
     password?: string;
     confirmPassword?: string;
     role: 'student' | 'teacher';
-    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 6 | 7 | undefined;
+    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
     course: string;
     courseUnits: string[];
 }
@@ -46,12 +47,6 @@ const validateForm = (formData: FormData, signUp: boolean): string | null => {
     }
 
     return null;
-};
-
-// Extract utility functions
-const findFirstDigit = (input: string): string | null => {
-    const match = input.match(/\d/);
-    return match?.[0] || null;
 };
 
 // Create reusable form field components
@@ -240,9 +235,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     <option value="" disabled>
                         Select a Year of Study
                     </option>
-                    {Array.from({ length: 7 }, (_, i) => (
-                        <option key={i + 1} value={i + 1}>
-                            {i + 1}
+                    {[1, 2, 3, 4, 5, 7].map((year) => (
+                        <option key={year} value={year}>
+                            {year}
                         </option>
                     ))}
                 </select>

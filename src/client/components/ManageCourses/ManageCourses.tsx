@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import styles from './ManageCourses.module.css'; // Update the stylesheet as necessary
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store.js';
-import {
-    deleteCourseRequest,
-    // deleteCourseRequest,
-    fetchAllCoursesRequest
-} from '../../store/slices/courseSlice'; // Update actions and slice names
-import Button from '../Button/Button';
 import { ICourse } from '../../../common/types/ICourse'; // Replace with appropriate type
 import addIcon from '../../assets/addIcon.svg';
+import {
+    deleteCourseRequest,
+    fetchAllCoursesRequest
+} from '../../store/slices/courseSlice'; // Update actions and slice names
+import { RootState } from '../../store/store.js';
+import Button from '../Button/Button';
+import styles from './ManageCourses.module.css'; // Update the stylesheet as necessary
 
 interface ManageCoursesProps {
     onAddEditCourse: (course?: ICourse) => void;
@@ -18,7 +17,6 @@ interface ManageCoursesProps {
 const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
     const { token } = useSelector((state: RootState) => state.auth);
     const { courses } = useSelector((state: RootState) => state.course);
-    console.log('🚀 ~ courses:', courses);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [courseToDelete, setCourseToDelete] = useState<ICourse | null>(null);

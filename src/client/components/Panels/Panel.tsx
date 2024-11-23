@@ -1,5 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ICourse } from '../../../common/types/ICourse';
+import { ICourseUnit } from '../../../common/types/ICourseUnit';
 import { IRoom } from '../../../common/types/IRoom';
 import { IUser } from '../../../common/types/IUser';
 import { updateConfigRequest } from '../../store/slices/schoolWeekConfigSlice';
@@ -7,15 +9,16 @@ import { RootState } from '../../store/store';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import ManageCardConfig from '../ManageConfigCard/ManageConfigCard';
+import AddEditCourseCard from '../ManageCourses/AddEditCourseCard/AddEditCourseCard';
 import ManageCourses from '../ManageCourses/ManageCourses';
+import AddEditCourseUnitCard from '../ManageCourseUnits/AddEditCourseUnitCard/AddEditCourseUnitCard';
+import ManageCourseUnits from '../ManageCourseUnits/ManageCourseUnits';
 import AddEditRoomCard from '../ManageRooms/AddEditRoomCard/AddEditRoomCard';
 import ManageRooms from '../ManageRooms/ManageRooms';
 import ManageSchoolWeek from '../ManageSchoolWeek/ManageSchoolWeek';
+import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
 import ManageUsers from '../ManageUsers/ManageUsers';
 import styles from './Panel.module.css';
-import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
-import { ICourse } from '../../../common/types/ICourse';
-import AddEditCourseCard from '../ManageCourses/AddEditCourseCard/AddEditCourseCard';
 
 interface CardProps {
     title: string;
@@ -49,8 +52,10 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
         showAddUserForm: false,
         showAddEditRoom: false,
         showAddEditCourse: false,
+        showAddEditCourseUnit: false,
         editingUser: undefined as IUser | undefined,
         editingCourse: undefined as ICourse | undefined,
+        editingCourseUnit: undefined as ICourseUnit | undefined,
         editingRoom: undefined as IRoom | undefined
     });
 
@@ -144,6 +149,16 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                         }
                     />
                 );
+            case 'Course Units':
+                return (
+                    <ManageCourseUnits
+                        onAddEditCourseUnit={(courseUnit) =>
+                            openModal('showAddEditCourseUnit', {
+                                editingCourseUnit: courseUnit
+                            })
+                        }
+                    />
+                );
             default:
                 return null;
         }
@@ -207,6 +222,13 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                     course={modalState.editingCourse}
                     onSave={() => closeModal('showAddEditCourse')}
                     onCancel={() => closeModal('showAddEditCourse')}
+                />
+            )}
+            {modalState.showAddEditCourseUnit && (
+                <AddEditCourseUnitCard
+                    courseUnit={modalState.editingCourseUnit}
+                    onSave={() => closeModal('showAddEditCourseUnit')}
+                    onCancel={() => closeModal('showAddEditCourseUnit')}
                 />
             )}
             <div className={styles.panel}>

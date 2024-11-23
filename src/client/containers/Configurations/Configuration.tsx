@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Card from '../../components/Card/Card';
 import PageContainer from '../../components/Common/PageContainer/PageContainer';
 import Panel from '../../components/Panels/Panel';
@@ -11,6 +10,7 @@ const Configuration = () => {
                 <Panel title="Rooms" rightSideControl="button"></Panel>
                 <Panel title="School Week" rightSideControl="button"></Panel>
                 <Panel title="Courses" rightSideControl="button"></Panel>
+                <Panel title="Course Units" rightSideControl="button"></Panel>
             </Card>
         </PageContainer>
     );

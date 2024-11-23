@@ -44,6 +44,36 @@ const courseUnitSlice = createSlice({
         deleteCourseUnitFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        updateCourseUnitRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        updateCourseUnitSuccess: (state, action) => {
+            const updatedCourseUnit = action.payload;
+            state.courseUnits = state.courseUnits.map((courseUnit) =>
+                courseUnit._id === updatedCourseUnit._id
+                    ? updatedCourseUnit
+                    : courseUnit
+            );
+            state.loading = false;
+        },
+        updateCourseUnitFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        createCourseUnitRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        createCourseUnitSuccess: (state, action) => {
+            const newCourse = action.payload;
+            state.courseUnits = [...state.courseUnits, newCourse];
+            state.loading = false;
+        },
+        createCourseUnitFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
@@ -54,7 +84,13 @@ export const {
     fetchAllCourseUnitsFailure,
     deleteCourseUnitRequest,
     deleteCourseUnitSuccess,
-    deleteCourseUnitFailure
+    deleteCourseUnitFailure,
+    updateCourseUnitRequest,
+    updateCourseUnitSuccess,
+    updateCourseUnitFailure,
+    createCourseUnitRequest,
+    createCourseUnitSuccess,
+    createCourseUnitFailure
 } = courseUnitSlice.actions;
 
 export default courseUnitSlice.reducer;

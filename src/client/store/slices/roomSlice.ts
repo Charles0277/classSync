@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ISchoolWeekConfig } from '../../../common/types/ISchoolWeekConfig';
 import { IRoom } from '../../../common/types/IRoom';
 
 interface roomState {
@@ -52,7 +51,10 @@ const roomSlice = createSlice({
             state.error = null;
         },
         updateRoomSuccess: (state, action) => {
-            state.room = action.payload;
+            const updatedRoom = action.payload;
+            state.rooms = state.rooms.map((room) =>
+                room._id === updatedRoom._id ? updatedRoom : room
+            );
             state.loading = false;
         },
         updateRoomFailure: (state, action) => {

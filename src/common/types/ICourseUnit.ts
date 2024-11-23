@@ -1,7 +1,7 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface ICourseUnit extends Document {
     name: string;
     code: string;
-    instructor: string;
+    instructor: Types.ObjectId;
 }
