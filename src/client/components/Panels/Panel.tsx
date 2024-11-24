@@ -184,14 +184,14 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                     user={modalState.editingUser}
                     onSave={() => closeModal('showEditUserForm')}
                     onCancel={() => closeModal('showEditUserForm')}
-                    mode="edit"
+                    mode="admin"
                 />
             )}
             {modalState.showAddUserForm && (
                 <AddEditUserCard
                     onSave={() => closeModal('showAddUserForm')}
                     onCancel={() => closeModal('showAddUserForm')}
-                    mode="add"
+                    mode="signUp"
                 />
             )}
             {modalState.showAddEditRoom && (

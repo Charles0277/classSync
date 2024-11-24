@@ -30,16 +30,20 @@ interface SignUpFormProps {
     >;
     signUp?: boolean;
     handleBack?: () => void;
+    mode: 'signUp' | 'edit' | 'admin';
 }
 
-const validateForm = (formData: FormData, signUp: boolean): string | null => {
+const validateForm = (
+    formData: FormData,
+    mode: 'signUp' | 'edit' | 'admin'
+): string | null => {
     const { firstName, lastName, email, password, confirmPassword } = formData;
 
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
         return 'All fields are required';
     }
 
-    if (signUp && (!password?.trim() || !confirmPassword?.trim())) {
+    if (mode === 'signUp' && (!password?.trim() || !confirmPassword?.trim())) {
         return 'Password fields are required';
     }
 
@@ -61,7 +65,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     handleInputChange,
     handleSubmit,
     setMode,
-    signUp = false,
+    mode,
     handleBack
 }) => {
     const [step, setStep] = useState(1);
@@ -88,20 +92,23 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     const handleNext = useCallback(
         (e: React.FormEvent) => {
             e.preventDefault();
-            const error = validateForm(formData, signUp);
+            const error = validateForm(formData, mode);
             if (error) {
                 alert(error);
                 return;
             }
 
-            if (signUp && formData.password !== formData.confirmPassword) {
+            if (
+                (mode === 'signUp' || mode === 'edit') &&
+                formData.password !== formData.confirmPassword
+            ) {
                 alert('Passwords do not match');
                 return;
             }
 
             setStep(2);
         },
-        [formData, signUp]
+        [formData, mode]
     );
 
     const handlePrevious = useCallback(() => setStep(1), []);
@@ -161,7 +168,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     title="Please enter a valid email address."
                 />
             </FormField>
-            {signUp && (
+            {(mode === 'signUp' || mode === 'edit') && (
                 <>
                     <FormField label="Password">
                         <Input
@@ -275,9 +282,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 
     return (
         <div
-            className={`${styles.formContainer} ${!signUp && styles.notSignUp}`}
+            className={`${styles.formContainer} ${mode === 'admin' && styles.notSignUp}`}
         >
-            {signUp && setMode && <h2 className={styles.formTitle}>Sign Up</h2>}
+            {mode === 'signUp' && setMode && (
+                <h2 className={styles.formTitle}>Sign Up</h2>
+            )}
             <form className={styles.formGroup} onSubmit={handleSubmit}>
                 {step === 1 ? (
                     <>
@@ -315,7 +324,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                                 type="submit"
                                 id="signUp"
                                 name="signUp"
-                                value={signUp ? 'Sign Up' : 'Save'}
+                                value={mode === 'signUp' ? 'Sign Up' : 'Save'}
                             />
                         </div>
                     </>

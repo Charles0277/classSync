@@ -10,8 +10,8 @@ import SignUpForm from '../../Forms/SignupForm/SignUpForm';
 import styles from './AddEditUserCard.module.css';
 
 interface UserCardProps {
-    mode: 'add' | 'edit';
-    user?: IUser; // Optional when mode is 'add'
+    mode: 'signUp' | 'edit' | 'admin';
+    user?: IUser;
     onSave: () => void;
     onCancel: () => void;
 }
@@ -24,6 +24,8 @@ interface SignUpFormData {
     yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
     course: string;
     courseUnits: string[];
+    password?: string;
+    confirmPassword?: string;
 }
 
 const INITIAL_FORM_DATA: SignUpFormData = {
@@ -67,7 +69,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
     const { token } = useSelector((state: RootState) => state.auth);
 
     const [formData, setFormData] = useState<SignUpFormData>(
-        mode === 'edit' && user
+        user && mode === 'edit'
             ? {
                   firstName: user.firstName,
                   lastName: user.lastName,
@@ -82,9 +84,28 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                       | 7
                       | undefined,
                   course: user.course?.toString() || '',
-                  courseUnits: user.courseUnits.map((unit) => unit.toString())
+                  courseUnits: user.courseUnits.map((unit) => unit.toString()),
+                  password: '',
+                  confirmPassword: ''
               }
-            : INITIAL_FORM_DATA
+            : user && mode === 'admin'
+              ? {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    role: user.role as 'student' | 'teacher',
+                    yearOfStudy: user.yearOfStudy as
+                        | 1
+                        | 2
+                        | 3
+                        | 4
+                        | 5
+                        | 7
+                        | undefined,
+                    course: user.course?.toString() || '',
+                    courseUnits: user.courseUnits.map((unit) => unit.toString())
+                }
+              : INITIAL_FORM_DATA
     );
 
     const handleInputChange = useCallback(
@@ -116,7 +137,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                 );
                 return;
             }
-            if (mode === 'add') {
+            if (mode === 'signUp') {
                 dispatch(signUpRequest(formData));
             } else {
                 dispatch(updateUserRequest({ formData, token }));
@@ -137,9 +158,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
     }, [onCancel]);
 
     const contentClass =
-        mode === 'add'
-            ? styles.addContentContainer
-            : styles.editContentContainer;
+        mode === 'admin' ? styles.noPassword : styles.includesPassword;
 
     return (
         <div
@@ -153,9 +172,11 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                     </Button>
                 </div>
                 <h2 className={styles.popupTitle}>
-                    {mode === 'add'
+                    {mode === 'signUp'
                         ? 'Add a New User'
-                        : `Edit ${user?.firstName} ${user?.lastName}`}
+                        : mode === 'admin'
+                          ? `Edit ${user?.firstName} ${user?.lastName}`
+                          : 'Edit Profile'}
                 </h2>
                 <div className={contentClass}>
                     <SignUpForm
@@ -163,7 +184,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                         handleInputChange={handleInputChange}
                         handleSubmit={handleSubmit}
                         handleBack={onCancel}
-                        signUp={mode === 'add' ? true : false}
+                        mode={mode}
                     />
                 </div>
             </div>

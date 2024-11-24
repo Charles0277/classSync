@@ -168,7 +168,7 @@ const RightColumn: React.FC = () => {
             case 'logIn':
                 return <LogInForm {...props} />;
             case 'signUp':
-                return <SignUpForm {...props} signUp />;
+                return <SignUpForm {...props} mode="signUp" />;
             default:
                 return GetStartedSection;
         }

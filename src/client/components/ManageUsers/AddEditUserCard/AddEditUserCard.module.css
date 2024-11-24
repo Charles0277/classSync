@@ -35,12 +35,12 @@
     padding-top: 0.5rem;
 }
 
-.addContentContainer {
-    width: 80%;
+.includesPassword {
+    width: 90%;
     align-self: center;
 }
 
-.editContentContainer {
+.noPassword {
     width: 55%;
     align-self: center;
 }
