@@ -55,6 +55,25 @@ UserSchema.pre<IUser>('save', async function (next) {
     }
 });
 
+UserSchema.pre('findOneAndUpdate', async function (next) {
+    const update = this.getUpdate() as mongoose.UpdateQuery<IUser>;
+
+    if (update && update.password) {
+        try {
+            const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+            const hashedPassword = await bcrypt.hash(update.password, salt);
+
+            update.password = hashedPassword;
+
+            next();
+        } catch (error) {
+            next(error as CallbackError);
+        }
+    } else {
+        next();
+    }
+});
+
 export const UserModel: Model<IUser> = mongoose.model<IUser>(
     'User',
     UserSchema

@@ -67,6 +67,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
 }) => {
     const dispatch = useDispatch();
     const { token } = useSelector((state: RootState) => state.auth);
+    console.log('🚀 ~ user:', user);
 
     const [formData, setFormData] = useState<SignUpFormData>(
         user && mode === 'edit'
@@ -83,8 +84,12 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                       | 5
                       | 7
                       | undefined,
-                  course: user.course?.toString() || '',
-                  courseUnits: user.courseUnits.map((unit) => unit.toString()),
+                  course: user.course._id
+                      ? user.course._id.toString()
+                      : user.course.toString() || '',
+                  courseUnits: user.course._id
+                      ? user.courseUnits.map((unit) => unit._id.toString())
+                      : user.courseUnits.map((unit) => unit.toString()) || [],
                   password: '',
                   confirmPassword: ''
               }
@@ -107,6 +112,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                 }
               : INITIAL_FORM_DATA
     );
+    console.log('🚀 ~ formData:', formData);
 
     const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

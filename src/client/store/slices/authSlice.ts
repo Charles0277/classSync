@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IUser } from '../../../common/types/IUser';
+import { updateUserSuccess } from './userSlice';
 
 interface AuthState {
     user?: IUser;
@@ -68,6 +69,15 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             localStorage.removeItem('token');
         }
+    },
+    extraReducers(builder) {
+        builder.addCase(updateUserSuccess, (state, action) => {
+            const updatedUser = action.payload;
+            console.log('🚀 ~ builder.addCase ~ updatedUser:', updatedUser);
+            if (state.user?._id === updatedUser._id) {
+                state.user = updatedUser;
+            }
+        });
     }
 });
 

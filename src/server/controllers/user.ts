@@ -73,7 +73,9 @@ export const updateUser = async (
             'role',
             'yearOfStudy',
             'course',
-            'courseUnits'
+            'courseUnits',
+            'password',
+            'confirmPassword'
         ];
 
         const invalidFields = Object.keys(req.body).filter(
