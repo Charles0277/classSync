@@ -48,7 +48,11 @@ function* handleFetchTeachers(action: any) {
 }
 
 function* handleUpdateUser(action: any) {
-    const { formData, token } = action.payload;
+    let { formData, token } = action.payload;
+    if (formData.password === '') {
+        delete formData.password;
+        delete formData.confirmPassword;
+    }
     try {
         const response: AxiosResponse<IUser> = yield call(
             updateUserApi,

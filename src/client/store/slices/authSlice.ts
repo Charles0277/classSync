@@ -73,7 +73,6 @@ const authSlice = createSlice({
     extraReducers(builder) {
         builder.addCase(updateUserSuccess, (state, action) => {
             const updatedUser = action.payload;
-            console.log('🚀 ~ builder.addCase ~ updatedUser:', updatedUser);
             if (state.user?._id === updatedUser._id) {
                 state.user = updatedUser;
             }

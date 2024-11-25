@@ -67,7 +67,6 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
 }) => {
     const dispatch = useDispatch();
     const { token } = useSelector((state: RootState) => state.auth);
-    console.log('🚀 ~ user:', user);
 
     const [formData, setFormData] = useState<SignUpFormData>(
         user && mode === 'edit'
@@ -112,7 +111,6 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                 }
               : INITIAL_FORM_DATA
     );
-    console.log('🚀 ~ formData:', formData);
 
     const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
