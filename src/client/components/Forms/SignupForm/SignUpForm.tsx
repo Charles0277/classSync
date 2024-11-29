@@ -1,11 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ICourseUnit } from '../../../../common/types/ICourseUnit';
 import { findFirstDigit } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
+import { AlertDialogDemo } from '../../AlertDialog/AlertDialog';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
-import { ICourseUnit } from '../../../../common/types/ICourseUnit';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from '../../ui/alert-dialog';
 
 interface FormData {
     firstName: string;
@@ -69,6 +80,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     handleBack
 }) => {
     const [step, setStep] = useState(1);
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
     const dispatch = useDispatch();
     const { courses } = useSelector((state: RootState) => state.course);
 
@@ -102,7 +115,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 (mode === 'signUp' || mode === 'edit') &&
                 formData.password !== formData.confirmPassword
             ) {
-                alert('Passwords do not match');
+                setDialogMessage('Passwords do not match');
+                setDialogVisible(true);
                 return;
             }
 
@@ -288,6 +302,32 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 <h2 className={styles.formTitle}>Sign Up</h2>
             )}
             <form className={styles.formGroup} onSubmit={handleSubmit}>
+                <AlertDialog
+                    open={dialogVisible}
+                    onOpenChange={setDialogVisible}
+                >
+                    <AlertDialogTrigger asChild>
+                        {/* Trigger is invisible but required */}
+                        <div style={{ display: 'none' }} />
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                Validation Error
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {dialogMessage}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogAction
+                                onClick={() => setDialogVisible(false)}
+                            >
+                                OK
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                 {step === 1 ? (
                     <>
                         {renderPersonalInfoFields()}
