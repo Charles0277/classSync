@@ -46,19 +46,25 @@ interface SignUpFormProps {
 
 const validateForm = (
     formData: FormData,
-    mode: 'signUp' | 'edit' | 'admin'
-): string | null => {
+    mode: 'signUp' | 'edit' | 'admin',
+    setDialogMessage: React.Dispatch<React.SetStateAction<string>>,
+    setDialogVisible: React.Dispatch<React.SetStateAction<boolean>>
+): boolean => {
     const { firstName, lastName, email, password, confirmPassword } = formData;
 
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-        return 'All fields are required';
+        setDialogMessage('All fields are required');
+        setDialogVisible(true);
+        return false;
     }
 
     if (mode === 'signUp' && (!password?.trim() || !confirmPassword?.trim())) {
-        return 'Password fields are required';
+        setDialogMessage('Password fields are required');
+        setDialogVisible(true);
+        return false;
     }
 
-    return null;
+    return true;
 };
 
 const FormField: React.FC<{ label: string; children: React.ReactNode }> = ({
@@ -105,11 +111,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     const handleNext = useCallback(
         (e: React.FormEvent) => {
             e.preventDefault();
-            const error = validateForm(formData, mode);
-            if (error) {
-                alert(error);
-                return;
-            }
+            const isValid = validateForm(
+                formData,
+                mode,
+                setDialogMessage,
+                setDialogVisible
+            );
+
+            if (!isValid) return;
 
             if (
                 (mode === 'signUp' || mode === 'edit') &&
@@ -307,7 +316,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     onOpenChange={setDialogVisible}
                 >
                     <AlertDialogTrigger asChild>
-                        {/* Trigger is invisible but required */}
                         <div style={{ display: 'none' }} />
                     </AlertDialogTrigger>
                     <AlertDialogContent>
