@@ -4,9 +4,7 @@ import { ICourseUnit } from '../../../../common/types/ICourseUnit';
 import { findFirstDigit } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
-import { AlertDialogDemo } from '../../AlertDialog/AlertDialog';
 import Input from '../../Input/Input';
-import styles from '../Forms.module.css';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,6 +15,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from '../../ui/alert-dialog';
+import styles from '../Forms.module.css';
 
 interface FormData {
     firstName: string;
