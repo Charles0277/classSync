@@ -17,10 +17,9 @@ export const getUserApi = (email: string) => {
     return axios.get<IUser>(`http://localhost:3000/user/${email}`);
 };
 
-export const updateUserApi = (formData: any, token: string) => {
-    const { email } = formData;
+export const updateUserApi = (id: string, formData: any, token: string) => {
     return axios.put<IUser>(
-        `http://localhost:3000/update-user/${email}`,
+        `http://localhost:3000/update-user/${id}`,
         formData,
         {
             headers: { Authorization: `Bearer ${token}` }

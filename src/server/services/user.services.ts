@@ -1,3 +1,4 @@
+import { run } from 'node:test';
 import { UserModel } from '../models/user.models.js';
 
 export const getUsers = () => UserModel.find();
@@ -16,7 +17,7 @@ export const createUser = (values: Record<string, any>) =>
 export const deleteUserById = (id: string) => UserModel.findByIdAndDelete(id);
 
 export const updateUserById = (id: string, values: Record<string, any>) =>
-    UserModel.findByIdAndUpdate(id, values, { new: true });
+    UserModel.findByIdAndUpdate(id, values, { new: true, runValidators: true });
 
 export const deleteUserByEmail = (email: string) =>
     UserModel.findOneAndDelete({ email });

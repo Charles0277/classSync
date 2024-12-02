@@ -4,7 +4,8 @@ import {
     getTeachers,
     getUserByEmail,
     getUsers,
-    updateUserByEmail
+    updateUserByEmail,
+    updateUserById
 } from '../services/user.services.js';
 
 export const getAllUsers = async (
@@ -64,7 +65,7 @@ export const updateUser = async (
     res: express.Response
 ) => {
     try {
-        const { email } = req.params;
+        const { id } = req.params;
 
         const allowedFields = [
             'firstName',
@@ -92,7 +93,7 @@ export const updateUser = async (
             Object.entries(req.body).filter(([_, value]) => value !== undefined)
         );
 
-        const updatedUser = await updateUserByEmail(email, updatedValues);
+        const updatedUser = await updateUserById(id, updatedValues);
 
         return res.status(201).send(updatedUser);
     } catch (error) {

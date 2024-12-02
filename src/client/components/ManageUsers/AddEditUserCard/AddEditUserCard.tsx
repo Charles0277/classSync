@@ -144,7 +144,11 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
             if (mode === 'signUp') {
                 dispatch(signUpRequest(formData));
             } else {
-                dispatch(updateUserRequest({ formData, token }));
+                if (user) {
+                    dispatch(
+                        updateUserRequest({ id: user._id, formData, token })
+                    );
+                }
             }
             onSave();
         },
