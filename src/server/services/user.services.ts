@@ -1,9 +1,10 @@
-import { run } from 'node:test';
 import { UserModel } from '../models/user.models.js';
 
 export const getUsers = () => UserModel.find();
 
 export const getTeachers = () => UserModel.find({ role: 'teacher' });
+
+export const getStudents = () => UserModel.find({ role: 'student' });
 
 export const getUserByEmail = (email: string) =>
     UserModel.findOne({ email })
