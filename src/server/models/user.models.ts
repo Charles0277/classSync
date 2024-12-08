@@ -1,7 +1,11 @@
 import bcrypt from 'bcrypt';
-import mongoose, { CallbackError, Model, Schema, model } from 'mongoose';
+import mongoose, { CallbackError, Model, Schema } from 'mongoose';
 import { IUser } from '../../common/types/IUser.js';
 import { CourseUnitModel } from './courseUnit.model.js';
+import {
+    MANCHESTER_EMAIL_ERROR,
+    MANCHESTER_EMAIL_REGEX
+} from '@/common/validation.js';
 
 const SALT_WORK_FACTOR = 10;
 
@@ -12,11 +16,11 @@ const UserSchema: Schema<IUser> = new Schema({
         type: String,
         required: true,
         unique: true,
+        set: (email: string) => email.toLowerCase(),
         validate: {
-            validator: (email: string) => {
-                return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
-            },
-            message: (props) => `${props.value} is not a valid email!`
+            validator: (email: string) => MANCHESTER_EMAIL_REGEX.test(email),
+            message: (props) =>
+                `${props.value} is not a valid University of Manchester email address. ${MANCHESTER_EMAIL_ERROR}`
         }
     },
     role: {
@@ -36,7 +40,7 @@ const UserSchema: Schema<IUser> = new Schema({
             message: (props) =>
                 `${props.value} is not a valid year of study! Valid years are 1, 2, 3, 4, 5, and 7.`
         },
-        set: (value: any) => parseInt(value, 10) // Convert to number during assignment
+        set: (value: any) => parseInt(value, 10)
     },
     course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
     courseUnits: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CourseUnit' }]
@@ -48,27 +52,23 @@ UserSchema.pre<IUser>('save', async function (next) {
     if (!user.isModified('password')) return next();
 
     try {
-        const incrementPromises = user.courseUnits.map((courseUnit) =>
-            model('CourseUnit').findByIdAndUpdate(
-                courseUnit._id,
-                [
-                    {
-                        $set: {
-                            size: { $ifNull: ['$size', 0] }
-                        }
-                    },
-                    {
-                        $inc: { size: 1 }
-                    }
-                ],
-                { new: true, useFindAndModify: false }
-            )
-        );
-
-        await Promise.all(incrementPromises);
-
+        // First, handle the password hashing
         const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
         user.password = await bcrypt.hash(user.password, salt);
+
+        // Then, increment the size of course units
+        if (user.isNew && user.courseUnits?.length > 0) {
+            const incrementPromises = user.courseUnits.map((courseUnit) =>
+                CourseUnitModel.findByIdAndUpdate(
+                    courseUnit._id,
+                    { $inc: { size: 1 } },
+                    { new: true, useFindAndModify: false }
+                )
+            );
+
+            await Promise.all(incrementPromises);
+        }
+
         next();
     } catch (error) {
         next(error as CallbackError);
@@ -78,6 +78,7 @@ UserSchema.pre<IUser>('save', async function (next) {
 UserSchema.pre('findOneAndUpdate', async function (next) {
     const update = this.getUpdate() as mongoose.UpdateQuery<IUser>;
     const userId = this.getQuery()['_id'];
+
     try {
         const existingUser = await UserModel.findById(userId).lean();
         if (!existingUser) {
@@ -98,7 +99,6 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
                 (courseUnit: string) => courseUnit
             );
 
-            // Determine added and removed courseUnits
             const addedCourseUnits = currentCourseUnitsIds.filter(
                 (id: string) => !previousCourseUnitsIds.includes(id)
             );
@@ -106,23 +106,20 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
                 (id) => !currentCourseUnitsIds.includes(id)
             );
 
-            // Increment size for added courseUnits
             const incrementPromises = addedCourseUnits.map(
                 (courseUnitId: string) =>
                     CourseUnitModel.findByIdAndUpdate(
                         courseUnitId,
                         { $inc: { size: 1 } },
-                        { new: true, useFindAndModify: false }
+                        { new: true }
                     )
             );
 
-            // Decrement size for removed courseUnits
-            // Example of conditional decrement to prevent negative sizes
             const decrementPromises = removedCourseUnits.map((courseUnitId) =>
                 CourseUnitModel.findOneAndUpdate(
-                    { _id: courseUnitId, size: { $gt: 0 } }, // Only decrement if size > 0
+                    { _id: courseUnitId, size: { $gt: 0 } },
                     { $inc: { size: -1 } },
-                    { new: true, useFindAndModify: false }
+                    { new: true }
                 )
             );
 

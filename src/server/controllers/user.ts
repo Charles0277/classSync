@@ -4,9 +4,12 @@ import {
     getTeachers,
     getUserByEmail,
     getUsers,
-    updateUserByEmail,
     updateUserById
 } from '../services/user.services.js';
+import {
+    MANCHESTER_EMAIL_ERROR,
+    MANCHESTER_EMAIL_REGEX
+} from '@/common/validation.js';
 
 export const getAllUsers = async (
     req: express.Request,
@@ -92,6 +95,13 @@ export const updateUser = async (
         const updatedValues = Object.fromEntries(
             Object.entries(req.body).filter(([_, value]) => value !== undefined)
         );
+
+        if (
+            updatedValues.email &&
+            !MANCHESTER_EMAIL_REGEX.test(updatedValues.email.toString())
+        ) {
+            return res.status(400).json({ error: MANCHESTER_EMAIL_ERROR });
+        }
 
         const updatedUser = await updateUserById(id, updatedValues);
 

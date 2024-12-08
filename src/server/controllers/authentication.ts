@@ -1,7 +1,11 @@
-import express from 'express';
 import bcrypt from 'bcrypt';
+import express from 'express';
 import jwt from 'jsonwebtoken';
 
+import {
+    MANCHESTER_EMAIL_ERROR,
+    MANCHESTER_EMAIL_REGEX
+} from '@/common/validation.js';
 import { createUser, getUserByEmail } from '../services/user.services.js';
 
 export const signUp = async (req: express.Request, res: express.Response) => {
@@ -29,17 +33,27 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             !course ||
             !courseUnits
         ) {
-            return res.status(400).send({
-                error: 'Please fill in all fields'
+            return res.status(400).json({
+                error: 'Please fill in all required fields'
             });
         }
 
-        const existingUser = await getUserByEmail(email);
-
-        if (existingUser) {
-            return res.status(400).send({ error: 'User already exists' });
+        // Validate Manchester email
+        if (!MANCHESTER_EMAIL_REGEX.test(email)) {
+            return res.status(400).json({
+                error: { MANCHESTER_EMAIL_ERROR }
+            });
         }
 
+        // Check if user already exists
+        const existingUser = await getUserByEmail(email);
+        if (existingUser) {
+            return res.status(409).json({
+                error: 'An account with this email already exists'
+            });
+        }
+
+        // Create new user
         const newUser = await createUser({
             firstName,
             lastName,
@@ -51,43 +65,57 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             courseUnits
         });
 
-        return res.status(201).send(newUser);
+        return res.status(201).json(newUser);
     } catch (error) {
-        return res.status(400).send(error);
+        console.error('Sign up error:', error);
+        return res.status(500).json({
+            error: 'Something went wrong during sign up. Please try again.'
+        });
     }
 };
 
 export const login = async (req: express.Request, res: express.Response) => {
     try {
-        const { email, password } = req.body as {
-            email: string;
-            password: string;
-        };
+        const { email, password } = req.body;
 
+        // Validate required fields
         if (!email || !password) {
-            return res.status(400).send({
-                error: 'Please provide an email and password'
+            return res.status(400).json({
+                error: 'Please provide both email and password'
             });
         }
 
-        const existingUser = await getUserByEmail(email.toLowerCase());
-
-        if (!existingUser) {
-            return res.status(400).send({ error: 'This user does not exist' });
+        // Get user and check existence
+        const user = await getUserByEmail(email.toLowerCase());
+        if (!user) {
+            return res.status(401).json({
+                error: 'Invalid email or password'
+            });
         }
 
-        if (bcrypt.compareSync(password, existingUser.password)) {
-        } else {
-            return res.status(401).send({ error: 'Incorrect password' });
+        // Verify password
+        const isPasswordValid = bcrypt.compareSync(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                error: 'Invalid email or password'
+            });
         }
 
-        const payload = { userEmail: existingUser.email };
-        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET! as string, {
-            expiresIn: '30d'
+        // Generate JWT token
+        const token = jwt.sign(
+            { userEmail: user.email },
+            process.env.JWT_SECRET!,
+            { expiresIn: '30d' }
+        );
+
+        return res.status(200).json({
+            user,
+            token
         });
-
-        return res.status(201).send({ existingUser, token: jwtToken });
     } catch (error) {
-        return res.status(400).send(error);
+        console.error('Login error:', error);
+        return res.status(500).json({
+            error: 'An error occurred during login. Please try again.'
+        });
     }
 };
