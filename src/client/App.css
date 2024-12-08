@@ -4,6 +4,8 @@
     width: 100vw;
     align-items: stretch;
     overflow: auto;
+
+    z-index: 0;
 }
 
 .layout {
