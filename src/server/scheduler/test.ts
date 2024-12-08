@@ -33,6 +33,10 @@ export async function generateSchedules() {
         });
 
         const schedules = await scheduler.generateSchedule();
+        schedules.forEach((schedule, user) => {
+            console.log('here');
+            console.log(user, schedule.entries);
+        });
         console.log('Generated Schedules:', schedules);
     } catch (error) {
         console.error('Failed to generate schedule:', error);
