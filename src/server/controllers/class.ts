@@ -58,6 +58,7 @@ export const updateClass = async (
             'name',
             'courseUnit',
             'instructor',
+            'classTypes',
             'students',
             'semester'
         ];
@@ -90,11 +91,19 @@ export const createNewClass = async (
     res: express.Response
 ) => {
     try {
-        const { name, courseUnit, instructor, students, semester } = req.body;
+        const { name, courseUnit, instructor, classTypes, students, semester } =
+            req.body;
 
-        if (!name || !courseUnit || !instructor || !students || !semester) {
+        if (
+            !name ||
+            !courseUnit ||
+            !instructor ||
+            !classTypes ||
+            !students ||
+            !semester
+        ) {
             return res.status(400).send({
-                error: 'Please provide a name, courseUnit, instructor, semester, and at least 1 student'
+                error: 'Please provide a name, courseUnit, instructor, class type, semester, and at least 1 student'
             });
         }
 
@@ -108,6 +117,7 @@ export const createNewClass = async (
             name,
             courseUnit,
             instructor,
+            classTypes,
             students,
             semester
         });

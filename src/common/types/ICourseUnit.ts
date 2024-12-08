@@ -5,4 +5,5 @@ export interface ICourseUnit extends Document {
     code: string;
     size: number;
     instructor: Types.ObjectId;
+    classTypes: string[];
 }

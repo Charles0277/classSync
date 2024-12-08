@@ -21,6 +21,7 @@ interface CourseUnitFormData {
     name: string;
     code: string;
     instructor: string;
+    classTypes: string[];
 }
 
 const validateForm = (formData: CourseUnitFormData): boolean => {
@@ -37,7 +38,8 @@ const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
     const [formData, setFormData] = useState<CourseUnitFormData>({
         name: courseUnit ? courseUnit.name : '',
         code: courseUnit ? courseUnit.code : '',
-        instructor: courseUnit ? courseUnit.instructor._id.toString() : ''
+        instructor: courseUnit ? courseUnit.instructor._id.toString() : '',
+        classTypes: courseUnit ? courseUnit.classTypes : []
     });
 
     const { token } = useSelector((state: RootState) => state.auth);
@@ -51,10 +53,17 @@ const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
                 | { name: string; value: any }
         ) => {
             const { name, value } = 'target' in e ? e.target : e;
+            console.log('🚀 ~ value:', value);
+            console.log('🚀 ~ name:', name);
 
             if (name === 'instructor') {
                 setFormData((prev) => ({ ...prev, [name]: value }));
-            } else {
+            }
+            // if (name === 'classTypes') {
+            //     const classTypes = value.map((unit) => unit.trim());
+            //     setFormData((prev) => ({ ...prev, classTypes }));
+            // }
+            else {
                 setFormData((prev) => ({ ...prev, [name]: value }));
             }
         },

@@ -6,11 +6,12 @@ import { RootState } from '../../../store/store';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
 
-interface CourseFormProps {
+interface CourseUnitFormProps {
     formData: {
         name: string;
         code: string;
         instructor: string;
+        classTypes: string[];
     };
     handleInputChange: (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | any
@@ -20,7 +21,7 @@ interface CourseFormProps {
     edit?: boolean;
 }
 
-const CourseUnitForm: React.FC<CourseFormProps> = ({
+const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
     formData,
     handleInputChange,
     handleSubmit,
@@ -30,6 +31,8 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
     const dispatch = useDispatch();
     const { teachers } = useSelector((state: RootState) => state.user);
     const { token } = useSelector((state: RootState) => state.auth);
+
+    const classTypes = ['lecture', 'lab', 'tutorial', 'seminar', 'workshop'];
 
     const [selectedTeacher, setSelectedTeacher] = useState<{
         value: string;
@@ -47,6 +50,42 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
               }
             : null
     );
+
+    const [selectedClassTypes, setSelectedClassTypes] = useState<
+        { value: string; label: string }[]
+    >(() =>
+        formData.classTypes
+            .map((formDataClassType) =>
+                classTypes.find((classType) => classType === formDataClassType)
+            )
+            .filter((classType): classType is string => Boolean(classType))
+            .map((classType) => ({
+                value: classType,
+                label: `${classType.charAt(0).toUpperCase()}${classType.slice(1)}`
+            }))
+    );
+    console.log('🚀 ~ selectedClassTypes:', selectedClassTypes);
+
+    useEffect(() => {
+        if (selectedClassTypes?.length === 0) {
+            const mappedUnits =
+                formData.classTypes
+                    .map((formDataClassType) =>
+                        classTypes.find(
+                            (classType) => classType === formDataClassType
+                        )
+                    )
+                    .filter((classType): classType is string =>
+                        Boolean(classType)
+                    )
+                    .map((classType) => ({
+                        value: classType,
+                        label: `${classType.charAt(0).toUpperCase()}${classType.slice(1)}`
+                    })) || [];
+            console.log('🚀 ~ useEffect ~ mappedUnits:', mappedUnits);
+            setSelectedClassTypes(mappedUnits);
+        }
+    }, [formData.classTypes]);
 
     useEffect(() => {
         if (!selectedTeacher && formData.instructor) {
@@ -68,7 +107,7 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
         }
     }, [dispatch, teachers, token]);
 
-    const handleSelectedChange = (selected: any) => {
+    const handleTeacherChange = (selected: any) => {
         setSelectedTeacher(selected);
         handleInputChange({
             name: 'instructor',
@@ -76,10 +115,24 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
         });
     };
 
+    const handleClassTypesChange = (selected: any) => {
+        const updatedClassTypes = selected
+            ? selected.map((option: any) => option.value)
+            : [];
+        setSelectedClassTypes(selected.value);
+        handleInputChange({ name: 'classTypes', value: updatedClassTypes });
+    };
+
     const teacherOptions =
         teachers?.map((teacher) => ({
             value: teacher._id as string,
             label: `${teacher.firstName} ${teacher.lastName}`
+        })) || [];
+
+    const classTypeOptions =
+        classTypes?.map((classType) => ({
+            value: classType,
+            label: `${classType.charAt(0).toUpperCase()}${classType.slice(1)}`
         })) || [];
 
     return (
@@ -110,7 +163,7 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
                     options={teacherOptions}
                     isClearable
                     value={selectedTeacher}
-                    onChange={handleSelectedChange}
+                    onChange={handleTeacherChange}
                     placeholder="Select an Instructor"
                     styles={{
                         container: (base) => ({
@@ -118,6 +171,23 @@ const CourseUnitForm: React.FC<CourseFormProps> = ({
                             width: '110%'
                         })
                     }}
+                    maxMenuHeight={200}
+                />
+
+                <label htmlFor="classType">Class Type:</label>
+                <Select
+                    options={classTypeOptions}
+                    isClearable
+                    value={selectedClassTypes}
+                    onChange={handleClassTypesChange}
+                    placeholder="Select at least one Class Type"
+                    styles={{
+                        container: (base) => ({
+                            ...base,
+                            width: '110%'
+                        })
+                    }}
+                    isMulti
                     maxMenuHeight={200}
                 />
 

@@ -38,6 +38,7 @@ export const splitCourseUnitIntoClasses = async (
                 name: className,
                 courseUnit: courseUnit._id,
                 instructor: courseUnit.instructor,
+                classTypes: courseUnit.classTypes,
                 students: classStudents,
                 semester
             });

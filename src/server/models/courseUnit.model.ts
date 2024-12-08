@@ -1,4 +1,4 @@
-import mongoose, { CallbackError, Model, Schema } from 'mongoose';
+import mongoose, { Model, Schema } from 'mongoose';
 import { ICourseUnit } from '../../common/types/ICourseUnit.js';
 
 const courseUnitSchema = new Schema<ICourseUnit>({
@@ -16,7 +16,8 @@ const courseUnitSchema = new Schema<ICourseUnit>({
         required: true,
         min: [0, 'Size cannot be negative']
     },
-    instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    classTypes: { type: [String], required: true, default: ['lecture'] }
 });
 
 export const CourseUnitModel: Model<ICourseUnit> = mongoose.model<ICourseUnit>(

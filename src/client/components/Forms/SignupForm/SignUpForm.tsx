@@ -133,6 +133,17 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         [formData, mode]
     );
 
+    const handleKeyDown = useCallback(
+        (e: React.KeyboardEvent<HTMLFormElement>) => {
+            if (e.key === 'Enter' && step === 1) {
+                console.log('here');
+                e.preventDefault();
+                handleNext(e as unknown as React.FormEvent);
+            }
+        },
+        [handleNext, step]
+    );
+
     const handlePrevious = useCallback(() => setStep(1), []);
     const handleBackClick = useCallback(() => {
         if (setMode) setMode(undefined);
@@ -309,7 +320,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             {mode === 'signUp' && setMode && (
                 <h2 className={styles.formTitle}>Sign Up</h2>
             )}
-            <form className={styles.formGroup} onSubmit={handleSubmit}>
+            <form
+                className={styles.formGroup}
+                onSubmit={handleSubmit}
+                onKeyDown={handleKeyDown}
+            >
                 <AlertDialog
                     open={dialogVisible}
                     onOpenChange={setDialogVisible}

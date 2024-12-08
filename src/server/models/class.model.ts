@@ -16,6 +16,10 @@ const classSchema = new Schema<IClass>({
         ref: 'User',
         required: true
     },
+    classTypes: {
+        type: [String],
+        required: true
+    },
     students: [
         {
             type: mongoose.Schema.Types.ObjectId,

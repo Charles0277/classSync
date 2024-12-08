@@ -57,7 +57,7 @@ export const updateCourseUnit = async (
     try {
         const { id } = req.params;
 
-        const allowedFields = ['name', 'code', 'instructor'];
+        const allowedFields = ['name', 'code', 'instructor', 'classTypes'];
 
         const invalidFields = Object.keys(req.body).filter(
             (key) => !allowedFields.includes(key)
@@ -87,11 +87,11 @@ export const createNewCourseUnit = async (
     res: express.Response
 ) => {
     try {
-        const { name, code, instructor } = req.body;
+        const { name, code, instructor, classTypes } = req.body;
 
-        if (!name || !code || !instructor) {
+        if (!name || !code || !instructor || !classTypes) {
             return res.status(400).send({
-                error: 'Please provide a name, code, and a instructor'
+                error: 'Please provide a name, code, class type, and a instructor'
             });
         }
 
@@ -106,7 +106,8 @@ export const createNewCourseUnit = async (
         const newCourseUnit = await createCourseUnit({
             name,
             code,
-            instructor
+            instructor,
+            classTypes
         });
 
         return res.status(201).send(newCourseUnit);
