@@ -5,7 +5,14 @@ const RoomSchema = new Schema<IRoom>({
     name: { type: String, required: true, unique: true },
     type: {
         type: String,
-        enum: ['Lecture Theatre', 'Laboratory', 'Office', 'Computer Cluster'],
+        enum: [
+            'all',
+            'lectureTheatre',
+            'laboratory',
+            'classroom',
+            'office',
+            'computerCluster'
+        ],
         required: true
     },
     capacity: { type: Number, required: true },

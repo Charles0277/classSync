@@ -32,7 +32,13 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
     const { teachers } = useSelector((state: RootState) => state.user);
     const { token } = useSelector((state: RootState) => state.auth);
 
-    const classTypes = ['lecture', 'lab', 'tutorial', 'seminar', 'workshop'];
+    const classTypes = [
+        'lectureTheatre',
+        'laboratory',
+        'classroom',
+        'office',
+        'computerCluster'
+    ];
 
     const [selectedTeacher, setSelectedTeacher] = useState<{
         value: string;

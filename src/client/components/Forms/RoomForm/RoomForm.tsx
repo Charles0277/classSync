@@ -48,10 +48,11 @@ const RoomForm: React.FC<RoomFormProps> = ({
                 <option value="" disabled>
                     Select a Room Type
                 </option>
-                <option value="Lecture Theatre">Lecture Theatre</option>
-                <option value="Laboratory">Laboratory</option>
-                <option value="Office">Office</option>
-                <option value="Computer Cluster">Computer Cluster</option>
+                <option value="lectureTheatre">Lecture Theatre</option>
+                <option value="laboratory">Laboratory</option>
+                <option value="classroom">Class Room</option>
+                <option value="office">Office</option>
+                <option value="computerCluster">Computer Cluster</option>
             </select>
             <div>
                 <label htmlFor="capacity">Capacity:</label>

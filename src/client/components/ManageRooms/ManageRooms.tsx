@@ -19,7 +19,12 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
     const { rooms } = useSelector((state: RootState) => state.room);
 
     const [filter, setFilter] = useState<
-        'all' | 'Lecture Theatre' | 'Laboratory' | 'Office' | 'Computer Cluster'
+        | 'all'
+        | 'lectureTheatre'
+        | 'laboratory'
+        | 'classroom'
+        | 'office'
+        | 'computerCluster'
     >('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [roomToDelete, setRoomToDelete] = useState<IRoom | null>(null);
@@ -34,10 +39,11 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
     const handleFilterChange = (
         newFilter:
             | 'all'
-            | 'Lecture Theatre'
-            | 'Laboratory'
-            | 'Office'
-            | 'Computer Cluster'
+            | 'lectureTheatre'
+            | 'laboratory'
+            | 'classroom'
+            | 'office'
+            | 'computerCluster'
     ) => {
         setFilter(newFilter);
     };
@@ -74,25 +80,31 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
                     </Button>
                     <Button
                         type="button"
-                        onClick={() => handleFilterChange('Lecture Theatre')}
+                        onClick={() => handleFilterChange('lectureTheatre')}
                     >
                         Lecture Theatre
                     </Button>
                     <Button
                         type="button"
-                        onClick={() => handleFilterChange('Laboratory')}
+                        onClick={() => handleFilterChange('classroom')}
+                    >
+                        Class Room
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={() => handleFilterChange('laboratory')}
                     >
                         Laboratory
                     </Button>
                     <Button
                         type="button"
-                        onClick={() => handleFilterChange('Office')}
+                        onClick={() => handleFilterChange('office')}
                     >
                         Office
                     </Button>
                     <Button
                         type="button"
-                        onClick={() => handleFilterChange('Computer Cluster')}
+                        onClick={() => handleFilterChange('computerCluster')}
                     >
                         Computer Cluster
                     </Button>
