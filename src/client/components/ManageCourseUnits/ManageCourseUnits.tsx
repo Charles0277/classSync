@@ -135,7 +135,7 @@ const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
                 {filteredCourseUnits && filteredCourseUnits.length > 0 ? (
                     filteredCourseUnits.map((courseUnit, index) => (
                         <div
-                            key={courseUnit.name}
+                            key={courseUnit.code}
                             className={`${styles.courseUnitContainer} ${
                                 index === filteredCourseUnits.length - 1
                                     ? styles.lastCourse

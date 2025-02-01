@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from '../Forms.module.css';
 import Input from '../../Input/Input';
+import styles from '../Forms.module.css';
 
 interface RoomFormProps {
     formData: {
@@ -49,8 +49,8 @@ const RoomForm: React.FC<RoomFormProps> = ({
                     Select a Room Type
                 </option>
                 <option value="lectureTheatre">Lecture Theatre</option>
-                <option value="laboratory">Laboratory</option>
-                <option value="classroom">Class Room</option>
+                {/* <option value="laboratory">Laboratory</option> */}
+                <option value="classroom">Classroom</option>
                 <option value="office">Office</option>
                 <option value="computerCluster">Computer Cluster</option>
             </select>

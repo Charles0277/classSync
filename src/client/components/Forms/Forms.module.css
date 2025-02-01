@@ -63,3 +63,13 @@
 .checkBox label {
     padding: 0 !important;
 }
+
+.checkBox {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.checkBoxItem {
+    display: flex;
+}

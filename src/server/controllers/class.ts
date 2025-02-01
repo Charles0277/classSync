@@ -100,7 +100,7 @@ export const createNewClass = async (
             !instructor ||
             !classTypes ||
             !students ||
-            !semester
+            !semester.toString()
         ) {
             return res.status(400).send({
                 error: 'Please provide a name, courseUnit, instructor, class type, semester, and at least 1 student'

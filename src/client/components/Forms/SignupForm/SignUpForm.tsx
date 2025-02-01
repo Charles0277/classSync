@@ -136,7 +136,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLFormElement>) => {
             if (e.key === 'Enter' && step === 1) {
-                console.log('here');
                 e.preventDefault();
                 handleNext(e as unknown as React.FormEvent);
             }
@@ -291,7 +290,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             <FormField label="Course Units">
                 <div className={styles.checkBox}>
                     {filteredCourseUnits.map((courseUnit) => (
-                        <div key={courseUnit._id as string}>
+                        <div
+                            key={courseUnit._id as string}
+                            className={styles.checkBoxItem}
+                        >
                             <input
                                 type="checkbox"
                                 id={courseUnit._id as string}

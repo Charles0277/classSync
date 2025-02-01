@@ -1,6 +1,7 @@
-import { Document, Schema, Types } from 'mongoose';
+import { Document, ObjectId, Types } from 'mongoose';
 
 export interface IUser extends Document {
+    _id: Types.ObjectId;
     firstName: string;
     lastName: string;
     email: string;
@@ -9,4 +10,5 @@ export interface IUser extends Document {
     yearOfStudy: number;
     course: Types.ObjectId;
     courseUnits: Types.ObjectId[];
+    schedule?: Types.ObjectId[];
 }

@@ -1,19 +1,20 @@
 import { IClass } from '@/common/types/IClass.js';
-import { IUser } from '@/common/types/IUser.js';
+import { getIdString } from '@/common/utils.js';
 import { Variable } from 'glpk-ts';
-import { Types } from 'mongoose';
 import { generateModel, SchedulingVariables } from './constraints.js';
 
-export interface ScheduleEntry {
+// ilpScheduler.types.ts (or at the top of ilpScheduler.ts)
+export interface GlobalScheduleEntry {
     classId: string;
     roomId: string;
     day: number;
     hour: number;
+    instructorId: string;
+    studentIds: string[];
 }
 
-export interface Schedule {
-    userId: string;
-    entries: ScheduleEntry[];
+export interface GlobalSchedule {
+    entries: GlobalScheduleEntry[];
 }
 
 export class ILPScheduler {
@@ -23,14 +24,15 @@ export class ILPScheduler {
         this.vars = vars;
     }
 
-    private getIdString(id: string | Types.ObjectId | undefined): string {
-        if (!id) return '';
-        return id instanceof Types.ObjectId ? id.toString() : id;
-    }
+    // private getIdString(id: string | Types.ObjectId | undefined): string {
+    //     if (!id) return '';
+    //     return id instanceof Types.ObjectId ? id.toString() : id;
+    // }
 
-    public async generateSchedule(): Promise<Map<string, Schedule>> {
+    // Return a GlobalSchedule containing all scheduled class entries
+    public async generateSchedule(): Promise<GlobalSchedule> {
         try {
-            // Generate the model
+            // Generate the model and variables
             const { model, variables } = await generateModel(this.vars);
 
             // First, solve the LP relaxation using simplex
@@ -60,7 +62,7 @@ export class ILPScheduler {
             console.log('MIP Status:', model.statusMIP);
             console.log('Solution Value:', model.valueMIP);
 
-            // Process solution into schedules
+            // Process the solution into a global schedule
             return this.processSchedule(variables);
         } catch (error) {
             console.error('Error generating schedule:', error);
@@ -68,126 +70,60 @@ export class ILPScheduler {
         }
     }
 
-    private processSchedule(
-        variables: Map<string, Variable>
-    ): Map<string, Schedule> {
-        const schedules = new Map<string, Schedule>();
-
-        // Initialize schedules for all users
-        [...this.vars.instructors, ...this.vars.students].forEach(
-            (user: IUser) => {
-                if (
-                    user._id &&
-                    (typeof user._id === 'string' ||
-                        user._id instanceof Types.ObjectId)
-                ) {
-                    const userId = this.getIdString(user._id);
-                    schedules.set(userId, {
-                        userId,
-                        entries: []
-                    });
-                    console.log(`Initialized schedule for user: ${userId}`);
-                }
-            }
-        );
+    private processSchedule(variables: Map<string, Variable>): GlobalSchedule {
+        const globalSchedule: GlobalSchedule = { entries: [] };
 
         console.log('Processing variables for scheduling...');
         console.log('Total variables:', variables.size);
 
-        // Process all assignments
+        // Process each variable assignment from the solution
         variables.forEach((variable, varName) => {
-            const value = variable.valueMIP;
-
-            if (value > 0) {
-                console.log(`Found assignment: ${varName} = ${value}`);
-            }
-
-            // Check if the variable represents an assignment (value close to 1)
-            if (Math.abs(value - 1) < 1e-5) {
-                const [_, classId, roomId, day, hour] = varName.split('_');
+            // Only consider variables that are set to 1 (or very close)
+            if (Math.abs(variable.valueMIP - 1) < 1e-5) {
+                // Variable naming convention: x_{classId}_{roomId}_{day}_{hour}
+                const parts = varName.split('_');
+                if (parts.length !== 5) {
+                    console.warn(`Unexpected variable name format: ${varName}`);
+                    return;
+                }
+                const [_, classId, roomId, day, hour] = parts;
                 console.log(`Processing assignment for class ${classId}`);
 
+                // Find the corresponding class object
                 const classObj = this.vars.classes.find(
-                    (c: IClass) =>
-                        this.getIdString(
-                            c._id as string | Types.ObjectId | undefined
-                        ) === classId
+                    (c: IClass) => getIdString(c._id as string) === classId
                 );
 
                 if (classObj) {
-                    const scheduleEntry: ScheduleEntry = {
+                    const instructorId = getIdString(classObj.instructor);
+                    const studentIds = classObj.students.map((studentId) =>
+                        getIdString(studentId)
+                    );
+
+                    const scheduleEntry: GlobalScheduleEntry = {
                         classId,
                         roomId,
-                        day: parseInt(day),
-                        hour: parseInt(hour)
+                        day: parseInt(day, 10),
+                        hour: parseInt(hour, 10),
+                        instructorId,
+                        studentIds
                     };
 
-                    console.log('Created schedule entry:', scheduleEntry);
-
-                    // Get instructor ID as string
-                    const instructorId = this.getIdString(classObj.instructor);
-                    console.log('Class instructor ID:', instructorId);
-
-                    // Add to instructor's schedule
-                    const instructorSchedule = schedules.get(instructorId);
-                    if (instructorSchedule) {
-                        instructorSchedule.entries.push(scheduleEntry);
-                        console.log(
-                            `Added entry to instructor ${instructorId} schedule`
-                        );
-                    } else {
-                        console.log(
-                            `Warning: Could not find schedule for instructor ${instructorId}`
-                        );
-                        console.log('Available schedule keys:', [
-                            ...schedules.keys()
-                        ]);
-                    }
-
-                    // Add to students' schedules
-                    classObj.students.forEach((studentId) => {
-                        const studentIdStr = this.getIdString(studentId);
-                        const studentSchedule = schedules.get(studentIdStr);
-                        if (studentSchedule) {
-                            studentSchedule.entries.push(scheduleEntry);
-                            console.log(
-                                `Added entry to student ${studentIdStr} schedule`
-                            );
-                        } else {
-                            console.log(
-                                `Warning: Could not find schedule for student ${studentIdStr}`
-                            );
-                            console.log('Available schedule keys:', [
-                                ...schedules.keys()
-                            ]);
-                        }
-                    });
-                } else {
-                    console.log(`Warning: Could not find class ${classId}`);
                     console.log(
-                        'Available classes:',
-                        this.vars.classes.map((c) =>
-                            this.getIdString(
-                                c._id as string | Types.ObjectId | undefined
-                            )
-                        )
+                        'Created global schedule entry:',
+                        scheduleEntry
                     );
+                    globalSchedule.entries.push(scheduleEntry);
+                } else {
+                    console.warn(`Warning: Could not find class ${classId}`);
                 }
             }
         });
 
-        // Debug logging for final schedules
-        console.log('\nFinal schedules:');
-        schedules.forEach((schedule, userId) => {
-            console.log(`User ${userId}: ${schedule.entries.length} entries`);
-            if (schedule.entries.length > 0) {
-                console.log(
-                    'Entries:',
-                    JSON.stringify(schedule.entries, null, 2)
-                );
-            }
-        });
-
-        return schedules;
+        console.log(
+            'Final Global Schedule:',
+            JSON.stringify(globalSchedule, null, 2)
+        );
+        return globalSchedule;
     }
 }

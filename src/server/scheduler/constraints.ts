@@ -1,6 +1,7 @@
 import { IClass } from '@/common/types/IClass.js';
 import { IRoom } from '@/common/types/IRoom.js';
 import { IUser } from '@/common/types/IUser.js';
+import { getIdString } from '@/common/utils.js';
 import { CoefficientList, Model, Variable, loadModule } from 'glpk-ts';
 
 export interface TimeSlot {
@@ -27,51 +28,63 @@ export const generateModel = async (
 ): Promise<{ model: Model; variables: Map<string, Variable> }> => {
     await loadModule();
 
-    // Initialize model
+    // Initialise the model with a minimisation objective.
     const model = new Model({
-        name: 'class_scheduling',
-        sense: 'min' // We want to minimize the objective (earlier times are better)
+        name: 'class_scheduling_optimised',
+        sense: 'min'
     });
 
-    // Create variables map to store Variable objects
+    // Create a map to store the decision variables.
     const variableMap = new Map<string, Variable>();
 
-    console.log('Generating model with:', {
+    console.log('Generating optimised model with:', {
         classes: vars.classes.length,
         rooms: vars.rooms.length,
         timeSlots: vars.timeSlots.length
     });
 
-    // Add binary variables
+    // Generate variables only for feasible (class, room, time slot) combinations.
     vars.classes.forEach((class_) => {
-        vars.rooms.forEach((room) => {
+        // Determine the number of students in this class.
+        const numStudents = class_.students.length;
+
+        // Pre-filter rooms that can actually accommodate this class.
+        // (Assumes each room object has a 'capacity' property.)
+        const feasibleRooms = vars.rooms.filter(
+            (room) => room.capacity >= numStudents
+        );
+
+        feasibleRooms.forEach((room) => {
             vars.timeSlots.forEach((timeSlot) => {
                 const varName = `x_${class_._id}_${room._id}_${timeSlot.day}_${timeSlot.hour}`;
 
-                // Calculate objective coefficient to prefer earlier times
-                // Higher values for later times/days make the solver try to minimize them
+                // Calculate objective coefficient to prefer earlier times.
+                // Later times/days incur a higher cost.
                 const timeWeight =
-                    timeSlot.hour - vars.weekConfig.startHour + 1; // 1-based weight for hours
-                const dayWeight = timeSlot.day * vars.weekConfig.hoursPerDay; // Additional weight for later days
+                    timeSlot.hour - vars.weekConfig.startHour + 1;
+                const dayWeight = timeSlot.day * vars.weekConfig.hoursPerDay;
                 const objCoeff = timeWeight + dayWeight;
 
-                // Create binary variable
+                // Add the binary variable.
                 const variable = model.addVar({
                     name: varName,
                     type: 'binary',
                     obj: objCoeff
                 });
-
                 variableMap.set(varName, variable);
             });
         });
     });
 
-    // Add each type of constraint...
-    // 1. Each class must be assigned exactly once
+    // Constraint 1: Ensure each class is assigned exactly one (room, time slot) combination.
     vars.classes.forEach((class_) => {
         const coeffs: CoefficientList = [];
-        vars.rooms.forEach((room) => {
+        const numStudents = class_.students.length;
+        const feasibleRooms = vars.rooms.filter(
+            (room) => room.capacity >= numStudents
+        );
+
+        feasibleRooms.forEach((room) => {
             vars.timeSlots.forEach((timeSlot) => {
                 const varName = `x_${class_._id}_${room._id}_${timeSlot.day}_${timeSlot.hour}`;
                 const variable = variableMap.get(varName);
@@ -80,30 +93,30 @@ export const generateModel = async (
                 }
             });
         });
-
         if (coeffs.length > 0) {
             model.addConstr({
                 name: `class_assigned_once_${class_._id}`,
                 coeffs: coeffs,
-                ub: 1,
-                lb: 1
+                lb: 1,
+                ub: 1
             });
         }
     });
 
-    // Rest of constraints remain the same...
-    // 2. Room capacity constraints (one class per room per time)
+    // Constraint 2: Room availability – no more than one class per room per time slot.
     vars.rooms.forEach((room) => {
         vars.timeSlots.forEach((timeSlot) => {
             const coeffs: CoefficientList = [];
             vars.classes.forEach((class_) => {
-                const varName = `x_${class_._id}_${room._id}_${timeSlot.day}_${timeSlot.hour}`;
-                const variable = variableMap.get(varName);
-                if (variable) {
-                    coeffs.push([variable, 1]);
+                // Only consider classes for which this room is feasible.
+                if (room.capacity >= class_.students.length) {
+                    const varName = `x_${class_._id}_${room._id}_${timeSlot.day}_${timeSlot.hour}`;
+                    const variable = variableMap.get(varName);
+                    if (variable) {
+                        coeffs.push([variable, 1]);
+                    }
                 }
             });
-
             if (coeffs.length > 0) {
                 model.addConstr({
                     name: `room_available_${room._id}_${timeSlot.day}_${timeSlot.hour}`,
@@ -114,13 +127,20 @@ export const generateModel = async (
         });
     });
 
-    // 3. Teacher availability (one class per teacher per time)
+    // Constraint 3: Teacher availability – a teacher cannot be in more than one class at the same time.
     vars.instructors.forEach((instructor) => {
         vars.timeSlots.forEach((timeSlot) => {
             const coeffs: CoefficientList = [];
             vars.classes.forEach((class_) => {
-                if (class_.instructor.toString() === instructor._id) {
-                    vars.rooms.forEach((room) => {
+                if (
+                    getIdString(class_.instructor) ===
+                    getIdString(instructor._id)
+                ) {
+                    const numStudents = class_.students.length;
+                    const feasibleRooms = vars.rooms.filter(
+                        (room) => room.capacity >= numStudents
+                    );
+                    feasibleRooms.forEach((room) => {
                         const varName = `x_${class_._id}_${room._id}_${timeSlot.day}_${timeSlot.hour}`;
                         const variable = variableMap.get(varName);
                         if (variable) {
@@ -129,7 +149,6 @@ export const generateModel = async (
                     });
                 }
             });
-
             if (coeffs.length > 0) {
                 model.addConstr({
                     name: `instructor_available_${instructor._id}_${timeSlot.day}_${timeSlot.hour}`,
@@ -140,15 +159,22 @@ export const generateModel = async (
         });
     });
 
-    // 4. Student conflicts (one class per student per time)
+    // Constraint 4: Student conflicts – a student cannot attend more than one class at the same time.
     vars.students.forEach((student) => {
         vars.timeSlots.forEach((timeSlot) => {
             const coeffs: CoefficientList = [];
             vars.classes.forEach((class_) => {
+                // Check if the student is enrolled in this class.
                 if (
-                    class_.students.some((id) => id.toString() === student._id)
+                    class_.students.some(
+                        (id) => getIdString(id) === getIdString(student._id)
+                    )
                 ) {
-                    vars.rooms.forEach((room) => {
+                    const numStudents = class_.students.length;
+                    const feasibleRooms = vars.rooms.filter(
+                        (room) => room.capacity >= numStudents
+                    );
+                    feasibleRooms.forEach((room) => {
                         const varName = `x_${class_._id}_${room._id}_${timeSlot.day}_${timeSlot.hour}`;
                         const variable = variableMap.get(varName);
                         if (variable) {
@@ -157,7 +183,6 @@ export const generateModel = async (
                     });
                 }
             });
-
             if (coeffs.length > 0) {
                 model.addConstr({
                     name: `student_available_${student._id}_${timeSlot.day}_${timeSlot.hour}`,
@@ -168,9 +193,9 @@ export const generateModel = async (
         });
     });
 
-    // Update model
+    // Update the model so that all variables and constraints are finalised.
     model.update();
-    console.log('Model generated successfully');
+    console.log('Optimised model generated successfully');
 
     return { model, variables: variableMap };
 };

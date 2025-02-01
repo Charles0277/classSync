@@ -1,10 +1,7 @@
 import { TimeSlot } from './constraints.js';
-
-// index.ts
-export { ILPScheduler } from './ilpScheduler.js';
-export type { Schedule, ScheduleEntry } from './ilpScheduler.js';
-export type { SchedulingVariables, TimeSlot } from './constraints.js';
 export { generateModel } from './constraints.js';
+export type { SchedulingVariables, TimeSlot } from './constraints.js';
+export { ILPScheduler } from './ilpScheduler.js';
 
 // Helper function to generate time slots
 export function generateTimeSlots(weekConfig: {
