@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { IClass } from './types/IClass.js';
 import { ICourseUnit } from './types/ICourseUnit.js';
 import { IUser } from './types/IUser.js';
+import { createClass } from '@/server/services/class.services.js';
 
 export const findFirstDigit = (input: string): string | null => {
     const match = input.match(/\d/);
@@ -13,6 +14,7 @@ export const findLastDigit = (input: string): string | null => {
     return match?.pop() || null;
 };
 
+// Optimized split function
 export const splitCourseUnitIntoClasses = async (
     courseUnit: ICourseUnit,
     students: IUser[],
@@ -21,63 +23,65 @@ export const splitCourseUnitIntoClasses = async (
 ): Promise<IClass[]> => {
     const numberOfClasses = Math.ceil(courseUnit.size / maxRoomSize);
     const studentsPerClass = Math.ceil(students.length / numberOfClasses);
-    const classes: IClass[] = [];
+    const semester = findLastDigit(courseUnit.code);
 
-    for (let i = 0; i < numberOfClasses; i++) {
-        const classStudents = students.slice(
-            i * studentsPerClass,
-            (i + 1) * studentsPerClass
+    const createPromises = Array.from({ length: numberOfClasses }, (_, i) => {
+        const start = i * studentsPerClass;
+        const end = start + studentsPerClass;
+        return createClass({
+            name: `${courseUnit.name} - ${i + 1}`,
+            courseUnit: courseUnit._id,
+            instructor: courseUnit.instructor,
+            classTypes: classType,
+            students: students.slice(start, end),
+            semester
+        });
+    });
+
+    try {
+        return await Promise.all(createPromises);
+    } catch (error) {
+        console.error(
+            `Failed to create classes for ${courseUnit.name}:`,
+            error
         );
+        throw error;
+    }
+};
 
-        const className = `${courseUnit.name} - ${i + 1}`;
-        const semester = findLastDigit(courseUnit.code);
+// utils.js - Add memoization for expensive functions
+const memoize = (fn: (...args: any[]) => any) => {
+    const cache = new Map();
+    return (...args: any[]) => {
+        const key = JSON.stringify(args);
+        return cache.has(key)
+            ? cache.get(key)
+            : (cache.set(key, fn(...args)), cache.get(key));
+    };
+};
 
-        try {
-            // const newClass = await createClass({
-            //     name: className,
-            //     courseUnit: courseUnit._id,
-            //     instructor: courseUnit.instructor,
-            //     classTypes: classType,
-            //     students: classStudents,
-            //     semester
-            // });
-            // classes.push(newClass);
-        } catch (error) {
-            console.error(`Failed to create class ${className}:`, error);
-            throw error;
+export const convertClassTypeToRoomType = memoize(
+    (classType: string): string => {
+        switch (classType) {
+            case 'workshop':
+            case 'seminar':
+                return 'classroom';
+            default:
+                return classType;
         }
     }
+);
 
-    return classes;
-};
-
-export const convertClassTypeToRoomType = (classType: string): string => {
-    switch (classType) {
-        case 'workshop':
-            return 'classroom';
-        case 'seminar':
-            return 'classroom';
-        default:
-            return classType;
-    }
-};
-
-export const maxRoomSizeForRoomType = (classType: string): number => {
-    switch (classType) {
-        case 'lectureTheatre':
-            return 282;
-        case 'computerCluster':
-            return 70;
-        case 'laboratory':
-            return 60;
-        case 'classroom':
-            return 40;
-        case 'office':
-            return 10;
-        default:
-            return 0;
-    }
-};
+export const maxRoomSizeForRoomType = memoize((classType: string): number => {
+    const sizes = {
+        lectureTheatre: 282,
+        computerCluster: 70,
+        laboratory: 60,
+        classroom: 40,
+        office: 10
+    };
+    return sizes[classType as keyof typeof sizes] || 0;
+});
 
 export const getIdString = (
     id: string | Types.ObjectId | undefined

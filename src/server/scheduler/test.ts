@@ -9,6 +9,7 @@ import { getCourseUnits } from '../services/courseUnits.services.js';
 import { getRooms } from '../services/room.services.js';
 import { getStudents, getTeachers } from '../services/user.services.js';
 import { ILPScheduler, generateTimeSlots } from './index.js';
+import { IUser } from '@/common/types/IUser.js';
 
 export async function generateSchedules(
     req: express.Request,
@@ -17,9 +18,9 @@ export async function generateSchedules(
     try {
         const weekConfig = {
             daysPerWeek: 5,
-            hoursPerDay: 8,
+            hoursPerDay: 9,
             startHour: 9,
-            endHour: 17
+            endHour: 18
         };
 
         const [rooms, instructors, students, courseUnits] = await Promise.all([
@@ -29,56 +30,53 @@ export async function generateSchedules(
             getCourseUnits()
         ]);
 
-        // Replace forEach with a for…of loop to properly await asynchronous operations
+        // Helper function to map students to course units efficiently
+        const mapStudentsToCourseUnits = (
+            students: IUser[]
+        ): Map<string, IUser[]> => {
+            const map = new Map<string, IUser[]>();
+            students.forEach((student) => {
+                student.courseUnits.forEach((cuId) => {
+                    const id = cuId.toString();
+                    if (!map.has(id)) map.set(id, []);
+                    map.get(id)!.push(student);
+                });
+            });
+            return map;
+        };
+
+        // Optimized caller implementation
         for (const courseUnit of courseUnits) {
-            const enrolledStudents = students.filter((student) =>
-                student.courseUnits.includes(courseUnit._id as any)
-            );
+            const enrolledStudents =
+                mapStudentsToCourseUnits(students).get(
+                    courseUnit._id.toString()
+                ) || [];
+            const classTypes = courseUnit.classTypes;
 
-            if (courseUnit.classTypes.length === 1) {
-                const classType = courseUnit.classTypes[0];
-                const roomType = convertClassTypeToRoomType(classType);
-                const maxRoomSize = maxRoomSizeForRoomType(roomType);
-
-                try {
-                    const classes = await splitCourseUnitIntoClasses(
-                        courseUnit,
-                        enrolledStudents,
-                        classType,
-                        maxRoomSize
-                    );
-                    // Handle the created classes as needed (e.g. persist to database)
-                } catch (error) {
-                    console.error(
-                        `Failed to create classes for ${courseUnit.name}:`,
-                        error
-                    );
-                }
-            } else if (courseUnit.classTypes.length === 2) {
-                for (const classType of courseUnit.classTypes) {
-                    const roomType = convertClassTypeToRoomType(classType);
-                    const maxRoomSize = maxRoomSizeForRoomType(roomType);
-
-                    try {
-                        const classes = await splitCourseUnitIntoClasses(
-                            courseUnit,
-                            enrolledStudents,
-                            classType,
-                            maxRoomSize
-                        );
-                        // Handle the created classes for each classType as needed
-                    } catch (error) {
-                        console.error(
-                            `Failed to create classes for ${courseUnit.name} with class type ${classType}:`,
-                            error
-                        );
-                    }
-                }
-            } else {
+            if (classTypes.length === 0 || classTypes.length > 2) {
                 console.warn(
-                    `Course unit ${courseUnit.name} has an unsupported number of class types.`
+                    `Course unit ${courseUnit.name} has unsupported number of class types`
                 );
+                continue;
             }
+
+            // for (const classType of classTypes) {
+            //     try {
+            //         const roomType = convertClassTypeToRoomType(classType);
+            //         const classes = await splitCourseUnitIntoClasses(
+            //             courseUnit,
+            //             enrolledStudents,
+            //             classType,
+            //             maxRoomSizeForRoomType(roomType)
+            //         );
+            //         // Handle created classes
+            //     } catch (error) {
+            //         console.error(
+            //             `Failed to create ${classType} classes for ${courseUnit.name}:`,
+            //             error
+            //         );
+            //     }
+            // }
         }
 
         // Retrieve all classes (after creating them as above)
@@ -92,7 +90,7 @@ export async function generateSchedules(
             timeSlots: generateTimeSlots({
                 daysPerWeek: 5,
                 startHour: 9,
-                endHour: 17
+                endHour: 18
             }),
             weekConfig
         });

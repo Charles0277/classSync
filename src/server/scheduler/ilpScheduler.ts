@@ -24,11 +24,6 @@ export class ILPScheduler {
         this.vars = vars;
     }
 
-    // private getIdString(id: string | Types.ObjectId | undefined): string {
-    //     if (!id) return '';
-    //     return id instanceof Types.ObjectId ? id.toString() : id;
-    // }
-
     // Return a GlobalSchedule containing all scheduled class entries
     public async generateSchedule(): Promise<GlobalSchedule> {
         try {
@@ -91,7 +86,7 @@ export class ILPScheduler {
 
                 // Find the corresponding class object
                 const classObj = this.vars.classes.find(
-                    (c: IClass) => getIdString(c._id as string) === classId
+                    (c: IClass) => getIdString(c._id) === classId
                 );
 
                 if (classObj) {
