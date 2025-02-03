@@ -136,10 +136,6 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
         const updatedClassTypes = selected
             ? selected.map((option: any) => option.value)
             : [];
-        console.log(
-            '🚀 ~ handleClassTypesChange ~ updatedClassTypes:',
-            updatedClassTypes
-        );
         setSelectedClassTypes(selected.value);
         handleInputChange({ name: 'classTypes', value: updatedClassTypes });
     };
