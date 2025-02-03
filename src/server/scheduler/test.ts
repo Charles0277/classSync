@@ -18,9 +18,9 @@ export async function generateSchedules(
     try {
         const weekConfig = {
             daysPerWeek: 5,
-            hoursPerDay: 9,
+            hoursPerDay: 10,
             startHour: 9,
-            endHour: 18
+            endHour: 19
         };
 
         const [rooms, instructors, students, courseUnits] = await Promise.all([
@@ -90,17 +90,13 @@ export async function generateSchedules(
             timeSlots: generateTimeSlots({
                 daysPerWeek: 5,
                 startHour: 9,
-                endHour: 18
+                endHour: 19
             }),
             weekConfig
         });
 
         // Generate the overarching (global) schedule
         const globalSchedule = await scheduler.generateSchedule();
-        console.log(
-            'Global Schedule:',
-            JSON.stringify(globalSchedule, null, 2)
-        );
 
         return res.status(201).send(globalSchedule);
     } catch (error) {

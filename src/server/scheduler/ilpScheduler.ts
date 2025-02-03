@@ -3,7 +3,6 @@ import { getIdString } from '@/common/utils.js';
 import { Variable } from 'glpk-ts';
 import { generateModel, SchedulingVariables } from './constraints.js';
 
-// ilpScheduler.types.ts (or at the top of ilpScheduler.ts)
 export interface GlobalScheduleEntry {
     classId: string;
     roomId: string;
@@ -44,8 +43,16 @@ export class ILPScheduler {
 
             // Now solve the integer program
             const mipResult = model.intopt({
+                msgLevel: 'all',
+                gapMIP: 0.9, // Slightly relax optimality gap
                 presolve: true,
-                msgLevel: 'all'
+                cutsCover: false, // Disable less effective cuts
+                cutsClique: false,
+                cutsMIR: true,
+                cutsGomory: false,
+                branching: 'most_fractional', // Focus on fractional variables
+                backtracking: 'best_bound', // Best-bound search
+                heuristicFP: true // Prioritize feasibility heuristics
             });
 
             if (mipResult !== 'ok') {
@@ -82,7 +89,6 @@ export class ILPScheduler {
                     return;
                 }
                 const [_, classId, roomId, day, hour] = parts;
-                console.log(`Processing assignment for class ${classId}`);
 
                 // Find the corresponding class object
                 const classObj = this.vars.classes.find(
@@ -104,10 +110,6 @@ export class ILPScheduler {
                         studentIds
                     };
 
-                    console.log(
-                        'Created global schedule entry:',
-                        scheduleEntry
-                    );
                     globalSchedule.entries.push(scheduleEntry);
                 } else {
                     console.warn(`Warning: Could not find class ${classId}`);
@@ -115,10 +117,6 @@ export class ILPScheduler {
             }
         });
 
-        console.log(
-            'Final Global Schedule:',
-            JSON.stringify(globalSchedule, null, 2)
-        );
         return globalSchedule;
     }
 }

@@ -74,15 +74,12 @@ export const generateModel = async (vars: SchedulingVariables) => {
         feasibleRooms.forEach((room) => {
             vars.timeSlots.forEach((ts) => {
                 const varName = `x_${classId}_${getIdString(room._id)}_${ts.day}_${ts.hour}`;
-                const timeWeight = ts.hour - vars.weekConfig.startHour + 1;
-                const dayWeight = ts.day * vars.weekConfig.hoursPerDay;
-
                 variableMap.set(
                     varName,
                     model.addVar({
                         name: varName,
                         type: 'binary',
-                        obj: timeWeight + dayWeight
+                        obj: 0
                     })
                 );
             });
@@ -164,29 +161,58 @@ export const generateModel = async (vars: SchedulingVariables) => {
         });
     });
 
-    // Constraint 4: Student conflicts using precomputed map
-    // studentClasses.forEach((classes, studentId) => {
-    //     vars.timeSlots.forEach((ts) => {
-    //         const coeffs: CoefficientList = [];
+    // Precompute student groups based on identical class sets
+    const studentGroups = new Map<
+        string,
+        { students: string[]; classes: IClass[] }
+    >();
+    const groupIdMap = new Map<string, string>(); // Maps long keys to short IDs
+    let groupCounter = 1;
 
-    //         classes.forEach((c) => {
-    //             const classId = getIdString(c._id);
-    //             classFeasibleRooms.get(classId)?.forEach((room) => {
-    //                 const varName = `x_${classId}_${getIdString(room._id)}_${ts.day}_${ts.hour}`;
-    //                 const variable = variableMap.get(varName);
-    //                 if (variable) coeffs.push([variable, 1]);
-    //             });
-    //         });
+    studentClasses.forEach((classes, studentId) => {
+        const classIds = classes.map((c) => getIdString(c._id)).sort();
+        const groupKey = classIds.join(',');
 
-    //         if (coeffs.length) {
-    //             model.addConstr({
-    //                 name: `student_${studentId}_${ts.day}_${ts.hour}`,
-    //                 coeffs,
-    //                 ub: 1
-    //             });
-    //         }
-    //     });
-    // });
+        if (!groupIdMap.has(groupKey)) {
+            groupIdMap.set(groupKey, `GRP${groupCounter++}`);
+        }
+        const shortId = groupIdMap.get(groupKey)!;
+
+        if (!studentGroups.has(shortId)) {
+            studentGroups.set(shortId, { students: [], classes });
+        }
+        studentGroups.get(shortId)!.students.push(studentId);
+    });
+
+    console.log(
+        `Reduced student constraints from ${studentClasses.size} to ${studentGroups.size} groups`
+    );
+
+    // Constraint 4: Student conflicts using grouped classes
+    studentGroups.forEach((group, shortId) => {
+        const { classes } = group;
+
+        vars.timeSlots.forEach((ts) => {
+            const coeffs: CoefficientList = [];
+
+            classes.forEach((c) => {
+                const classId = getIdString(c._id);
+                classFeasibleRooms.get(classId)?.forEach((room) => {
+                    const varName = `x_${classId}_${getIdString(room._id)}_${ts.day}_${ts.hour}`;
+                    const variable = variableMap.get(varName);
+                    if (variable) coeffs.push([variable, 1]);
+                });
+            });
+
+            if (coeffs.length > 0) {
+                model.addConstr({
+                    name: `sgrp_${shortId}_${ts.day}_${ts.hour}`, // Shortened name
+                    coeffs,
+                    ub: 1
+                });
+            }
+        });
+    });
 
     model.update();
     console.log('Optimised model generated successfully');
