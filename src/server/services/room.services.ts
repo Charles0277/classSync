@@ -11,4 +11,7 @@ export const deleteRoomById = (id: string) =>
     RoomModel.findByIdAndDelete({ _id: id });
 
 export const updateRoomById = (id: string, values: Record<string, any>) =>
-    RoomModel.findByIdAndUpdate({ _id: id }, values, { new: true });
+    RoomModel.findByIdAndUpdate({ _id: id }, values, {
+        new: true,
+        runValidators: true
+    });

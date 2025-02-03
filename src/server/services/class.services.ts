@@ -11,7 +11,10 @@ export const createClass = (values: Record<string, any>) =>
     new ClassModel(values).save().then((savedClass) => savedClass.toObject());
 
 export const updateClassById = (id: string, values: Record<string, any>) =>
-    ClassModel.findByIdAndUpdate({ _id: id }, values, { new: true });
+    ClassModel.findByIdAndUpdate({ _id: id }, values, {
+        new: true,
+        runValidators: true
+    });
 
 export const deleteClassById = (id: string) =>
     ClassModel.findByIdAndDelete({ _id: id });

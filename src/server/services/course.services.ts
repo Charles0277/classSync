@@ -16,9 +16,10 @@ export const createCourse = (values: Record<string, any>) =>
         );
 
 export const updateCourseById = (id: string, values: Record<string, any>) =>
-    CourseModel.findByIdAndUpdate({ _id: id }, values, { new: true }).populate(
-        'courseUnits'
-    );
+    CourseModel.findByIdAndUpdate({ _id: id }, values, {
+        new: true,
+        runValidators: true
+    }).populate('courseUnits');
 
 export const deleteCourseByCode = (code: string) =>
     CourseModel.findOneAndDelete({ code });

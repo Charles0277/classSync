@@ -23,5 +23,6 @@ export const deleteCourseUnitById = (id: string) =>
 
 export const updateCourseUnitById = (id: string, values: Record<string, any>) =>
     CourseUnitModel.findByIdAndUpdate({ _id: id }, values, {
-        new: true
+        new: true,
+        runValidators: true
     }).populate('instructor');
