@@ -5,6 +5,7 @@ import { fetchTeachersRequest } from '../../../store/slices/userSlice';
 import { RootState } from '../../../store/store';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
+import { getIdString } from '@/common/utils';
 
 interface CourseUnitFormProps {
     formData: {
@@ -40,15 +41,25 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
         'computerCluster'
     ];
 
+    const classTypesMap = {
+        lectureTheatre: 'Lecture Theatre',
+        laboratory: 'Laboratory',
+        classroom: 'Classroom',
+        office: 'Office',
+        computerCluster: 'Computer Cluster'
+    };
+
     const [selectedTeacher, setSelectedTeacher] = useState<{
         value: string;
         label: string;
     } | null>(() =>
-        teachers?.find(({ _id }) => _id === formData.instructor)
+        teachers?.find(({ _id }) => getIdString(_id) === formData.instructor)
             ? {
                   value: formData.instructor,
                   label: teachers
-                      .filter(({ _id }) => _id === formData.instructor)
+                      .filter(
+                          ({ _id }) => getIdString(_id) === formData.instructor
+                      )
                       .map(
                           ({ firstName, lastName }) =>
                               `${firstName} ${lastName}`
@@ -67,10 +78,9 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
             .filter((classType): classType is string => Boolean(classType))
             .map((classType) => ({
                 value: classType,
-                label: `${classType.charAt(0).toUpperCase()}${classType.slice(1)}`
+                label: classTypesMap[classType as keyof typeof classTypesMap]
             }))
     );
-    console.log('🚀 ~ selectedClassTypes:', selectedClassTypes);
 
     useEffect(() => {
         if (selectedClassTypes?.length === 0) {
@@ -86,9 +96,10 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                     )
                     .map((classType) => ({
                         value: classType,
-                        label: `${classType.charAt(0).toUpperCase()}${classType.slice(1)}`
+                        label: classTypesMap[
+                            classType as keyof typeof classTypesMap
+                        ]
                     })) || [];
-            console.log('🚀 ~ useEffect ~ mappedUnits:', mappedUnits);
             setSelectedClassTypes(mappedUnits);
         }
     }, [formData.classTypes]);
@@ -96,11 +107,11 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
     useEffect(() => {
         if (!selectedTeacher && formData.instructor) {
             const teacher = teachers?.find(
-                ({ _id }) => _id === formData.instructor
+                ({ _id }) => getIdString(_id) === formData.instructor
             );
             if (teacher) {
                 setSelectedTeacher({
-                    value: teacher._id as string,
+                    value: getIdString(teacher._id),
                     label: `${teacher.firstName} ${teacher.lastName}`
                 });
             }
@@ -125,20 +136,24 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
         const updatedClassTypes = selected
             ? selected.map((option: any) => option.value)
             : [];
+        console.log(
+            '🚀 ~ handleClassTypesChange ~ updatedClassTypes:',
+            updatedClassTypes
+        );
         setSelectedClassTypes(selected.value);
         handleInputChange({ name: 'classTypes', value: updatedClassTypes });
     };
 
     const teacherOptions =
         teachers?.map((teacher) => ({
-            value: teacher._id as string,
+            value: getIdString(teacher._id),
             label: `${teacher.firstName} ${teacher.lastName}`
         })) || [];
 
     const classTypeOptions =
         classTypes?.map((classType) => ({
             value: classType,
-            label: `${classType.charAt(0).toUpperCase()}${classType.slice(1)}`
+            label: classTypesMap[classType as keyof typeof classTypesMap]
         })) || [];
 
     return (

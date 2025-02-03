@@ -53,17 +53,10 @@ const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
                 | { name: string; value: any }
         ) => {
             const { name, value } = 'target' in e ? e.target : e;
-            console.log('🚀 ~ value:', value);
-            console.log('🚀 ~ name:', name);
 
             if (name === 'instructor') {
                 setFormData((prev) => ({ ...prev, [name]: value }));
-            }
-            // if (name === 'classTypes') {
-            //     const classTypes = value.map((unit) => unit.trim());
-            //     setFormData((prev) => ({ ...prev, classTypes }));
-            // }
-            else {
+            } else {
                 setFormData((prev) => ({ ...prev, [name]: value }));
             }
         },
