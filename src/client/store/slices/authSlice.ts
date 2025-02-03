@@ -28,11 +28,11 @@ const authSlice = createSlice({
             state.error = null;
         },
         logInSuccess: (state, action) => {
-            const { existingUser, token } = action.payload;
+            const { user, token } = action.payload;
             state.isLoading = false;
-            state.user = existingUser;
+            state.user = user;
             state.token = token;
-            state.isAuthenticated = true;
+            state.isAuthenticated = user;
             localStorage.setItem('token', token);
         },
         logInFailure: (state, action) => {
