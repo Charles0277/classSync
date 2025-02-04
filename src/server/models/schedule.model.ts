@@ -1,8 +1,8 @@
-import mongoose, { Model, Schema } from 'mongoose';
 import {
     IGlobalSchedule,
     IGlobalScheduleEntry
 } from '@/common/types/ISchedule.js';
+import mongoose, { Model, Schema } from 'mongoose';
 
 const globalScheduleEntrySchema = new Schema<IGlobalScheduleEntry>({
     classId: { type: Schema.Types.ObjectId, required: true, ref: 'Class' },
@@ -15,10 +15,18 @@ const globalScheduleEntrySchema = new Schema<IGlobalScheduleEntry>({
 
 const globalScheduleSchema = new Schema<IGlobalSchedule>(
     {
-        entries: { type: [globalScheduleEntrySchema], required: true }
+        entries: {
+            type: Map,
+            of: globalScheduleEntrySchema,
+            required: true
+        }
     },
     { timestamps: true }
 );
 
 export const GlobalScheduleModel: Model<IGlobalSchedule> =
-    mongoose.model<IGlobalSchedule>('GlobalSchedule', globalScheduleSchema);
+    mongoose.model<IGlobalSchedule>(
+        'GlobalSchedule',
+        globalScheduleSchema,
+        'global_schedule'
+    );

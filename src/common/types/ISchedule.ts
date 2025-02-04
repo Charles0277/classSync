@@ -1,16 +1,19 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface IGlobalScheduleEntry {
+    _id: Types.ObjectId;
     classId: String;
     roomId: String;
     day: number;
     hour: number;
     instructorId: String;
-    studentIds: String[];
+    studentIds: string[];
 }
 
-export interface IGlobalSchedule extends Document {
-    entries: IGlobalScheduleEntry[];
+export interface GlobalSchedule {
+    entries: {
+        [classId: string]: IGlobalScheduleEntry;
+    };
 }
 
 export interface IIndividualScheduleEntry {
@@ -23,5 +26,9 @@ export interface IIndividualScheduleEntry {
 }
 
 export interface IIndividualSchedule extends Document {
-    entries: IIndividualScheduleEntry[];
+    entries: {
+        [classId: string]: IIndividualScheduleEntry;
+    };
 }
+
+export interface IGlobalSchedule extends GlobalSchedule, Document {}

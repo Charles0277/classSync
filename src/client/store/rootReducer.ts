@@ -1,10 +1,11 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import userReducer from './slices/userSlice';
 import authReducer from './slices/authSlice';
-import schoolWeekConfigReducer from './slices/schoolWeekConfigSlice';
-import roomReducer from './slices/roomSlice';
 import courseReducer from './slices/courseSlice';
 import courseUnitReducer from './slices/courseUnitSlice';
+import roomReducer from './slices/roomSlice';
+import scheduleReducer from './slices/scheduleSlice';
+import schoolWeekConfigReducer from './slices/schoolWeekConfigSlice';
+import userReducer from './slices/userSlice';
 
 const rootReducer = combineReducers({
     user: userReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     schoolWeekConfig: schoolWeekConfigReducer,
     room: roomReducer,
     course: courseReducer,
-    courseUnit: courseUnitReducer
+    courseUnit: courseUnitReducer,
+    schedule: scheduleReducer
 });
 
 export default rootReducer;

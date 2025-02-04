@@ -1,20 +1,11 @@
 import { IClass } from '@/common/types/IClass.js';
+import {
+    GlobalSchedule,
+    IGlobalScheduleEntry
+} from '@/common/types/ISchedule.js';
 import { getIdString } from '@/common/utils.js';
 import { Variable } from 'glpk-ts';
 import { generateModel, SchedulingVariables } from './constraints.js';
-
-export interface GlobalScheduleEntry {
-    classId: string;
-    roomId: string;
-    day: number;
-    hour: number;
-    instructorId: string;
-    studentIds: string[];
-}
-
-export interface GlobalSchedule {
-    entries: GlobalScheduleEntry[];
-}
 
 export class ILPScheduler {
     private vars: SchedulingVariables;
@@ -46,10 +37,7 @@ export class ILPScheduler {
                 msgLevel: 'all',
                 gapMIP: 0.9, // Slightly relax optimality gap
                 presolve: true,
-                cutsCover: false, // Disable less effective cuts
-                cutsClique: false,
                 cutsMIR: true,
-                cutsGomory: false,
                 branching: 'most_fractional', // Focus on fractional variables
                 backtracking: 'best_bound', // Best-bound search
                 heuristicFP: true // Prioritize feasibility heuristics
@@ -73,7 +61,7 @@ export class ILPScheduler {
     }
 
     private processSchedule(variables: Map<string, Variable>): GlobalSchedule {
-        const globalSchedule: GlobalSchedule = { entries: [] };
+        const globalSchedule: GlobalSchedule = { entries: {} };
 
         console.log('Processing variables for scheduling...');
         console.log('Total variables:', variables.size);
@@ -101,7 +89,7 @@ export class ILPScheduler {
                         getIdString(studentId)
                     );
 
-                    const scheduleEntry: GlobalScheduleEntry = {
+                    const scheduleEntry: IGlobalScheduleEntry = {
                         classId,
                         roomId,
                         day: parseInt(day, 10),
@@ -110,7 +98,11 @@ export class ILPScheduler {
                         studentIds
                     };
 
-                    globalSchedule.entries.push(scheduleEntry);
+                    if (globalSchedule.entries[classId]) {
+                        console.warn(`Duplicate classId detected: ${classId}`);
+                    } else {
+                        globalSchedule.entries[classId] = scheduleEntry;
+                    }
                 } else {
                     console.warn(`Warning: Could not find class ${classId}`);
                 }

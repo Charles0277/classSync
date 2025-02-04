@@ -4,9 +4,9 @@ import classEntity from './class.js';
 import course from './course.js';
 import courseUnit from './courseUnit.js';
 import room from './room.js';
+import schedule from './schedule.js';
 import schoolWeekConfig from './schoolWeekConfig.js';
 import user from './user.js';
-import schedulerTest from './schedulerTest.js';
 
 const router = express.Router();
 
@@ -18,6 +18,6 @@ export default (): express.Router => {
     course(router);
     courseUnit(router);
     classEntity(router);
-    schedulerTest(router);
+    schedule(router);
     return router;
 };
