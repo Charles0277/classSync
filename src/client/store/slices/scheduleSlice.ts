@@ -1,9 +1,12 @@
-import { GlobalSchedule, IIndividualSchedule } from '@/common/types/ISchedule';
+import {
+    GlobalSchedule,
+    IIndividualScheduleEntry
+} from '@/common/types/ISchedule';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface scheduleState {
     globalSchedule?: GlobalSchedule;
-    userSchedule?: IIndividualSchedule;
+    userSchedule?: IIndividualScheduleEntry[];
     loading: boolean;
     error: string | null;
 }

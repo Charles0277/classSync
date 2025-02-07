@@ -1,13 +1,13 @@
 import { Document, Types } from 'mongoose';
 
 export interface IGlobalScheduleEntry {
-    _id: Types.ObjectId;
+    _id?: Types.ObjectId;
     classId: String;
     roomId: String;
     day: number;
     hour: number;
     instructorId: String;
-    studentIds: string[];
+    studentIds?: string[];
 }
 
 export interface GlobalSchedule {
@@ -17,18 +17,12 @@ export interface GlobalSchedule {
 }
 
 export interface IIndividualScheduleEntry {
-    name: string;
+    _id?: Types.ObjectId;
+    className: string;
     day: number;
     hour: number;
-    duration: number;
     instructorName: string;
     roomName: string;
-}
-
-export interface IIndividualSchedule extends Document {
-    entries: {
-        [classId: string]: IIndividualScheduleEntry;
-    };
 }
 
 export interface IGlobalSchedule extends GlobalSchedule, Document {}

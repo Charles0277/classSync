@@ -1,25 +1,17 @@
-import {
-    getGlobalScheduleRequest,
-    getUserScheduleRequest
-} from '@/client/store/slices/scheduleSlice';
+import { getUserScheduleRequest } from '@/client/store/slices/scheduleSlice';
 import { RootState } from '@/client/store/store';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PageContainer from '../../components/Common/PageContainer/PageContainer';
+import Schedule from '../../components/Schedule/Schedule';
 
 const Home = () => {
     const { token, user } = useSelector((state: RootState) => state.auth);
-    const { globalSchedule, userSchedule, loading } = useSelector(
+    const { userSchedule, loading } = useSelector(
         (state: RootState) => state.schedule
     );
 
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (!globalSchedule) {
-            dispatch(getGlobalScheduleRequest({ token }));
-        }
-    }, []);
 
     useEffect(() => {
         if (!userSchedule && user) {
@@ -27,9 +19,13 @@ const Home = () => {
         }
     }, [user]);
 
-    if (!globalSchedule && loading) return <div>Loading...</div>;
+    if (!userSchedule && loading) return <div>Loading...</div>;
 
-    return <PageContainer>Hello World</PageContainer>;
+    return (
+        <PageContainer>
+            {userSchedule && <Schedule userSchedule={userSchedule} />}
+        </PageContainer>
+    );
 };
 
 export default Home;
