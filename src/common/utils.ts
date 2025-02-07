@@ -3,6 +3,7 @@ import { IClass } from './types/IClass.js';
 import { ICourseUnit } from './types/ICourseUnit.js';
 import { IUser } from './types/IUser.js';
 import { createClass } from '@/server/services/class.services.js';
+import { TimeSlot } from '@/server/scheduler/constraints.js';
 
 export const findFirstDigit = (input: string): string | null => {
     const match = input.match(/\d/);
@@ -19,17 +20,17 @@ export const splitCourseUnitIntoClasses = async (
     courseUnit: ICourseUnit,
     students: IUser[],
     classType: string,
-    maxRoomSize: number
+    maxRoomSize: number,
+    semester: 1 | 2
 ): Promise<IClass[]> => {
     const numberOfClasses = Math.ceil(courseUnit.size / maxRoomSize);
     const studentsPerClass = Math.ceil(students.length / numberOfClasses);
-    const semester = findLastDigit(courseUnit.code);
 
     const createPromises = Array.from({ length: numberOfClasses }, (_, i) => {
         const start = i * studentsPerClass;
         const end = start + studentsPerClass;
         return createClass({
-            name: `${courseUnit.name} - ${i + 1}`,
+            name: courseUnit.name,
             courseUnit: courseUnit._id,
             instructor: courseUnit.instructor,
             classTypes: classType,
@@ -71,6 +72,24 @@ export const convertClassTypeToRoomType = memoize(
         }
     }
 );
+
+export function generateTimeSlots(weekConfig: {
+    daysPerWeek: number;
+    startHour: number;
+    endHour: number;
+}): TimeSlot[] {
+    const slots: TimeSlot[] = [];
+    for (let day = 0; day < weekConfig.daysPerWeek; day++) {
+        for (
+            let hour = weekConfig.startHour;
+            hour < weekConfig.endHour;
+            hour++
+        ) {
+            slots.push({ day, hour });
+        }
+    }
+    return slots;
+}
 
 export const maxRoomSizeForRoomType = memoize((classType: string): number => {
     const sizes = {

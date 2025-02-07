@@ -1,16 +1,21 @@
-import { IGlobalScheduleEntry } from '@/common/types/ISchedule.js';
 import { IUser } from '@/common/types/IUser.js';
-import { getIdString } from '@/common/utils.js';
+import {
+    convertClassTypeToRoomType,
+    findLastDigit,
+    generateTimeSlots,
+    maxRoomSizeForRoomType,
+    splitCourseUnitIntoClasses
+} from '@/common/utils.js';
 import express from 'express';
 import { ILPScheduler } from '../scheduler/ilpScheduler.js';
-import { generateTimeSlots } from '../scheduler/index.js';
-import { getClasses } from '../services/class.services.js';
+import { deleteAllClasses, getClasses } from '../services/class.services.js';
 import { getCourseUnits } from '../services/courseUnits.services.js';
 import { getRooms } from '../services/room.services.js';
 import {
     createSchedule,
     deleteScheduleById,
-    fetchGlobalSchedule
+    fetchGlobalSchedule,
+    fetchUserSchedule
 } from '../services/schedule.services.js';
 import { getStudents, getTeachers } from '../services/user.services.js';
 
@@ -33,26 +38,7 @@ export const getUserSchedule = async (
 ) => {
     const { id } = req.params;
     try {
-        const globalSchedule = await fetchGlobalSchedule();
-
-        const classes = await getClasses();
-
-        const classIdsToFilter = classes
-            .filter((cls) =>
-                cls.students.some((student) => student.toString() === id)
-            )
-            .map((cls) => getIdString(cls._id));
-
-        const entriesMap = globalSchedule?.entries as unknown as Map<
-            string,
-            IGlobalScheduleEntry
-        >;
-        const userSchedule = Array.from(entriesMap.values()).filter(
-            (entry: IGlobalScheduleEntry) =>
-                entry.classId &&
-                classIdsToFilter.includes(entry.classId.toString())
-        );
-
+        const userSchedule = await fetchUserSchedule(id);
         return res.status(200).send(userSchedule);
     } catch (error) {
         console.log(error);
@@ -119,6 +105,18 @@ export async function generateGlobalSchedule(
     res: express.Response
 ) {
     try {
+        const { semester } = req.body;
+
+        if (typeof semester !== 'number' || semester < 1 || semester > 2) {
+            return res.status(400).send({ error: 'Invalid semester' });
+        }
+
+        const currentClasses = await getClasses();
+
+        if (currentClasses.length > 0) {
+            await deleteAllClasses();
+        }
+
         const weekConfig = {
             daysPerWeek: 5,
             hoursPerDay: 10,
@@ -132,6 +130,12 @@ export async function generateGlobalSchedule(
             getStudents(),
             getCourseUnits()
         ]);
+
+        const courseUnitsOfSemester = courseUnits.filter(
+            (courseUnit) =>
+                Number(findLastDigit(courseUnit.code)) === semester ||
+                Number(findLastDigit(courseUnit.code)) === 0
+        );
 
         // Helper function to map students to course units efficiently
         const mapStudentsToCourseUnits = (
@@ -149,7 +153,7 @@ export async function generateGlobalSchedule(
         };
 
         // Optimized caller implementation
-        for (const courseUnit of courseUnits) {
+        for (const courseUnit of courseUnitsOfSemester) {
             const enrolledStudents =
                 mapStudentsToCourseUnits(students).get(
                     courseUnit._id.toString()
@@ -163,23 +167,24 @@ export async function generateGlobalSchedule(
                 continue;
             }
 
-            // for (const classType of classTypes) {
-            //     try {
-            //         const roomType = convertClassTypeToRoomType(classType);
-            //         const classes = await splitCourseUnitIntoClasses(
-            //             courseUnit,
-            //             enrolledStudents,
-            //             classType,
-            //             maxRoomSizeForRoomType(roomType)
-            //         );
-            //         // Handle created classes
-            //     } catch (error) {
-            //         console.error(
-            //             `Failed to create ${classType} classes for ${courseUnit.name}:`,
-            //             error
-            //         );
-            //     }
-            // }
+            for (const classType of classTypes) {
+                try {
+                    const roomType = convertClassTypeToRoomType(classType);
+                    splitCourseUnitIntoClasses(
+                        courseUnit,
+                        enrolledStudents,
+                        classType,
+                        maxRoomSizeForRoomType(roomType),
+                        semester as 1 | 2
+                    );
+                    // Handle created classes
+                } catch (error) {
+                    console.error(
+                        `Failed to create ${classType} classes for ${courseUnit.name}:`,
+                        error
+                    );
+                }
+            }
         }
 
         // Retrieve all classes (after creating them as above)

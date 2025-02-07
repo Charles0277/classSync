@@ -1,7 +1,83 @@
+import mongoose from 'mongoose';
 import { GlobalScheduleModel } from '../models/schedule.model.js';
 
 export const fetchGlobalSchedule = () =>
     GlobalScheduleModel.findOne().sort({ createdAt: -1 });
+
+export const fetchUserSchedule = async (id: string) => {
+    const userId = new mongoose.Types.ObjectId(id);
+
+    const userSchedule = await GlobalScheduleModel.aggregate([
+        { $sort: { createdAt: -1 } },
+        { $limit: 1 },
+        { $match: { entries: { $exists: true } } },
+        { $project: { entriesArray: { $objectToArray: '$entries' } } },
+        { $unwind: '$entriesArray' },
+        { $replaceRoot: { newRoot: '$entriesArray.v' } },
+        { $match: { studentIds: userId } },
+
+        {
+            $lookup: {
+                from: 'classes',
+                let: { classId: '$classId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$classId'] } } },
+                    { $project: { name: 1 } }
+                ],
+                as: 'class'
+            }
+        },
+        {
+            $lookup: {
+                from: 'rooms',
+                let: { roomId: '$roomId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$roomId'] } } },
+                    { $project: { name: 1 } }
+                ],
+                as: 'room'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                let: { instructorId: '$instructorId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$instructorId'] } } },
+                    {
+                        $project: {
+                            fullName: {
+                                $concat: ['$firstName', ' ', '$lastName']
+                            }
+                        }
+                    }
+                ],
+                as: 'instructor'
+            }
+        },
+
+        {
+            $addFields: {
+                className: { $arrayElemAt: ['$class.name', 0] },
+                roomName: { $arrayElemAt: ['$room.name', 0] },
+                instructorName: { $arrayElemAt: ['$instructor.fullName', 0] }
+            }
+        },
+
+        {
+            $project: {
+                _id: 1,
+                className: 1,
+                day: 1,
+                hour: 1,
+                instructorName: 1,
+                roomName: 1
+            }
+        }
+    ]);
+
+    return userSchedule;
+};
 
 export const createSchedule = (values: Record<string, any>) =>
     new GlobalScheduleModel(values)
