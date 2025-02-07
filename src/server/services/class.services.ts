@@ -18,3 +18,5 @@ export const updateClassById = (id: string, values: Record<string, any>) =>
 
 export const deleteClassById = (id: string) =>
     ClassModel.findByIdAndDelete({ _id: id });
+
+export const deleteAllClasses = () => ClassModel.deleteMany({});
