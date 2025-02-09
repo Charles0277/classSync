@@ -22,7 +22,7 @@ export const fetchUserSchedule = async (id: string) => {
                 let: { classId: '$classId' },
                 pipeline: [
                     { $match: { $expr: { $eq: ['$_id', '$$classId'] } } },
-                    { $project: { name: 1 } }
+                    { $project: { name: 1, classTypes: 1 } }
                 ],
                 as: 'class'
             }
@@ -59,6 +59,7 @@ export const fetchUserSchedule = async (id: string) => {
         {
             $addFields: {
                 className: { $arrayElemAt: ['$class.name', 0] },
+                classType: { $arrayElemAt: ['$class.classTypes', 0] },
                 roomName: { $arrayElemAt: ['$room.name', 0] },
                 instructorName: { $arrayElemAt: ['$instructor.fullName', 0] }
             }
@@ -68,6 +69,7 @@ export const fetchUserSchedule = async (id: string) => {
             $project: {
                 _id: 1,
                 className: 1,
+                classType: 1,
                 day: 1,
                 hour: 1,
                 instructorName: 1,

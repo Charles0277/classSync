@@ -73,6 +73,23 @@ export const convertClassTypeToRoomType = memoize(
     }
 );
 
+export const convertRoomTypeToClassType = memoize(
+    (roomType: string): string => {
+        switch (roomType[0]) {
+            case 'classroom':
+                return 'Workshop';
+            case 'laboratory':
+                return 'Laboratory';
+            case 'lectureTheatre':
+                return 'Lecture';
+            case 'office':
+                return 'Meeting';
+            default:
+                return roomType;
+        }
+    }
+);
+
 export function generateTimeSlots(weekConfig: {
     daysPerWeek: number;
     startHour: number;

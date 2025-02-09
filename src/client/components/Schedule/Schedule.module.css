@@ -9,7 +9,7 @@
 
 .scheduleGrid {
     display: grid;
-    grid-template-columns: repeat(5, 200px);
+    grid-template-columns: repeat(5, 225px);
     grid-template-rows: auto;
     gap: 10px;
     border: 1px solid #ccc;
@@ -27,6 +27,7 @@
     font-weight: bold;
     background-color: #f8f8f8;
     position: relative;
+    height: 200%;
 }
 
 .scheduleDay:last-child {
@@ -40,25 +41,19 @@
     position: relative;
 }
 
-.scheduleRow {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    min-height: 500px;
-    position: relative;
-}
-
 .scheduleEntry {
     border-radius: 6px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     font-size: 0.9rem;
     color: #333;
     position: absolute;
-    height: 65px;
-    width: 180px;
+    height: 75px;
+    width: 210px;
     border-style: solid;
     border-color: #333;
     border-width: 1px;
+    display: flex;
+    align-self: center;
 }
 
 .entry-monday {
@@ -92,7 +87,7 @@
     margin: 4px;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.2rem;
 }
 
 .entryTitle {

@@ -10,6 +10,7 @@ const Home = () => {
     const { userSchedule, loading } = useSelector(
         (state: RootState) => state.schedule
     );
+    console.log('🚀 ~ Home ~ userSchedule:', userSchedule);
 
     const dispatch = useDispatch();
 

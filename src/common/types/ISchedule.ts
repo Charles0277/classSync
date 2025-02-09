@@ -19,6 +19,7 @@ export interface GlobalSchedule {
 export interface IIndividualScheduleEntry {
     _id?: Types.ObjectId;
     className: string;
+    classType: [];
     day: number;
     hour: number;
     instructorName: string;
