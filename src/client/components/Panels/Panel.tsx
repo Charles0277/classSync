@@ -8,7 +8,7 @@ import { updateConfigRequest } from '../../store/slices/schoolWeekConfigSlice';
 import { RootState } from '../../store/store';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
-import ManageCardConfig from '../ManageConfigCard/ManageConfigCard';
+import { PopUpCard } from '../ManageConfigCard/PopUpCard';
 import AddEditCourseCard from '../ManageCourses/AddEditCourseCard/AddEditCourseCard';
 import ManageCourses from '../ManageCourses/ManageCourses';
 import AddEditCourseUnitCard from '../ManageCourseUnits/AddEditCourseUnitCard/AddEditCourseUnitCard';
@@ -172,12 +172,12 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
     return (
         <>
             {modalState.showPopup && (
-                <ManageCardConfig
+                <PopUpCard
                     title={`Manage ${title}`}
                     onCancel={() => closeModal('showPopup')}
                 >
                     {PopupContent}
-                </ManageCardConfig>
+                </PopUpCard>
             )}
             {modalState.showEditUserForm && modalState.editingUser && (
                 <AddEditUserCard

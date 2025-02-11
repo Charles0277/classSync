@@ -17,7 +17,6 @@
 
 .gridCell {
     background-color: white;
-    padding: 5px;
     position: relative;
     border-style: none solid solid none;
     border-width: 1.5px;
@@ -37,57 +36,7 @@
     font-weight: bold;
     display: flex;
     justify-content: end;
-}
-
-.scheduleEntry {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
-    border: 1px solid #333;
-    border-radius: 6px;
-    padding: 4px;
-    font-size: 0.9rem;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.entry-monday {
-    background-color: #e8a9f4;
-}
-
-.entry-tuesday {
-    background-color: #f4c7a9;
-}
-
-.entry-wednesday {
-    background-color: #bdf4a9;
-}
-
-.entry-thursday {
-    background-color: #a9c7f4;
-}
-
-.entry-friday {
-    background-color: #f4e8a9;
-}
-.entryContent {
-    text-align: left;
-    margin: 2px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    color: #555;
-    font-size: 0.8rem;
-    line-height: 1;
-}
-
-.entryTitle {
-    font-weight: bold;
-}
-
-.entryDetail {
-    font-weight: 500;
+    padding: 5px;
 }
 
 ::-webkit-scrollbar {

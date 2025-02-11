@@ -9,6 +9,7 @@ interface scheduleState {
     userSchedule?: IIndividualScheduleEntry[];
     loading: boolean;
     error: string | null;
+    popUpClass?: IIndividualScheduleEntry;
 }
 
 const initialState: scheduleState = {
@@ -43,6 +44,12 @@ const scheduleSlice = createSlice({
         getUserScheduleFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        openPopUp: (state, action) => {
+            state.popUpClass = action.payload;
+        },
+        closePopUp: (state) => {
+            state.popUpClass = undefined;
         }
     }
 });
@@ -53,7 +60,9 @@ export const {
     getGlobalScheduleFailure,
     getUserScheduleRequest,
     getUserScheduleSuccess,
-    getUserScheduleFailure
+    getUserScheduleFailure,
+    openPopUp,
+    closePopUp
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

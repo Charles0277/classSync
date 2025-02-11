@@ -1,18 +1,21 @@
+import clsx from 'clsx';
 import React, { useEffect } from 'react';
-import styles from './ManageConfigCard.module.css';
 import closeIcon from '../../assets/closeIcon.svg';
 import Button from '../Button/Button';
+import styles from './PopUpCard.module.css';
 
-interface ManageCardConfigProps {
+interface PopUpCardProps {
     title: string;
     onCancel: () => void;
     children: React.ReactNode;
+    className?: string;
 }
 
-const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
+export const PopUpCard: React.FC<PopUpCardProps> = ({
     title,
     onCancel,
-    children
+    children,
+    className = ''
 }) => {
     const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
         // Close the popup if clicking outside the popup card
@@ -36,7 +39,10 @@ const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
     return (
         <div className={styles.overlay} onClick={handleBackgroundClick}>
             <div
-                className={styles.popupCard}
+                className={clsx(
+                    styles.popupCard,
+                    className.split(' ').map((cls) => styles[cls])
+                )}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className={styles.closeIcon}>
@@ -55,5 +61,3 @@ const ManageCardConfig: React.FC<ManageCardConfigProps> = ({
         </div>
     );
 };
-
-export default ManageCardConfig;
