@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "jsx": "react",
         "target": "ESNext",
         "useDefineForClassFields": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
@@ -16,8 +17,10 @@
         "noEmit": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./src/*"]
-        }
+            "@/*": ["./src/*"],
+            "@tests/*": ["./tests/*"]
+        },
+        "allowImportingTsExtensions": true
     },
-    "include": ["src"]
+    "include": ["src", "tests"]
 }
