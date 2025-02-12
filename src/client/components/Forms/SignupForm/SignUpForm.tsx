@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ICourseUnit } from '../../../../common/types/ICourseUnit';
-import { findFirstDigit } from '../../../../common/utils';
+import { findFirstDigit, getIdString } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
 import Input from '../../Input/Input';
@@ -291,21 +291,21 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 <div className={styles.checkBox}>
                     {filteredCourseUnits.map((courseUnit) => (
                         <div
-                            key={courseUnit._id as string}
+                            key={getIdString(courseUnit._id)}
                             className={styles.checkBoxItem}
                         >
                             <input
                                 type="checkbox"
-                                id={courseUnit._id as string}
+                                id={getIdString(courseUnit._id)}
                                 name="courseUnits"
-                                value={courseUnit._id as string}
+                                value={getIdString(courseUnit._id)}
                                 onChange={handleInputChange}
                                 disabled={!formData.course}
                                 defaultChecked={formData.courseUnits.includes(
-                                    courseUnit._id as string
+                                    getIdString(courseUnit._id)
                                 )}
                             />
-                            <label htmlFor={courseUnit._id as string}>
+                            <label htmlFor={getIdString(courseUnit._id)}>
                                 {(courseUnit as ICourseUnit).name}
                             </label>
                         </div>

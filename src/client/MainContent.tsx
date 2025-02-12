@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar/Sidebar';
 import Configuration from './containers/Configurations/Configuration';
 import Home from './containers/Home/Home';
-import Welcome from './containers/welcome/Welcome';
+import Welcome from './containers/Welcome/Welcome';
 import { checkAuthenticationRequest, logOut } from './store/slices/authSlice';
 import { RootState } from './store/store';
 

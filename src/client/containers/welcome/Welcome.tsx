@@ -1,7 +1,7 @@
 import React from 'react';
-import styles from './Welcome.module.css';
 import LeftColumn from './LeftColumn';
 import RightColumn from './RightColumn';
+import styles from './Welcome.module.css';
 
 const Welcome: React.FC = () => {
     return (
