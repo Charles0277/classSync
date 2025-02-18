@@ -9,7 +9,7 @@ import {
 import express from 'express';
 import { ILPScheduler } from '../scheduler/ilpScheduler.js';
 import { deleteAllClasses, getClasses } from '../services/class.services.js';
-import { getCourseUnits } from '../services/courseUnits.services.js';
+import { getCourseUnits } from '../services/courseUnit.services.ts';
 import { getRooms } from '../services/room.services.js';
 import {
     createSchedule,
@@ -60,45 +60,6 @@ export const deleteGlobalSchedule = async (
         return res.sendStatus(400);
     }
 };
-
-// export const updateGlobalSchedule = async (
-//     req: express.Request,
-//     res: express.Response
-// ) => {
-//     try {
-//         const { id } = req.params;
-
-//         const allowedFields = [
-//             'name',
-//             'courseUnit',
-//             'instructor',
-//             'classTypes',
-//             'students',
-//             'semester'
-//         ];
-
-//         const invalidFields = Object.keys(req.body).filter(
-//             (key) => !allowedFields.includes(key)
-//         );
-
-//         if (invalidFields.length > 0) {
-//             return res
-//                 .status(400)
-//                 .send(`Invalid fields: ${invalidFields.join(', ')}`);
-//         }
-
-//         const updatedValues = Object.fromEntries(
-//             Object.entries(req.body).filter(([_, value]) => value !== undefined)
-//         );
-
-//         const updatedClass = await updateClassById(id, updatedValues);
-
-//         return res.status(201).send(updatedClass);
-//     } catch (error) {
-//         console.log(error);
-//         return res.sendStatus(400);
-//     }
-// };
 
 export async function generateGlobalSchedule(
     req: express.Request,

@@ -1,4 +1,4 @@
-import { CourseUnitModel } from '../models/courseUnit.model.js';
+import { CourseUnitModel } from '../models/courseUnit.model.ts';
 
 export const getCourseUnits = () =>
     CourseUnitModel.find().populate('instructor');

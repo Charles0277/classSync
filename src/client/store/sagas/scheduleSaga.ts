@@ -1,11 +1,18 @@
 import {
+    generateGlobalScheduleApi,
     getGlobalScheduleApi,
     getUserScheduleApi
 } from '@/client/api/scheduleApi';
-import { IGlobalSchedule, IIndividualSchedule } from '@/common/types/ISchedule';
+import {
+    IGlobalSchedule,
+    IIndividualScheduleEntry
+} from '@/common/types/ISchedule';
 import { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import {
+    generateGlobalScheduleFailure,
+    generateGlobalScheduleRequest,
+    generateGlobalScheduleSuccess,
     getGlobalScheduleFailure,
     getGlobalScheduleRequest,
     getGlobalScheduleSuccess,
@@ -30,7 +37,7 @@ function* getGlobalSchedule(action: any) {
 function* getUserSchedule(action: any) {
     const { token, id } = action.payload;
     try {
-        const response: AxiosResponse<IIndividualSchedule> = yield call(
+        const response: AxiosResponse<IIndividualScheduleEntry> = yield call(
             getUserScheduleApi,
             token,
             id
@@ -41,7 +48,25 @@ function* getUserSchedule(action: any) {
     }
 }
 
+function* generateGlobalSchedule(action: any) {
+    const { token, semester } = action.payload;
+    try {
+        const response: AxiosResponse<IGlobalSchedule> = yield call(
+            generateGlobalScheduleApi,
+            token,
+            semester
+        );
+        yield put(generateGlobalScheduleSuccess(response.data));
+    } catch (error: any) {
+        yield put(generateGlobalScheduleFailure(error.message));
+    }
+}
+
 export default function* scheduleSaga() {
     yield takeLatest(getGlobalScheduleRequest.type, getGlobalSchedule);
     yield takeLatest(getUserScheduleRequest.type, getUserSchedule);
+    yield takeLatest(
+        generateGlobalScheduleRequest.type,
+        generateGlobalSchedule
+    );
 }

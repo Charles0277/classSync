@@ -1,6 +1,9 @@
 import { closePopUp, openPopUp } from '@/client/store/slices/scheduleSlice';
 import { RootState } from '@/client/store/store';
-import { IIndividualScheduleEntry } from '@/common/types/ISchedule';
+import {
+    GlobalSchedule,
+    IIndividualScheduleEntry
+} from '@/common/types/ISchedule';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClassDetails } from '../ClassDetails/ClassDetails';
@@ -9,10 +12,14 @@ import { ScheduleEntry } from '../ScheduleEntry/ScheduleEntry';
 import styles from './Schedule.module.css';
 
 type ScheduleProps = {
-    userSchedule: IIndividualScheduleEntry[];
+    userSchedule?: IIndividualScheduleEntry[];
+    globalSchedule?: GlobalSchedule;
 };
 
-const Schedule: React.FC<ScheduleProps> = ({ userSchedule }) => {
+const Schedule: React.FC<ScheduleProps> = ({
+    userSchedule,
+    globalSchedule
+}) => {
     const popUp = useSelector((state: RootState) => state.schedule.popUpClass);
     console.log('🚀 ~ popUp:', popUp);
 
@@ -22,10 +29,12 @@ const Schedule: React.FC<ScheduleProps> = ({ userSchedule }) => {
     const dispatch = useDispatch();
     const scheduleMap: { [key: string]: IIndividualScheduleEntry } = {};
 
-    userSchedule.forEach((entry) => {
-        const key = `${entry.day}-${entry.hour}`;
-        scheduleMap[key] = entry;
-    });
+    if (userSchedule) {
+        userSchedule.forEach((entry) => {
+            const key = `${entry.day}-${entry.hour}`;
+            scheduleMap[key] = entry;
+        });
+    }
 
     return (
         <>

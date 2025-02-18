@@ -50,6 +50,18 @@ const scheduleSlice = createSlice({
         },
         closePopUp: (state) => {
             state.popUpClass = undefined;
+        },
+        generateGlobalScheduleRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        generateGlobalScheduleSuccess: (state, action) => {
+            state.globalSchedule = action.payload;
+            state.loading = false;
+        },
+        generateGlobalScheduleFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
@@ -61,6 +73,9 @@ export const {
     getUserScheduleRequest,
     getUserScheduleSuccess,
     getUserScheduleFailure,
+    generateGlobalScheduleRequest,
+    generateGlobalScheduleSuccess,
+    generateGlobalScheduleFailure,
     openPopUp,
     closePopUp
 } = scheduleSlice.actions;

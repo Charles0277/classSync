@@ -6,7 +6,7 @@ import {
     getCourseUnitById,
     getCourseUnits,
     updateCourseUnitById
-} from '../services/courseUnits.services.js';
+} from '../services/courseUnit.services.ts';
 
 export const getAllCourseUnits = async (
     req: express.Request,

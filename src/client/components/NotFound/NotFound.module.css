@@ -1,0 +1,21 @@
+.notFound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+}
+
+.notFound img {
+    width: 70%;
+    margin: 1rem 0;
+}
+
+.title {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+    font-weight: 650;
+}
+
+.description {
+    font-size: 1rem;
+}

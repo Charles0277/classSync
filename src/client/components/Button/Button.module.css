@@ -74,3 +74,14 @@
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
 }
+
+.generate {
+    background-color: var(--darkBlue-color);
+    color: white;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-color: transparent;
+    cursor: pointer;
+}
