@@ -35,12 +35,13 @@ function* getGlobalSchedule(action: any) {
 }
 
 function* getUserSchedule(action: any) {
-    const { token, id } = action.payload;
+    const { token, id, role } = action.payload;
     try {
         const response: AxiosResponse<IIndividualScheduleEntry> = yield call(
             getUserScheduleApi,
             token,
-            id
+            id,
+            role
         );
         yield put(getUserScheduleSuccess(response.data));
     } catch (error: any) {

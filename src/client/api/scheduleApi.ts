@@ -11,10 +11,13 @@ export const getGlobalScheduleApi = (token: string) => {
     );
 };
 
-export const getUserScheduleApi = (token: string, id: string) => {
+export const getUserScheduleApi = (token: string, id: string, role: string) => {
     return axios.get<IIndividualScheduleEntry>(
         `http://localhost:3000/get-user-schedule/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+            params: { role: role },
+            headers: { Authorization: `Bearer ${token}` }
+        }
     );
 };
 

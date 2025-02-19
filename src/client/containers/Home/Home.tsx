@@ -40,7 +40,13 @@ const Home = () => {
     useEffect(() => {
         if (token) {
             if (userId && !isAdmin && !userSchedule) {
-                dispatch(getUserScheduleRequest({ token, id: userId }));
+                dispatch(
+                    getUserScheduleRequest({
+                        token,
+                        id: userId,
+                        role: user.role
+                    })
+                );
                 setFetchRequested(true);
             } else if (isAdmin && !globalSchedule) {
                 dispatch(getGlobalScheduleRequest({ token }));

@@ -4,8 +4,9 @@ import { GlobalScheduleModel } from '../models/schedule.model.js';
 export const fetchGlobalSchedule = () =>
     GlobalScheduleModel.findOne().sort({ createdAt: -1 });
 
-export const fetchUserSchedule = async (id: string) => {
+export const fetchUserSchedule = async (id: string, role: string) => {
     const userId = new mongoose.Types.ObjectId(id);
+    const isTeacher = role === 'teacher';
 
     const userSchedule = await GlobalScheduleModel.aggregate([
         { $sort: { createdAt: -1 } },
@@ -14,7 +15,7 @@ export const fetchUserSchedule = async (id: string) => {
         { $project: { entriesArray: { $objectToArray: '$entries' } } },
         { $unwind: '$entriesArray' },
         { $replaceRoot: { newRoot: '$entriesArray.v' } },
-        { $match: { studentIds: userId } },
+        { $match: { [isTeacher ? 'instructorId' : 'studentIds']: userId } },
 
         {
             $lookup: {
@@ -43,7 +44,11 @@ export const fetchUserSchedule = async (id: string) => {
                 from: 'users',
                 let: { instructorId: '$instructorId' },
                 pipeline: [
-                    { $match: { $expr: { $eq: ['$_id', '$$instructorId'] } } },
+                    {
+                        $match: {
+                            $expr: { $eq: ['$_id', '$$instructorId'] }
+                        }
+                    },
                     {
                         $project: {
                             fullName: {
@@ -61,7 +66,9 @@ export const fetchUserSchedule = async (id: string) => {
                 className: { $arrayElemAt: ['$class.name', 0] },
                 classType: { $arrayElemAt: ['$class.classTypes', 0] },
                 roomName: { $arrayElemAt: ['$room.name', 0] },
-                instructorName: { $arrayElemAt: ['$instructor.fullName', 0] }
+                instructorName: {
+                    $arrayElemAt: ['$instructor.fullName', 0]
+                }
             }
         },
 
@@ -73,11 +80,11 @@ export const fetchUserSchedule = async (id: string) => {
                 day: 1,
                 hour: 1,
                 instructorName: 1,
-                roomName: 1
+                roomName: 1,
+                ...(role === 'teacher' && { studentIds: 1 })
             }
         }
     ]);
-
     return userSchedule;
 };
 

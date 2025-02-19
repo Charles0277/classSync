@@ -37,8 +37,9 @@ export const getUserSchedule = async (
     res: express.Response
 ) => {
     const { id } = req.params;
+    const { role } = req.query;
     try {
-        const userSchedule = await fetchUserSchedule(id);
+        const userSchedule = await fetchUserSchedule(id, role as string);
         return res.status(200).send(userSchedule);
     } catch (error) {
         console.log(error);
