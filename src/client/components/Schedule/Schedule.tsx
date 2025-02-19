@@ -21,7 +21,6 @@ const Schedule: React.FC<ScheduleProps> = ({
     globalSchedule
 }) => {
     const popUp = useSelector((state: RootState) => state.schedule.popUpClass);
-    console.log('🚀 ~ popUp:', popUp);
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     const hours = Array.from({ length: 10 }, (_, i) => 9 + i);

@@ -2,6 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { LoadingScreen } from './components/LoadingScreen/LoadingScreen';
 import Sidebar from './components/Sidebar/Sidebar';
 import Configuration from './containers/Configurations/Configuration';
 import Home from './containers/Home/Home';
@@ -30,7 +31,11 @@ function MainContent() {
                 );
             }
         }
-    }, []);
+    }, [dispatch]);
+
+    if (!!isLoading) {
+        return <LoadingScreen />;
+    }
 
     return (
         <BrowserRouter>
@@ -39,28 +44,18 @@ function MainContent() {
                 <Routes>
                     <Route
                         path="/"
-                        element={
-                            isLoading ? (
-                                <Home />
-                            ) : isAuthenticated ? (
-                                <Home />
-                            ) : (
-                                <Welcome />
-                            )
-                        }
-                    ></Route>
+                        element={isAuthenticated ? <Home /> : <Welcome />}
+                    />
                     <Route
                         path="/configurations"
                         element={
-                            isLoading ? (
-                                <Configuration />
-                            ) : isAuthenticated && user?.role === 'admin' ? (
+                            isAuthenticated && user?.role === 'admin' ? (
                                 <Configuration />
                             ) : (
                                 <Home />
                             )
                         }
-                    ></Route>
+                    />
                 </Routes>
             </main>
         </BrowserRouter>

@@ -8,12 +8,16 @@ interface scheduleState {
     globalSchedule?: GlobalSchedule;
     userSchedule?: IIndividualScheduleEntry[];
     loading: boolean;
+    hasLoaded: boolean;
+    generateSemester1Loading?: boolean;
+    generateSemester2Loading?: boolean;
     error: string | null;
     popUpClass?: IIndividualScheduleEntry;
 }
 
 const initialState: scheduleState = {
     loading: false,
+    hasLoaded: false,
     error: null
 };
 
@@ -28,6 +32,7 @@ const scheduleSlice = createSlice({
         getGlobalScheduleSuccess: (state, action) => {
             state.globalSchedule = action.payload;
             state.loading = false;
+            state.hasLoaded = true;
         },
         getGlobalScheduleFailure: (state, action) => {
             state.loading = false;
@@ -40,6 +45,7 @@ const scheduleSlice = createSlice({
         getUserScheduleSuccess: (state, action) => {
             state.userSchedule = action.payload;
             state.loading = false;
+            state.hasLoaded = true;
         },
         getUserScheduleFailure: (state, action) => {
             state.loading = false;
@@ -52,16 +58,22 @@ const scheduleSlice = createSlice({
             state.popUpClass = undefined;
         },
         generateGlobalScheduleRequest: (state, action) => {
-            state.loading = true;
+            if (action.payload.semester === 1) {
+                state.generateSemester1Loading = true;
+            } else {
+                state.generateSemester2Loading = true;
+            }
             state.error = null;
         },
         generateGlobalScheduleSuccess: (state, action) => {
             state.globalSchedule = action.payload;
-            state.loading = false;
+            state.generateSemester1Loading = false;
+            state.generateSemester2Loading = false;
         },
         generateGlobalScheduleFailure: (state, action) => {
-            state.loading = false;
             state.error = action.payload;
+            state.generateSemester1Loading = false;
+            state.generateSemester2Loading = false;
         }
     }
 });

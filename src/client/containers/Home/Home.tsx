@@ -1,36 +1,57 @@
 import { GenerateSchedule } from '@/client/components/GenerateSchedule/GenerateSchedule';
+import { LoadingScreen } from '@/client/components/LoadingScreen/LoadingScreen';
 import { NotFound } from '@/client/components/NotFound/NotFound';
 import {
     getGlobalScheduleRequest,
     getUserScheduleRequest
 } from '@/client/store/slices/scheduleSlice';
 import { RootState } from '@/client/store/store';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PageContainer from '../../components/Common/PageContainer/PageContainer';
 import Schedule from '../../components/Schedule/Schedule';
 
 const Home = () => {
     const { token, user } = useSelector((state: RootState) => state.auth);
-    const { userSchedule, globalSchedule, loading } = useSelector(
+    const { userSchedule, globalSchedule, loading, hasLoaded } = useSelector(
         (state: RootState) => state.schedule
     );
-
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        if (!userSchedule && user?._id && user?.role !== 'admin') {
-            dispatch(getUserScheduleRequest({ token: token, id: user?._id }));
-        }
-    }, [user]);
+    const isAdmin = user?.role === 'admin';
+    const userId = user?._id;
+
+    const [fetchRequested, setFetchRequested] = useState(hasLoaded || false);
+    const [minLoadingElapsed, setMinLoadingElapsed] = useState(
+        hasLoaded || false
+    );
 
     useEffect(() => {
-        if (!userSchedule && user?.role === 'admin') {
-            dispatch(getGlobalScheduleRequest({ token: token }));
+        if (!hasLoaded) {
+            const timer = setTimeout(() => {
+                setMinLoadingElapsed(true);
+            }, 500);
+            return () => clearTimeout(timer);
+        } else {
+            setMinLoadingElapsed(true);
         }
-    }, [user]);
+    }, []);
 
-    if (!userSchedule && loading) return <div>Loading...</div>;
+    useEffect(() => {
+        if (token) {
+            if (userId && !isAdmin && !userSchedule) {
+                dispatch(getUserScheduleRequest({ token, id: userId }));
+                setFetchRequested(true);
+            } else if (isAdmin && !globalSchedule) {
+                dispatch(getGlobalScheduleRequest({ token }));
+                setFetchRequested(true);
+            }
+        }
+    }, [token, userId, isAdmin, userSchedule, globalSchedule, dispatch]);
+
+    if (!fetchRequested || loading || !minLoadingElapsed) {
+        return <LoadingScreen />;
+    }
 
     return (
         <PageContainer>
@@ -45,7 +66,7 @@ const Home = () => {
             ) : (
                 <NotFound
                     title="No Schedule Found"
-                    description="You do not have a schedule right now. Please contact your administrator."
+                    description="You do not have a schedule at the moment. Please contact your administrator."
                 />
             )}
         </PageContainer>

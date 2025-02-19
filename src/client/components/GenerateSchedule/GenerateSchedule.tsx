@@ -6,6 +6,9 @@ import { generateGlobalScheduleRequest } from '@/client/store/slices/scheduleSli
 
 export const GenerateSchedule: React.FC = () => {
     const { token } = useSelector((state: RootState) => state.auth);
+    const { generateSemester1Loading, generateSemester2Loading } = useSelector(
+        (state: RootState) => state.schedule
+    );
 
     const dispatch = useDispatch();
 
@@ -22,6 +25,7 @@ export const GenerateSchedule: React.FC = () => {
                         <Button
                             className="generate"
                             onClick={() => handleSubmit(1)}
+                            loading={generateSemester1Loading}
                         >
                             Generate
                         </Button>
@@ -35,6 +39,7 @@ export const GenerateSchedule: React.FC = () => {
                         <Button
                             className="generate"
                             onClick={() => handleSubmit(2)}
+                            loading={generateSemester2Loading}
                         >
                             Generate
                         </Button>
