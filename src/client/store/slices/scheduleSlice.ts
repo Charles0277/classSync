@@ -3,6 +3,7 @@ import {
     IIndividualScheduleEntry
 } from '@/common/types/ISchedule';
 import { createSlice } from '@reduxjs/toolkit';
+import { logOut } from './authSlice';
 
 interface scheduleState {
     globalSchedule?: GlobalSchedule;
@@ -75,6 +76,12 @@ const scheduleSlice = createSlice({
             state.generateSemester1Loading = false;
             state.generateSemester2Loading = false;
         }
+    },
+    extraReducers(builder) {
+        builder.addCase(logOut, (state) => {
+            state.userSchedule = undefined;
+            state.globalSchedule = undefined;
+        });
     }
 });
 
