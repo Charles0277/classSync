@@ -31,7 +31,7 @@ export const updateClassById = async (
 
     if (getIdString(classEntity.instructor) !== userId) {
         throw new Error(
-            'Permission denied: You are not the owner of this class'
+            'Permission denied: You are not the teacher of this class'
         );
     }
 
