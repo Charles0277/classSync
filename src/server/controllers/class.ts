@@ -60,6 +60,14 @@ export const updateClass = async (
 ) => {
     try {
         const { id } = req.params;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send('Missing userId or Role in the request.');
+        }
 
         const allowedFields = [
             'name',
@@ -85,7 +93,12 @@ export const updateClass = async (
             Object.entries(req.body).filter(([_, value]) => value !== undefined)
         );
 
-        const updatedClass = await updateClassById(id, updatedValues);
+        const updatedClass = await updateClassById(
+            id,
+            userId,
+            role,
+            updatedValues
+        );
 
         return res.status(201).send(updatedClass);
     } catch (error) {
