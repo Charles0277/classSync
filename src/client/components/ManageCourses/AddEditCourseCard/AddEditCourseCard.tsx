@@ -1,3 +1,4 @@
+import { getIdString } from '@/common/utils.js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ICourse } from '../../../../common/types/ICourse.js';
@@ -38,7 +39,7 @@ const AddEditCourseForm: React.FC<AddEditCourseFormProps> = ({
         name: course ? course.name : '',
         code: course ? course.code : '',
         courseUnits: course
-            ? course.courseUnits.map((unit) => unit._id as string)
+            ? course.courseUnits.map((unit) => getIdString(unit._id))
             : []
     });
 
