@@ -43,7 +43,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                     onCancel={() => dispatch(closePopUp())}
                     className={`schedulePopUp entry-${popUp.day}`}
                 >
-                    <ClassDetails entry={popUp} />
+                    <ClassDetails key={popUp.classId} entry={popUp} />
                 </PopUpCard>
             )}
             <div className={styles.scheduleContainer}>

@@ -1,4 +1,6 @@
+import { IDecodedToken } from '@/common/types/IDecodedToken.ts';
 import express from 'express';
+import { jwtDecode } from 'jwt-decode';
 import {
     createClass,
     deleteClassById,
@@ -24,7 +26,12 @@ export const getAllClasses = async (
 export const getClass = async (req: express.Request, res: express.Response) => {
     try {
         const { id } = req.params;
-        const classEntity = await getClassById(id);
+        const token = req.header('Authorization')?.split(' ')[1];
+
+        const decoded: IDecodedToken = jwtDecode(token!);
+        const role = decoded.userRole;
+
+        const classEntity = await getClassById(id, role);
         return res.status(201).send(classEntity);
     } catch (error) {
         console.log(error);
@@ -60,7 +67,8 @@ export const updateClass = async (
             'instructor',
             'classTypes',
             'students',
-            'semester'
+            'semester',
+            'description'
         ];
 
         const invalidFields = Object.keys(req.body).filter(

@@ -24,6 +24,7 @@ export interface IIndividualScheduleEntry {
     hour: number;
     instructorName: string;
     roomName: string;
+    classId: string;
 }
 
 export interface IGlobalSchedule extends GlobalSchedule, Document {}

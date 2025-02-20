@@ -1,5 +1,6 @@
 import { all, fork } from 'redux-saga/effects';
 import authSaga from './sagas/authSaga';
+import classSaga from './sagas/classSaga';
 import courseSaga from './sagas/courseSaga';
 import courseUnitSaga from './sagas/courseUnitSaga';
 import roomSaga from './sagas/roomSaga';
@@ -15,6 +16,7 @@ export default function* rootSaga() {
         fork(roomSaga),
         fork(courseSaga),
         fork(courseUnitSaga),
-        fork(scheduleSaga)
+        fork(scheduleSaga),
+        fork(classSaga)
     ]);
 }

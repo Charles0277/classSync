@@ -46,6 +46,20 @@
     width: 40rem;
     height: 27.5rem;
     color: #555;
+    overflow-y: auto;
+}
+
+.schedulePopUp::-webkit-scrollbar {
+    width: 7.5px;
+    border-style: none;
+}
+
+.schedulePopUp::-webkit-scrollbar-thumb {
+    width: 10px;
+    background-color: #868686;
+    height: 10px;
+    border-radius: 5rem;
+    border-style: none;
 }
 
 .entry-0 {

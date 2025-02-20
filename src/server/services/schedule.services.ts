@@ -74,7 +74,7 @@ export const fetchUserSchedule = async (id: string, role: string) => {
 
         {
             $project: {
-                _id: 1,
+                classId: 1,
                 className: 1,
                 classType: 1,
                 day: 1,

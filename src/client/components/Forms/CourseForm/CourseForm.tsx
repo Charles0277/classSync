@@ -1,3 +1,4 @@
+import { getIdString } from '@/common/utils';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -34,19 +35,26 @@ const CourseForm: React.FC<CourseFormProps> = ({
         { value: string; label: string }[]
     >(() =>
         formData.courseUnits
-            .map((id) => courseUnits.find((unit) => unit._id === id))
+            .map((id) =>
+                courseUnits.find((unit) => getIdString(unit._id) === id)
+            )
             .filter(Boolean)
-            .map((unit) => ({ value: unit!._id as string, label: unit!.name }))
+            .map((unit) => ({
+                value: getIdString(unit!._id),
+                label: unit!.name
+            }))
     );
 
     useEffect(() => {
         if (selectedCourseUnits.length === 0) {
             const mappedUnits =
                 formData.courseUnits
-                    .map((id) => courseUnits.find((unit) => unit._id === id))
+                    .map((id) =>
+                        courseUnits.find((unit) => getIdString(unit._id) === id)
+                    )
                     .filter(Boolean)
                     .map((unit) => ({
-                        value: unit!._id as string,
+                        value: getIdString(unit!._id),
                         label: unit!.name
                     })) || [];
             setSelectedCourseUnits(mappedUnits);
@@ -68,7 +76,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
     };
 
     const courseUnitOptions = courseUnits.map((unit) => ({
-        value: unit._id as string,
+        value: getIdString(unit._id),
         label: unit.name
     }));
 

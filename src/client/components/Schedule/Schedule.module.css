@@ -39,16 +39,18 @@
     padding: 5px;
 }
 
-::-webkit-scrollbar {
-    width: 10px;
+.scheduleContainer ::-webkit-scrollbar {
+    width: 7.5px;
     background-color: var(--brightBlue-color);
     border-style: none;
 }
 
-::-webkit-scrollbar-thumb {
+.scheduleContainer ::-webkit-scrollbar-thumb {
     width: 10px;
     background-color: #868686;
     height: 10px;
     border-radius: 5rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
     border-style: none;
 }

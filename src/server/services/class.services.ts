@@ -2,7 +2,13 @@ import { ClassModel } from '../models/class.model.js';
 
 export const getClasses = () => ClassModel.find();
 
-export const getClassById = (id: string) => ClassModel.findById({ _id: id });
+export const getClassById = (id: string, role: string) => {
+    if (role === 'student') {
+        return ClassModel.findById({ _id: id }).select('-students');
+    } else {
+        return ClassModel.findById({ _id: id });
+    }
+};
 
 export const getClassByName = (name: string) =>
     ClassModel.findOne({ name: name });

@@ -1,5 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
+import classReducer from './slices/classSlice';
 import courseReducer from './slices/courseSlice';
 import courseUnitReducer from './slices/courseUnitSlice';
 import roomReducer from './slices/roomSlice';
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
     room: roomReducer,
     course: courseReducer,
     courseUnit: courseUnitReducer,
-    schedule: scheduleReducer
+    schedule: scheduleReducer,
+    class: classReducer
 });
 
 export default rootReducer;

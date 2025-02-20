@@ -6,6 +6,7 @@ export interface IClass extends Document {
     courseUnit: Types.ObjectId;
     instructor: Types.ObjectId;
     classTypes: string[];
-    students: Types.ObjectId[];
+    students?: Types.ObjectId[];
     semester: 1 | 2 | 0;
+    description?: string;
 }

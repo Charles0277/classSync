@@ -33,6 +33,9 @@ const classSchema = new Schema<IClass>(
             min: 0,
             max: 2,
             required: true
+        },
+        description: {
+            type: String
         }
     },
     { timestamps: true }
