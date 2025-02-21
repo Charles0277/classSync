@@ -2,9 +2,9 @@ import express from 'express';
 import {
     createCourseUnit,
     deleteCourseUnitById,
-    getCourseUnitByCode,
-    getCourseUnitById,
-    getCourseUnits,
+    fetchCourseUnitByCode,
+    fetchCourseUnitById,
+    fetchCourseUnits,
     updateCourseUnitById
 } from '../services/courseUnit.services.ts';
 
@@ -13,7 +13,7 @@ export const getAllCourseUnits = async (
     res: express.Response
 ) => {
     try {
-        const courseUnits = await getCourseUnits();
+        const courseUnits = await fetchCourseUnits();
         return res.status(201).send(courseUnits);
     } catch (error) {
         console.log(error);
@@ -27,7 +27,7 @@ export const getCourseUnit = async (
 ) => {
     try {
         const { id } = req.params;
-        const course = await getCourseUnitById(id);
+        const course = await fetchCourseUnitById(id);
         return res.status(201).send(course);
     } catch (error) {
         console.log(error);
@@ -95,7 +95,7 @@ export const createNewCourseUnit = async (
             });
         }
 
-        const existingCourseUnit = await getCourseUnitByCode(code);
+        const existingCourseUnit = await fetchCourseUnitByCode(code);
 
         if (existingCourseUnit) {
             return res

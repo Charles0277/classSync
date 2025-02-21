@@ -2,8 +2,8 @@ import express from 'express';
 import {
     createRoom,
     deleteRoomById,
-    getRoomByName,
-    getRooms,
+    fetchRoomByName,
+    fetchRooms,
     updateRoomById
 } from '../services/room.services.js';
 
@@ -12,7 +12,7 @@ export const getAllRooms = async (
     res: express.Response
 ) => {
     try {
-        const rooms = await getRooms();
+        const rooms = await fetchRooms();
         return res.status(201).send(rooms);
     } catch (error) {
         console.log(error);
@@ -23,7 +23,7 @@ export const getAllRooms = async (
 export const getRoom = async (req: express.Request, res: express.Response) => {
     try {
         const { name } = req.params;
-        const room = await getRoomByName(name);
+        const room = await fetchRoomByName(name);
         return res.status(201).send(room);
     } catch (error) {
         console.log(error);
@@ -91,7 +91,7 @@ export const createNewRoom = async (
             });
         }
 
-        const existingRoom = await getRoomByName(name);
+        const existingRoom = await fetchRoomByName(name);
 
         if (existingRoom) {
             return res.status(400).send({ error: 'Room already exists' });

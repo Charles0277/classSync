@@ -2,9 +2,9 @@ import express from 'express';
 import {
     createCourse,
     deleteCourseById,
-    getCourseByCode,
-    getCourseById,
-    getCourses,
+    fetchCourseByCode,
+    fetchCourseById,
+    fetchCourses,
     updateCourseById
 } from '../services/course.services.js';
 
@@ -13,7 +13,7 @@ export const getAllCourses = async (
     res: express.Response
 ) => {
     try {
-        const courses = await getCourses();
+        const courses = await fetchCourses();
         return res.status(201).send(courses);
     } catch (error) {
         console.log(error);
@@ -27,7 +27,7 @@ export const getCourse = async (
 ) => {
     try {
         const { id } = req.params;
-        const course = await getCourseById(id);
+        const course = await fetchCourseById(id);
         return res.status(201).send(course);
     } catch (error) {
         console.log(error);
@@ -95,7 +95,7 @@ export const createNewCourse = async (
             });
         }
 
-        const existingCourse = await getCourseByCode(code);
+        const existingCourse = await fetchCourseByCode(code);
 
         if (existingCourse) {
             return res.status(400).send({ error: 'Course already exists' });

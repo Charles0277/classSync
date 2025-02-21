@@ -1,12 +1,12 @@
 import { CourseUnitModel } from '../models/courseUnit.model.ts';
 
-export const getCourseUnits = () =>
+export const fetchCourseUnits = () =>
     CourseUnitModel.find().populate('instructor');
 
-export const getCourseUnitByCode = (code: string) =>
+export const fetchCourseUnitByCode = (code: string) =>
     CourseUnitModel.findOne({ code });
 
-export const getCourseUnitById = (id: string) =>
+export const fetchCourseUnitById = (id: string) =>
     CourseUnitModel.findById({ _id: id });
 
 export const createCourseUnit = (values: Record<string, any>) =>

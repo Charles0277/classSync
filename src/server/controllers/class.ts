@@ -4,9 +4,9 @@ import { jwtDecode } from 'jwt-decode';
 import {
     createClass,
     deleteClassById,
-    getClassById,
-    getClassByName,
-    getClasses,
+    fetchClassById,
+    fetchClassByName,
+    fetchClasses,
     updateClassById
 } from '../services/class.services.js';
 
@@ -15,7 +15,7 @@ export const getAllClasses = async (
     res: express.Response
 ) => {
     try {
-        const classes = await getClasses();
+        const classes = await fetchClasses();
         return res.status(201).send(classes);
     } catch (error) {
         console.log(error);
@@ -31,7 +31,7 @@ export const getClass = async (req: express.Request, res: express.Response) => {
         const decoded: IDecodedToken = jwtDecode(token!);
         const role = decoded.userRole;
 
-        const classEntity = await getClassById(id, role);
+        const classEntity = await fetchClassById(id, role);
         return res.status(201).send(classEntity);
     } catch (error) {
         console.log(error);
@@ -128,7 +128,7 @@ export const createNewClass = async (
             });
         }
 
-        const existingClass = await getClassByName(name);
+        const existingClass = await fetchClassByName(name);
 
         if (existingClass) {
             return res.status(400).send({ error: 'Class already exists' });

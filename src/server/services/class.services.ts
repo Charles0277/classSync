@@ -1,9 +1,9 @@
 import { getIdString } from '@/common/utils.ts';
 import { ClassModel } from '../models/class.model.js';
 
-export const getClasses = () => ClassModel.find();
+export const fetchClasses = () => ClassModel.find();
 
-export const getClassById = (id: string, role: string) => {
+export const fetchClassById = (id: string, role: string) => {
     if (role === 'student') {
         return ClassModel.findById({ _id: id }).select('-students');
     } else {
@@ -11,7 +11,7 @@ export const getClassById = (id: string, role: string) => {
     }
 };
 
-export const getClassByName = (name: string) =>
+export const fetchClassByName = (name: string) =>
     ClassModel.findOne({ name: name });
 
 export const createClass = (values: Record<string, any>) =>
@@ -23,7 +23,7 @@ export const updateClassById = async (
     role: string,
     values: Record<string, any>
 ) => {
-    const classEntity = await getClassById(id, role);
+    const classEntity = await fetchClassById(id, role);
 
     if (!classEntity) {
         throw new Error('Class not found');

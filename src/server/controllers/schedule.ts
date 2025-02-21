@@ -10,9 +10,9 @@ import {
 import express from 'express';
 import { jwtDecode } from 'jwt-decode';
 import { ILPScheduler } from '../scheduler/ilpScheduler.js';
-import { deleteAllClasses, getClasses } from '../services/class.services.js';
-import { getCourseUnits } from '../services/courseUnit.services.ts';
-import { getRooms } from '../services/room.services.js';
+import { deleteAllClasses, fetchClasses } from '../services/class.services.js';
+import { fetchCourseUnits } from '../services/courseUnit.services.ts';
+import { fetchRooms } from '../services/room.services.js';
 import {
     createSchedule,
     deleteScheduleById,
@@ -78,7 +78,7 @@ export async function generateGlobalSchedule(
             return res.status(400).send({ error: 'Invalid semester' });
         }
 
-        const currentClasses = await getClasses();
+        const currentClasses = await fetchClasses();
 
         if (currentClasses.length > 0) {
             await deleteAllClasses();
@@ -92,10 +92,10 @@ export async function generateGlobalSchedule(
         };
 
         const [rooms, instructors, students, courseUnits] = await Promise.all([
-            getRooms(),
+            fetchRooms(),
             fetchAllTeachers(),
             fetchStudents(),
-            getCourseUnits()
+            fetchCourseUnits()
         ]);
 
         const courseUnitsOfSemester = courseUnits.filter(
@@ -155,7 +155,7 @@ export async function generateGlobalSchedule(
         }
 
         // Retrieve all classes (after creating them as above)
-        const classes = await getClasses();
+        const classes = await fetchClasses();
 
         const scheduler = new ILPScheduler({
             classes,
