@@ -3,7 +3,8 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { IUser } from '../../../common/types/IUser';
 import {
     deleteUserApi,
-    getTeachersApi,
+    getAllTeachersApi,
+    getAllUsersApi,
     getUsersApi,
     updateUserApi
 } from '../../api/userApi';
@@ -11,9 +12,12 @@ import {
     deleteUserFailure,
     deleteUserRequest,
     deleteUserSuccess,
-    fetchTeachersFailure,
-    fetchTeachersRequest,
-    fetchTeachersSuccess,
+    fetchAllTeachersFailure,
+    fetchAllTeachersRequest,
+    fetchAllTeachersSuccess,
+    fetchAllUsersFailure,
+    fetchAllUsersRequest,
+    fetchAllUsersSuccess,
     fetchUsersFailure,
     fetchUsersRequest,
     fetchUsersSuccess,
@@ -22,28 +26,46 @@ import {
     updateUserSuccess
 } from '../slices/userSlice';
 
-function* handleFetchUsers(action: any) {
+function* handleFetchAllUsers(action: any) {
     const { token } = action.payload;
 
     try {
-        const response: AxiosResponse<IUser[]> = yield call(getUsersApi, token);
+        const response: AxiosResponse<IUser[]> = yield call(
+            getAllUsersApi,
+            token
+        );
+        yield put(fetchAllUsersSuccess(response.data));
+    } catch (error: any) {
+        yield put(fetchAllUsersFailure(error.message));
+    }
+}
+
+function* handleFetchUsers(action: any) {
+    const { token, studentsIds } = action.payload;
+
+    try {
+        const response: AxiosResponse<IUser[]> = yield call(
+            getUsersApi,
+            token,
+            studentsIds
+        );
         yield put(fetchUsersSuccess(response.data));
     } catch (error: any) {
         yield put(fetchUsersFailure(error.message));
     }
 }
 
-function* handleFetchTeachers(action: any) {
+function* handleFetchAllTeachers(action: any) {
     const { token } = action.payload;
 
     try {
         const response: AxiosResponse<IUser[]> = yield call(
-            getTeachersApi,
+            getAllTeachersApi,
             token
         );
-        yield put(fetchTeachersSuccess(response.data));
+        yield put(fetchAllTeachersSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchTeachersFailure(error.message));
+        yield put(fetchAllTeachersFailure(error.message));
     }
 }
 
@@ -81,8 +103,9 @@ function* handleDeleteUser(action: any) {
 }
 
 export default function* userSaga() {
+    yield takeLatest(fetchAllUsersRequest.type, handleFetchAllUsers);
     yield takeLatest(fetchUsersRequest.type, handleFetchUsers);
-    yield takeLatest(fetchTeachersRequest.type, handleFetchTeachers);
+    yield takeLatest(fetchAllTeachersRequest.type, handleFetchAllTeachers);
     yield takeLatest(updateUserRequest.type, handleUpdateUser);
     yield takeLatest(deleteUserRequest.type, handleDeleteUser);
 }

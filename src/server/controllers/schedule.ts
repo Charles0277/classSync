@@ -19,7 +19,7 @@ import {
     fetchGlobalSchedule,
     fetchUserSchedule
 } from '../services/schedule.services.js';
-import { getStudents, getTeachers } from '../services/user.services.js';
+import { fetchAllTeachers, fetchStudents } from '../services/user.services.js';
 
 export const getGlobalSchedule = async (
     req: express.Request,
@@ -93,8 +93,8 @@ export async function generateGlobalSchedule(
 
         const [rooms, instructors, students, courseUnits] = await Promise.all([
             getRooms(),
-            getTeachers(),
-            getStudents(),
+            fetchAllTeachers(),
+            fetchStudents(),
             getCourseUnits()
         ]);
 

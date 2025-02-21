@@ -20,6 +20,18 @@ const userSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
+        fetchAllUsersRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        fetchAllUsersSuccess: (state, action) => {
+            state.loading = false;
+            state.users = action.payload;
+        },
+        fetchAllUsersFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
         fetchUsersRequest: (state, action) => {
             state.loading = true;
             state.error = null;
@@ -32,15 +44,15 @@ const userSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
-        fetchTeachersRequest: (state, action) => {
+        fetchAllTeachersRequest: (state, action) => {
             state.loading = true;
             state.error = null;
         },
-        fetchTeachersSuccess: (state, action) => {
+        fetchAllTeachersSuccess: (state, action) => {
             state.loading = false;
             state.teachers = action.payload;
         },
-        fetchTeachersFailure: (state, action) => {
+        fetchAllTeachersFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },
@@ -83,12 +95,15 @@ const userSlice = createSlice({
 });
 
 export const {
+    fetchAllUsersRequest,
+    fetchAllUsersSuccess,
+    fetchAllUsersFailure,
     fetchUsersRequest,
     fetchUsersSuccess,
     fetchUsersFailure,
-    fetchTeachersRequest,
-    fetchTeachersSuccess,
-    fetchTeachersFailure,
+    fetchAllTeachersRequest,
+    fetchAllTeachersSuccess,
+    fetchAllTeachersFailure,
     updateUserRequest,
     updateUserSuccess,
     updateUserFailure,

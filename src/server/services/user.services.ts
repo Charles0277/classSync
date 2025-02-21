@@ -1,12 +1,16 @@
 import { UserModel } from '../models/user.models.js';
 
-export const getUsers = () => UserModel.find();
+export const fetchAllUsers = () => UserModel.find();
 
-export const getTeachers = () => UserModel.find({ role: 'teacher' });
+export const fetchUsers = (userIds: string[]) => {
+    return UserModel.find({ _id: { $in: userIds } });
+};
 
-export const getStudents = () => UserModel.find({ role: 'student' });
+export const fetchAllTeachers = () => UserModel.find({ role: 'teacher' });
 
-export const getUserByEmail = (email: string) =>
+export const fetchStudents = () => UserModel.find({ role: 'student' });
+
+export const fetchUserByEmail = (email: string) =>
     UserModel.findOne({ email })
         .populate('course')
         .populate('courseUnits')

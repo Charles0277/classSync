@@ -1,14 +1,21 @@
 import axios from 'axios';
 import { IUser } from '../../common/types/IUser.js';
 
-export const getUsersApi = (token: string) => {
-    return axios.get<IUser[]>(`http://localhost:3000/users`, {
+export const getAllUsersApi = (token: string) => {
+    return axios.get<IUser[]>(`http://localhost:3000/all-users`, {
         headers: { Authorization: `Bearer ${token}` }
     });
 };
 
-export const getTeachersApi = (token: string) => {
-    return axios.get<IUser[]>(`http://localhost:3000/teachers`, {
+export const getUsersApi = (token: string, userIds: string[]) => {
+    return axios.get<IUser[]>(`http://localhost:3000/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: userIds || []
+    });
+};
+
+export const getAllTeachersApi = (token: string) => {
+    return axios.get<IUser[]>(`http://localhost:3000/all-teachers`, {
         headers: { Authorization: `Bearer ${token}` }
     });
 };

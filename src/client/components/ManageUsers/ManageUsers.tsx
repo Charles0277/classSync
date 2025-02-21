@@ -4,7 +4,7 @@ import { IUser } from '../../../common/types/IUser';
 import addIcon from '../../assets/addIcon.svg';
 import {
     deleteUserRequest,
-    fetchUsersRequest
+    fetchAllUsersRequest
 } from '../../store/slices/userSlice';
 import { RootState } from '../../store/store.js';
 import Button from '../Button/Button';
@@ -26,7 +26,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
 
     useEffect(() => {
         if (token) {
-            dispatch(fetchUsersRequest({ token }));
+            dispatch(fetchAllUsersRequest({ token }));
         }
     }, [token]);
 

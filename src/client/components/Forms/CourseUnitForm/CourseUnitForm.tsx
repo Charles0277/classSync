@@ -1,11 +1,11 @@
+import { fetchAllTeachersRequest } from '@/client/store/slices/userSlice';
+import { getIdString } from '@/common/utils';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import { fetchTeachersRequest } from '../../../store/slices/userSlice';
 import { RootState } from '../../../store/store';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
-import { getIdString } from '@/common/utils';
 
 interface CourseUnitFormProps {
     formData: {
@@ -120,7 +120,7 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
 
     useEffect(() => {
         if (!teachers?.length) {
-            dispatch(fetchTeachersRequest({ token }));
+            dispatch(fetchAllTeachersRequest({ token }));
         }
     }, [dispatch, teachers, token]);
 

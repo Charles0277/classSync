@@ -3,6 +3,7 @@ import {
     resetClassEntity,
     updateClassRequest
 } from '@/client/store/slices/classSlice';
+import { fetchUsersRequest } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import { IIndividualScheduleEntry } from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
@@ -19,6 +20,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
     const dispatch = useDispatch();
     const { classEntity } = useSelector((state: RootState) => state.class);
     const { token, user } = useSelector((state: RootState) => state.auth);
+    const { users } = useSelector((state: RootState) => state.user);
 
     const [isEditing, setIsEditing] = useState(false);
     const [description, setDescription] = useState(
@@ -29,7 +31,24 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         if (token && getIdString(classEntity?._id) !== entry.classId) {
             dispatch(getClassRequest({ token, id: entry.classId }));
         }
-    }, [dispatch, token, entry.classId, classEntity?._id]);
+    }, [
+        dispatch,
+        token,
+        entry.classId,
+        classEntity?._id,
+        classEntity?.students
+    ]);
+
+    useEffect(() => {
+        if (classEntity?.students) {
+            dispatch(
+                fetchUsersRequest({
+                    token,
+                    studentsIds: classEntity?.students
+                })
+            );
+        }
+    }, [dispatch, classEntity?.students]);
 
     useEffect(() => {
         setDescription(classEntity?.description || 'No description provided.');
@@ -121,6 +140,14 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                 ) : (
                     <div className={styles.description}>{description}</div>
                 )}
+            </div>
+            <div className={styles.classProperty}>
+                <span className={styles.title}>Enrolled Students:</span>{' '}
+                <div className={styles.students}>
+                    {users.map(
+                        (user) => `${user.firstName} ${user.lastName} \n`
+                    )}
+                </div>
             </div>
         </div>
     );

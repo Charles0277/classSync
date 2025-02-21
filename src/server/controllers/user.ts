@@ -1,22 +1,35 @@
-import express from 'express';
-import {
-    deleteUserById,
-    getTeachers,
-    getUserByEmail,
-    getUsers,
-    updateUserById
-} from '../services/user.services.js';
 import {
     MANCHESTER_EMAIL_ERROR,
     MANCHESTER_EMAIL_REGEX
 } from '@/common/validation.js';
+import express from 'express';
+import {
+    deleteUserById,
+    fetchAllTeachers,
+    fetchAllUsers,
+    fetchUserByEmail,
+    fetchUsers,
+    updateUserById
+} from '../services/user.services.js';
 
 export const getAllUsers = async (
     req: express.Request,
     res: express.Response
 ) => {
     try {
-        const users = await getUsers();
+        const users = await fetchAllUsers();
+        return res.status(201).send(users);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const getUsers = async (req: express.Request, res: express.Response) => {
+    const userIds = req.query;
+    const userIdsArray = Object.values(userIds);
+    try {
+        const users = await fetchUsers(userIdsArray as string[]);
         return res.status(201).send(users);
     } catch (error) {
         console.log(error);
@@ -29,7 +42,7 @@ export const getAllTeachers = async (
     res: express.Response
 ) => {
     try {
-        const teachers = await getTeachers();
+        const teachers = await fetchAllTeachers();
         return res.status(201).send(teachers);
     } catch (error) {
         console.log(error);
@@ -40,7 +53,7 @@ export const getAllTeachers = async (
 export const getUser = async (req: express.Request, res: express.Response) => {
     try {
         const { email } = req.params;
-        const user = await getUserByEmail(email);
+        const user = await fetchUserByEmail(email);
         return res.status(201).send(user);
     } catch (error) {
         console.log(error);

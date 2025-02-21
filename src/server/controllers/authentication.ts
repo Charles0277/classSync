@@ -6,7 +6,7 @@ import {
     MANCHESTER_EMAIL_ERROR,
     MANCHESTER_EMAIL_REGEX
 } from '@/common/validation.js';
-import { createUser, getUserByEmail } from '../services/user.services.js';
+import { createUser, fetchUserByEmail } from '../services/user.services.js';
 
 export const signUp = async (req: express.Request, res: express.Response) => {
     try {
@@ -46,7 +46,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
         }
 
         // Check if user already exists
-        const existingUser = await getUserByEmail(email);
+        const existingUser = await fetchUserByEmail(email);
         if (existingUser) {
             return res.status(409).json({
                 error: 'An account with this email already exists'
@@ -85,8 +85,8 @@ export const login = async (req: express.Request, res: express.Response) => {
             });
         }
 
-        // Get user and check existence
-        const user = await getUserByEmail(email.toLowerCase());
+        // Fetch user and check existence
+        const user = await fetchUserByEmail(email.toLowerCase());
         if (!user) {
             return res.status(401).json({
                 error: 'Invalid email or password'
