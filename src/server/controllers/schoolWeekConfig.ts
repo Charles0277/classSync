@@ -45,7 +45,8 @@ export const updateSchoolWeekConfig = async (req: Request, res: Response) => {
         'daysPerWeek',
         'hoursPerDay',
         'startHour',
-        'endHour'
+        'endHour',
+        'updatedAt'
     ];
 
     // Filter out invalid fields
