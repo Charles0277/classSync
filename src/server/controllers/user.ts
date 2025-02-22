@@ -80,8 +80,22 @@ export const updateUser = async (
     req: express.Request,
     res: express.Response
 ) => {
+    const { id } = req.params;
     try {
-        const { id } = req.params;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send('Missing userId or Role in the request.');
+        }
+
+        if (id !== userId && role !== 'admin') {
+            return res
+                .status(403)
+                .send({ error: 'You are not authorized to update this user.' });
+        }
 
         const allowedFields = [
             'firstName',

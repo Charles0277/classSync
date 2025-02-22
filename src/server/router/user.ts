@@ -9,14 +9,20 @@ import {
 } from '../controllers/user.js';
 import {
     authenticateToken,
+    checkAdmin,
     checkTeacher
 } from '../middleware/authMiddleware/index.js';
 
 export default (router: express.Router) => {
-    router.get('/all-users', authenticateToken, getAllUsers);
+    router.get('/all-users', authenticateToken, checkAdmin, getAllUsers);
     router.get('/users', authenticateToken, checkTeacher, getUsers);
-    router.get('/all-teachers', authenticateToken, getAllTeachers);
+    router.get('/all-teachers', authenticateToken, checkAdmin, getAllTeachers);
     router.get('/user/:email', getUser);
-    router.delete('/delete-user/:id', authenticateToken, deleteUser);
+    router.delete(
+        '/delete-user/:id',
+        authenticateToken,
+        checkAdmin,
+        deleteUser
+    );
     router.put('/update-user/:id', authenticateToken, updateUser);
 };

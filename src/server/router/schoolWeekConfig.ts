@@ -1,31 +1,31 @@
 import express from 'express';
 import {
-    authenticateToken,
-    checkAdmin
-} from '../middleware/authMiddleware/index.js';
-import {
     createSchoolWeekConfig,
     getSchoolWeekConfig,
     updateSchoolWeekConfig
 } from '../controllers/schoolWeekConfig.js';
+import {
+    authenticateToken,
+    checkAdmin
+} from '../middleware/authMiddleware/index.js';
 
 export default (router: express.Router) => {
     router.get(
         '/school-week-config',
         authenticateToken,
-        // checkAdmin,
+        checkAdmin,
         getSchoolWeekConfig
     );
     router.post(
         '/create-school-week-config',
         authenticateToken,
-        // checkAdmin,
+        checkAdmin,
         createSchoolWeekConfig
     );
     router.post(
         '/update-school-week-config',
         authenticateToken,
-        // checkAdmin,
+        checkAdmin,
         updateSchoolWeekConfig
     );
 };

@@ -1,6 +1,5 @@
-import { IDecodedToken } from '@/common/types/IDecodedToken.ts';
+import { getIdString } from '@/common/utils.ts';
 import express from 'express';
-import { jwtDecode } from 'jwt-decode';
 import {
     createClass,
     deleteClassById,
@@ -26,10 +25,11 @@ export const getAllClasses = async (
 export const getClass = async (req: express.Request, res: express.Response) => {
     try {
         const { id } = req.params;
-        const token = req.header('Authorization')?.split(' ')[1];
+        const role = req.user?.userRole;
 
-        const decoded: IDecodedToken = jwtDecode(token!);
-        const role = decoded.userRole;
+        if (!role) {
+            return res.status(400).send('Missing Role in the request.');
+        }
 
         const classEntity = await fetchClassById(id, role);
         return res.status(201).send(classEntity);
@@ -67,6 +67,19 @@ export const updateClass = async (
             return res
                 .status(400)
                 .send('Missing userId or Role in the request.');
+        }
+
+        const classEntity = await fetchClassById(id, role);
+
+        if (
+            getIdString(classEntity?.instructor) !== userId &&
+            role !== 'admin'
+        ) {
+            return res
+                .status(401)
+                .send(
+                    'Permission denied: You are not the teacher of this class'
+                );
         }
 
         const allowedFields = [

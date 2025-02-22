@@ -1,4 +1,3 @@
-import { IDecodedToken } from '@/common/types/IDecodedToken.ts';
 import { IUser } from '@/common/types/IUser.js';
 import {
     convertClassTypeToRoomType,
@@ -8,7 +7,6 @@ import {
     splitCourseUnitIntoClasses
 } from '@/common/utils.js';
 import express from 'express';
-import { jwtDecode } from 'jwt-decode';
 import { ILPScheduler } from '../scheduler/ilpScheduler.js';
 import { deleteAllClasses, fetchClasses } from '../services/class.services.js';
 import { fetchCourseUnits } from '../services/courseUnit.services.ts';
@@ -39,10 +37,19 @@ export const getUserSchedule = async (
     res: express.Response
 ) => {
     const { id } = req.params;
-    const token = req.header('Authorization')?.split(' ')[1];
     try {
-        const decoded: IDecodedToken = jwtDecode(token!);
-        const role = decoded.userRole;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send('Missing userId or Role in the request.');
+        }
+
+        if (id !== userId && role !== 'admin') {
+            return res.status(403).send({ error: 'Unauthorized' });
+        }
 
         const userSchedule = await fetchUserSchedule(id, role);
         return res.status(200).send(userSchedule);
