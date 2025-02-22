@@ -11,6 +11,7 @@ const Configuration = () => {
                 <Panel title="School Week" rightSideControl="button"></Panel>
                 <Panel title="Courses" rightSideControl="button"></Panel>
                 <Panel title="Course Units" rightSideControl="button"></Panel>
+                <Panel title="Schedules" rightSideControl="button"></Panel>
             </Card>
         </PageContainer>
     );

@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 50%;
+    align-items: center;
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    background-color: #dbdbdb;
+    border-radius: 10px;
+    padding: 1rem;
+    font-weight: 600;
+}

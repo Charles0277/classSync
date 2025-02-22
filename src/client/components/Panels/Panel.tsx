@@ -15,6 +15,7 @@ import AddEditCourseUnitCard from '../ManageCourseUnits/AddEditCourseUnitCard/Ad
 import ManageCourseUnits from '../ManageCourseUnits/ManageCourseUnits';
 import AddEditRoomCard from '../ManageRooms/AddEditRoomCard/AddEditRoomCard';
 import ManageRooms from '../ManageRooms/ManageRooms';
+import { ManageSchedules } from '../ManageSchedules/ManageSchedules';
 import ManageSchoolWeek from '../ManageSchoolWeek/ManageSchoolWeek';
 import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
 import ManageUsers from '../ManageUsers/ManageUsers';
@@ -143,7 +144,8 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                         })
                     }
                 />
-            )
+            ),
+            Schedules: <ManageSchedules />
         };
         return modalComponents[title as keyof typeof modalComponents] || null;
     }, [title]);
