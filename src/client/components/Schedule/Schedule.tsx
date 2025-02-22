@@ -53,7 +53,10 @@ const Schedule: React.FC<ScheduleProps> = ({
                 </PopUpCard>
             )}
             <div className={styles.scheduleContainer}>
-                <div className={styles.scheduleGrid}>
+                <div
+                    className={styles.scheduleGrid}
+                    style={{ gap: `${globalSchedule && '5px'}` }}
+                >
                     <div
                         className={`${styles.gridCell} ${styles.hourLabel}`}
                     ></div>{' '}
