@@ -92,7 +92,9 @@ const Schedule: React.FC<ScheduleProps> = ({
                                                     >
                                                         <ScheduleEntry
                                                             entry={entry}
-                                                            day={day}
+                                                            classType={
+                                                                entry.classType
+                                                            }
                                                             onClick={() =>
                                                                 dispatch(
                                                                     openPopUp(

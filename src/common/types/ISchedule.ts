@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 export interface IGlobalScheduleEntry {
     _id?: Types.ObjectId;
     className: string;
-    classType: [];
+    classType: string;
     day: number;
     hour: number;
     instructorName: string;
@@ -22,7 +22,7 @@ export interface GlobalSchedule {
 export interface IIndividualScheduleEntry {
     _id?: Types.ObjectId;
     className: string;
-    classType: [];
+    classType: string;
     day: number;
     hour: number;
     instructorName: string;

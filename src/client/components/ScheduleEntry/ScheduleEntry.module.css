@@ -24,23 +24,23 @@
     overflow: hidden;
 }
 
-.entry-monday {
+.Workshop {
     background-color: #e8a9f4;
 }
 
-.entry-tuesday {
+.Laboratory {
     background-color: #f4c7a9;
 }
 
-.entry-wednesday {
+.Lecture {
     background-color: #bdf4a9;
 }
 
-.entry-thursday {
+.Meeting {
     background-color: #a9c7f4;
 }
 
-.entry-friday {
+.Seminar {
     background-color: #f4e8a9;
 }
 

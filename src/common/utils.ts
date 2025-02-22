@@ -77,6 +77,7 @@ export const convertRoomTypeToClassType = memoize(
     (roomType: string): string => {
         switch (roomType[0]) {
             case 'classroom':
+            case 'workshop':
                 return 'Workshop';
             case 'laboratory':
                 return 'Laboratory';
@@ -84,8 +85,8 @@ export const convertRoomTypeToClassType = memoize(
                 return 'Lecture';
             case 'office':
                 return 'Meeting';
-            case 'workshop':
-                return 'Workshop';
+            case 'seminar':
+                return 'Seminar';
             default:
                 return roomType;
         }
