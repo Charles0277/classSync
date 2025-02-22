@@ -1,6 +1,6 @@
 import {
     IGlobalScheduleEntry,
-    IIndividualScheduleEntry
+    IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType } from '@/common/utils';
 import classTypeIcon from '../../assets/classTypeIcon.svg';
@@ -9,7 +9,7 @@ import locationIcon from '../../assets/locationIcon.svg';
 import styles from './ScheduleEntry.module.css';
 
 interface SchedulEntryProps {
-    entry: IIndividualScheduleEntry | IGlobalScheduleEntry;
+    entry: IUserScheduleEntry | IGlobalScheduleEntry;
     classType: string;
     onClick: () => void;
 }

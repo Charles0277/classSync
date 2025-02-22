@@ -5,7 +5,7 @@ import {
 } from '@/client/store/slices/classSlice';
 import { fetchUsersRequest } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
-import { IIndividualScheduleEntry } from '@/common/types/ISchedule';
+import { IUserScheduleEntry } from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ import Button from '../Button/Button';
 import styles from './ClassDetails.module.css';
 
 interface ClassDetailsProps {
-    entry: IIndividualScheduleEntry;
+    entry: IUserScheduleEntry;
 }
 
 export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {

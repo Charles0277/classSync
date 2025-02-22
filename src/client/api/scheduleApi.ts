@@ -1,18 +1,19 @@
 import {
     IGlobalSchedule,
-    IIndividualScheduleEntry
+    IGlobalScheduleEntry,
+    IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import axios from 'axios';
 
 export const getGlobalScheduleApi = (token: string) => {
-    return axios.get<IGlobalSchedule>(
+    return axios.get<IGlobalScheduleEntry[]>(
         `http://localhost:3000/get-global-schedule`,
         { headers: { Authorization: `Bearer ${token}` } }
     );
 };
 
 export const getUserScheduleApi = (token: string, id: string, role: string) => {
-    return axios.get<IIndividualScheduleEntry>(
+    return axios.get<IUserScheduleEntry[]>(
         `http://localhost:3000/get-user-schedule/${id}`,
         {
             params: { role: role },

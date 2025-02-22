@@ -1,19 +1,19 @@
 import {
     IGlobalScheduleEntry,
-    IIndividualScheduleEntry
+    IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import { createSlice } from '@reduxjs/toolkit';
 import { logOut } from './authSlice';
 
 interface scheduleState {
     globalSchedule?: IGlobalScheduleEntry[];
-    userSchedule?: IIndividualScheduleEntry[];
+    userSchedule?: IUserScheduleEntry[];
     loading: boolean;
     hasLoaded: boolean;
     generateSemester1Loading?: boolean;
     generateSemester2Loading?: boolean;
     error: string | null;
-    popUpClass?: IIndividualScheduleEntry;
+    popUpClass?: IUserScheduleEntry;
 }
 
 const initialState: scheduleState = {

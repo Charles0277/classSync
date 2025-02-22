@@ -5,7 +5,8 @@ import {
 } from '@/client/api/scheduleApi';
 import {
     IGlobalSchedule,
-    IIndividualScheduleEntry
+    IGlobalScheduleEntry,
+    IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -24,7 +25,7 @@ import {
 function* getGlobalSchedule(action: any) {
     const { token } = action.payload;
     try {
-        const response: AxiosResponse<IGlobalSchedule> = yield call(
+        const response: AxiosResponse<IGlobalScheduleEntry[]> = yield call(
             getGlobalScheduleApi,
             token
         );
@@ -37,7 +38,7 @@ function* getGlobalSchedule(action: any) {
 function* getUserSchedule(action: any) {
     const { token, id, role } = action.payload;
     try {
-        const response: AxiosResponse<IIndividualScheduleEntry> = yield call(
+        const response: AxiosResponse<IUserScheduleEntry[]> = yield call(
             getUserScheduleApi,
             token,
             id,

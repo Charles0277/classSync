@@ -19,7 +19,7 @@ export interface GlobalSchedule {
     };
 }
 
-export interface IIndividualScheduleEntry {
+export interface IUserScheduleEntry {
     _id?: Types.ObjectId;
     className: string;
     classType: string;

@@ -2,7 +2,7 @@ import { closePopUp, openPopUp } from '@/client/store/slices/scheduleSlice';
 import { RootState } from '@/client/store/store';
 import {
     IGlobalScheduleEntry,
-    IIndividualScheduleEntry
+    IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ import { ScheduleEntry } from '../ScheduleEntry/ScheduleEntry';
 import styles from './Schedule.module.css';
 
 type ScheduleProps = {
-    userSchedule?: IIndividualScheduleEntry[];
+    userSchedule?: IUserScheduleEntry[];
     globalSchedule?: IGlobalScheduleEntry[];
 };
 
@@ -27,7 +27,7 @@ const Schedule: React.FC<ScheduleProps> = ({
 
     const dispatch = useDispatch();
     const scheduleMap: {
-        [key: string]: (IIndividualScheduleEntry | IGlobalScheduleEntry)[];
+        [key: string]: (IUserScheduleEntry | IGlobalScheduleEntry)[];
     } = {};
 
     const schedule = globalSchedule
