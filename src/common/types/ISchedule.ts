@@ -2,12 +2,15 @@ import { Document, Types } from 'mongoose';
 
 export interface IGlobalScheduleEntry {
     _id?: Types.ObjectId;
-    classId: String;
-    roomId: String;
+    className: string;
+    classType: [];
     day: number;
     hour: number;
-    instructorId: String;
-    studentIds?: string[];
+    instructorName: string;
+    roomName: string;
+    classId: string;
+    studentIds: string[];
+    type: string;
 }
 
 export interface GlobalSchedule {

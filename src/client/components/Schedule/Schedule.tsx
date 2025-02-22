@@ -1,7 +1,7 @@
 import { closePopUp, openPopUp } from '@/client/store/slices/scheduleSlice';
 import { RootState } from '@/client/store/store';
 import {
-    GlobalSchedule,
+    IGlobalScheduleEntry,
     IIndividualScheduleEntry
 } from '@/common/types/ISchedule';
 import React from 'react';
@@ -13,7 +13,7 @@ import styles from './Schedule.module.css';
 
 type ScheduleProps = {
     userSchedule?: IIndividualScheduleEntry[];
-    globalSchedule?: GlobalSchedule;
+    globalSchedule?: IGlobalScheduleEntry[];
 };
 
 const Schedule: React.FC<ScheduleProps> = ({
@@ -26,14 +26,20 @@ const Schedule: React.FC<ScheduleProps> = ({
     const hours = Array.from({ length: 10 }, (_, i) => 9 + i);
 
     const dispatch = useDispatch();
-    const scheduleMap: { [key: string]: IIndividualScheduleEntry } = {};
+    const scheduleMap: {
+        [key: string]: (IIndividualScheduleEntry | IGlobalScheduleEntry)[];
+    } = {};
 
-    if (userSchedule) {
-        userSchedule.forEach((entry) => {
-            const key = `${entry.day}-${entry.hour}`;
-            scheduleMap[key] = entry;
-        });
-    }
+    const schedule = globalSchedule
+        ? globalSchedule
+        : userSchedule
+          ? userSchedule
+          : [];
+    schedule.forEach((entry) => {
+        const key = `${entry.day}-${entry.hour}`;
+        if (!scheduleMap[key]) scheduleMap[key] = [];
+        scheduleMap[key].push(entry);
+    });
 
     return (
         <>
@@ -72,15 +78,29 @@ const Schedule: React.FC<ScheduleProps> = ({
                                         key={dayIndex}
                                         className={styles.gridCell}
                                     >
-                                        {entry && (
-                                            <ScheduleEntry
-                                                entry={entry}
-                                                day={day}
-                                                onClick={() => {
-                                                    dispatch(openPopUp(entry));
-                                                }}
-                                            />
-                                        )}
+                                        {scheduleMap[key] &&
+                                            scheduleMap[key].map(
+                                                (entry, idx, arr) => (
+                                                    <div
+                                                        key={idx}
+                                                        style={{
+                                                            width: `${100 / arr.length}%`
+                                                        }}
+                                                    >
+                                                        <ScheduleEntry
+                                                            entry={entry}
+                                                            day={day}
+                                                            onClick={() =>
+                                                                dispatch(
+                                                                    openPopUp(
+                                                                        entry
+                                                                    )
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                )
+                                            )}
                                     </div>
                                 );
                             })}

@@ -16,6 +16,7 @@
 }
 
 .gridCell {
+    display: flex;
     background-color: white;
     position: relative;
     border-style: none solid solid none;

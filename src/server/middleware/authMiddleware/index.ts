@@ -32,12 +32,16 @@ export const checkAdmin = async (
         return res.status(401).send('Unauthorized: No token provided');
     }
 
-    const decoded: IDecodedToken = jwtDecode(token);
+    try {
+        const decoded: IDecodedToken = jwtDecode(token);
 
-    if (decoded.userRole === 'admin') {
-        next();
-    } else {
-        res.status(403).send('Forbidden: Admins only');
+        if (decoded.userRole === 'admin') {
+            next();
+        } else {
+            res.status(403).send('Forbidden: Admins only');
+        }
+    } catch (error) {
+        return res.status(401).send('Unauthorized: Invalid token');
     }
 };
 

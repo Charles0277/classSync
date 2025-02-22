@@ -29,7 +29,7 @@ export const updateClassById = async (
         throw new Error('Class not found');
     }
 
-    if (getIdString(classEntity.instructor) !== userId) {
+    if (getIdString(classEntity.instructor) !== userId && role !== 'admin') {
         throw new Error(
             'Permission denied: You are not the teacher of this class'
         );

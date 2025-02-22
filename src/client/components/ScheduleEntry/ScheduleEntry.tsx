@@ -1,9 +1,12 @@
-import { IIndividualScheduleEntry } from '@/common/types/ISchedule';
+import {
+    IGlobalScheduleEntry,
+    IIndividualScheduleEntry
+} from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType } from '@/common/utils';
 import styles from './ScheduleEntry.module.css';
 
 interface SchedulEntryProps {
-    entry: IIndividualScheduleEntry;
+    entry: IIndividualScheduleEntry | IGlobalScheduleEntry;
     day: string;
     onClick: () => void;
 }
@@ -17,7 +20,7 @@ export const ScheduleEntry: React.FC<SchedulEntryProps> = ({
         <div
             onClick={onClick}
             style={{ cursor: 'pointer' }}
-            className={`${styles.scheduleEntry} ${styles[`entry-${day.toLowerCase()}`]}`}
+            className={`${'type' in entry ? styles.globalScheduleEntry : styles.scheduleEntry} ${styles[`entry-${day.toLowerCase()}`]}`}
         >
             <div className={styles.entryContent}>
                 <div className={styles.entryTitle}>{entry.className}</div>

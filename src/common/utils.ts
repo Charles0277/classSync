@@ -84,6 +84,8 @@ export const convertRoomTypeToClassType = memoize(
                 return 'Lecture';
             case 'office':
                 return 'Meeting';
+            case 'workshop':
+                return 'Workshop';
             default:
                 return roomType;
         }
