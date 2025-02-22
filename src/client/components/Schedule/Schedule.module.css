@@ -8,7 +8,7 @@
 .scheduleGrid {
     display: grid;
     grid-template-columns: 80px repeat(5, 225px);
-    grid-template-rows: 60px repeat(10, 90px);
+    grid-template-rows: 60px repeat(10, 100px);
     overflow-y: auto;
     height: 85%;
     overflow-x: hidden;

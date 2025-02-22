@@ -53,6 +53,7 @@
     color: #555;
     font-size: 0.8rem;
     line-height: 1;
+    align-items: baseline;
 }
 
 .entryTitle {
@@ -60,7 +61,22 @@
 }
 
 .entryDetail {
+    display: flex;
+    flex-direction: column;
     font-weight: 500;
+    gap: 0.2rem;
+}
+
+.entryDetail img {
+    display: flex;
+    width: 15px;
+    max-height: 15px;
+}
+
+.classProperty {
+    display: flex;
+    gap: 0.2rem;
+    align-items: center;
 }
 
 .scheduleEntry:hover {
