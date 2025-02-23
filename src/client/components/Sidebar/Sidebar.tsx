@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import classSyncLogo from '../../assets/classSyncLogo.svg';
-import createScheduleIcon from '../../assets/createScheduleIcon.svg';
 import feedbackIcon from '../../assets/feedbackIcon.svg';
 import homeIcon from '../../assets/homeIcon.svg';
 import profileIcon from '../../assets/profileIcon.svg';
@@ -97,9 +96,6 @@ const Sidebar: React.FC = () => {
                         onClick={() => navigate('/')}
                     >
                         <img src={homeIcon} alt="Home" />
-                    </Button>
-                    <Button type="button" className="sidebar">
-                        <img src={createScheduleIcon} alt="Schedule" />
                     </Button>
                     <Button
                         type="button"
