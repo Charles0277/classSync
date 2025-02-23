@@ -110,6 +110,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                             className={styles.feedbackInput}
                             value={formData.feedback}
                             onChange={handleFeedbackChange}
+                            maxLength={1000}
                         />
                         <div className={styles.feedbackEditButtons}>
                             <Button
