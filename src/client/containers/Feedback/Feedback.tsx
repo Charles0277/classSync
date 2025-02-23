@@ -1,13 +1,15 @@
+import Button from '@/client/components/Button/Button';
 import PageContainer from '@/client/components/Common/PageContainer/PageContainer';
 import { FeedbackForm } from '@/client/components/FeedbackForm/FeedbackForm';
 import { PopUpCard } from '@/client/components/ManageConfigCard/PopUpCard';
 import {
     deleteFeedbackRequest,
+    getAllFeedbackRequest,
     getUserFeedbackRequest
 } from '@/client/store/slices/feedbackSlice';
 import { RootState } from '@/client/store/store';
 import { IFeedback } from '@/common/types/IFeedback';
-import { getIdString } from '@/common/utils';
+import { capitaliseFirstLetter, getIdString } from '@/common/utils';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import addIcon from '../../assets/addIcon.svg';
@@ -27,6 +29,15 @@ export const Feedback = () => {
     const [selectedFeedback, setSelectedFeedback] = useState<
         IFeedback | undefined
     >();
+    const [filter, setFilter] = useState<
+        'all' | 'compliment' | 'suggestion' | 'complaint'
+    >('all');
+
+    const handleFilterChange = (
+        newFilter: 'all' | 'compliment' | 'suggestion' | 'complaint'
+    ) => {
+        setFilter(newFilter);
+    };
 
     const isAdmin = user?.role === 'admin';
     const popupTitle = selectedFeedback
@@ -36,10 +47,14 @@ export const Feedback = () => {
         : 'Submit Feedback';
 
     useEffect(() => {
-        if (user?._id && token) {
-            dispatch(getUserFeedbackRequest({ token, userId: user._id }));
+        if (token) {
+            if (user?._id && !isAdmin) {
+                dispatch(getUserFeedbackRequest({ token, userId: user._id }));
+            } else {
+                dispatch(getAllFeedbackRequest({ token }));
+            }
         }
-    }, [user?._id, token, dispatch]);
+    }, [user?._id, token, dispatch, isAdmin]);
 
     const handleFeedbackAction = (
         action: 'view' | 'edit' | 'submit',
@@ -60,20 +75,59 @@ export const Feedback = () => {
         setSelectedFeedback(undefined);
     };
 
+    const filteredFeedback = feedBackCollection?.filter((feedback) => {
+        const matchesFilter = filter === 'all' || feedback.type === filter;
+        return matchesFilter;
+    });
+
     return (
         <PageContainer className="feedbackPage">
             <div className={styles.title}>Feedback</div>
+            <div className={styles.filter}>
+                Filter:
+                {['all', 'compliment', 'suggestion', 'complaint'].map(
+                    (type) => (
+                        <Button
+                            key={type}
+                            className={filter === type ? 'selectedType' : ''}
+                            onClick={() =>
+                                handleFilterChange(
+                                    type as
+                                        | 'all'
+                                        | 'compliment'
+                                        | 'suggestion'
+                                        | 'complaint'
+                                )
+                            }
+                            style={{
+                                backgroundColor:
+                                    type === 'compliment'
+                                        ? '#2ecc71'
+                                        : type === 'suggestion'
+                                          ? '#b8b8b8'
+                                          : type === 'all'
+                                            ? '#2c3e50'
+                                            : '#e74c3c'
+                            }}
+                        >
+                            {capitaliseFirstLetter(type)}
+                        </Button>
+                    )
+                )}
+            </div>
             <div className={styles.feedbackContainer}>
-                <div
-                    className={styles.submitFeedbackCard}
-                    onClick={() => handleFeedbackAction('submit')}
-                >
-                    Submit Feedback
-                    <img src={addIcon} alt="Add feedback" />
-                </div>
-                {feedBackCollection.map((feedback) => (
+                {!isAdmin && (
                     <div
-                        key={feedback.id}
+                        className={styles.submitFeedbackCard}
+                        onClick={() => handleFeedbackAction('submit')}
+                    >
+                        Submit Feedback
+                        <img src={addIcon} alt="Add feedback" />
+                    </div>
+                )}
+                {filteredFeedback.map((feedback) => (
+                    <div
+                        key={getIdString(feedback._id)}
                         className={styles.feedbackCard}
                         onClick={() => handleFeedbackAction('view', feedback)}
                     >
