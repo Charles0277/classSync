@@ -65,15 +65,13 @@
 }
 
 .feedbackType {
-    background-color: #3498db;
+    display: flex;
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
     text-transform: uppercase;
-    align-self: flex-start;
-    margin-bottom: 1rem;
 }
 
 .feedbackText {
@@ -97,4 +95,22 @@
 
 .complaint {
     background-color: #e74c3c;
+}
+
+.feedbackHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.deleteIcon {
+    width: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: transform 0.2s ease;
+}
+
+.deleteIcon:hover {
+    transform: scale(1.1);
 }

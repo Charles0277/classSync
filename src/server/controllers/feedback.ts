@@ -54,8 +54,8 @@ export const deleteFeedback = async (
                 .send('Missing userId or Role in the request.');
         }
 
-        await deleteFeedbackById(id, userId, role);
-        return res.status(204).send();
+        const deletedFeedback = await deleteFeedbackById(id, userId, role);
+        return res.status(200).send(deletedFeedback);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
