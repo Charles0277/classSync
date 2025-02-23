@@ -77,7 +77,7 @@ export const updateFeedback = async (
                 .send('Missing userId or Role in the request.');
         }
 
-        const allowedFields = ['type', 'feedback'];
+        const allowedFields = ['type', 'feedback', 'user'];
 
         const invalidFields = Object.keys(req.body).filter(
             (key) => !allowedFields.includes(key)

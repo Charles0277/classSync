@@ -11,45 +11,54 @@ import { getIdString } from '@/common/utils';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import addIcon from '../../assets/addIcon.svg';
+import editIcon from '../../assets/editIcon.svg';
 import trashIcon from '../../assets/trashIcon.svg';
 import styles from './Feedback.module.css';
 
 export const Feedback = () => {
     const dispatch = useDispatch();
-
     const { user, token } = useSelector((state: RootState) => state.auth);
     const { feedBackCollection } = useSelector(
         (state: RootState) => state.feedback
     );
 
-    const [writeFeedback, setWriteFeedback] = useState(false);
-    const [feedback, setFeedback] = useState<IFeedback>();
+    const [openPopUp, setOpenPopUp] = useState(false);
+    const [editFeedback, setEditFeedback] = useState(false);
+    const [selectedFeedback, setSelectedFeedback] = useState<
+        IFeedback | undefined
+    >();
 
     const isAdmin = user?.role === 'admin';
+    const popupTitle = selectedFeedback
+        ? editFeedback
+            ? 'Edit Feedback'
+            : 'View Feedback'
+        : 'Submit Feedback';
 
-    const handleSubmitFeedback = () => {
-        setWriteFeedback(true);
-    };
+    useEffect(() => {
+        if (user?._id && token) {
+            dispatch(getUserFeedbackRequest({ token, userId: user._id }));
+        }
+    }, [user?._id, token, dispatch]);
 
-    const handleViewFeedback = (feedback: IFeedback) => {
-        setWriteFeedback(true);
-        setFeedback(feedback);
+    const handleFeedbackAction = (
+        action: 'view' | 'edit' | 'submit',
+        feedback?: IFeedback
+    ) => {
+        setOpenPopUp(true);
+        setEditFeedback(action === 'edit');
+        setSelectedFeedback(feedback);
     };
 
     const handleDeleteFeedback = (feedbackId: string) => {
-        dispatch(deleteFeedbackRequest({ id: feedbackId, token }));
+        if (token) dispatch(deleteFeedbackRequest({ id: feedbackId, token }));
     };
 
     const handleCancel = () => {
-        setWriteFeedback(false);
-        setFeedback(undefined);
+        setOpenPopUp(false);
+        setEditFeedback(false);
+        setSelectedFeedback(undefined);
     };
-
-    useEffect(() => {
-        if (user && token) {
-            dispatch(getUserFeedbackRequest({ token, userId: user?._id }));
-        }
-    }, [user, token, dispatch]);
 
     return (
         <PageContainer className="feedbackPage">
@@ -57,16 +66,16 @@ export const Feedback = () => {
             <div className={styles.feedbackContainer}>
                 <div
                     className={styles.submitFeedbackCard}
-                    onClick={handleSubmitFeedback}
+                    onClick={() => handleFeedbackAction('submit')}
                 >
                     Submit Feedback
-                    <img src={addIcon} />
+                    <img src={addIcon} alt="Add feedback" />
                 </div>
                 {feedBackCollection.map((feedback) => (
                     <div
                         key={feedback.id}
                         className={styles.feedbackCard}
-                        onClick={() => handleViewFeedback(feedback)}
+                        onClick={() => handleFeedbackAction('view', feedback)}
                     >
                         <div className={styles.feedbackHeader}>
                             <div
@@ -74,17 +83,28 @@ export const Feedback = () => {
                             >
                                 {feedback.type}
                             </div>
-                            <img
-                                src={trashIcon}
-                                className={styles.deleteIcon}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteFeedback(
-                                        getIdString(feedback._id)
-                                    );
-                                }}
-                                alt="Delete feedback"
-                            />
+                            <div className={styles.actionButtons}>
+                                <img
+                                    src={editIcon}
+                                    className={styles.editIcon}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleFeedbackAction('edit', feedback);
+                                    }}
+                                    alt="Edit feedback"
+                                />
+                                <img
+                                    src={trashIcon}
+                                    className={styles.deleteIcon}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteFeedback(
+                                            getIdString(feedback._id)
+                                        );
+                                    }}
+                                    alt="Delete feedback"
+                                />
+                            </div>
                         </div>
                         <div className={styles.feedbackText}>
                             {feedback.feedback}
@@ -92,13 +112,17 @@ export const Feedback = () => {
                     </div>
                 ))}
             </div>
-            {writeFeedback && (
+            {openPopUp && (
                 <PopUpCard
-                    title="Submit Feedback"
+                    title={popupTitle}
                     onCancel={handleCancel}
                     className="feedbackPopUp"
                 >
-                    <FeedbackForm onCancel={handleCancel} feedback={feedback} />
+                    <FeedbackForm
+                        onCancel={handleCancel}
+                        feedback={selectedFeedback}
+                        edit={editFeedback}
+                    />
                 </PopUpCard>
             )}
         </PageContainer>

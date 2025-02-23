@@ -1,4 +1,7 @@
-import { createFeedbackRequest } from '@/client/store/slices/feedbackSlice';
+import {
+    createFeedbackRequest,
+    updateFeedbackRequest
+} from '@/client/store/slices/feedbackSlice';
 import { RootState } from '@/client/store/store';
 import { IFeedback } from '@/common/types/IFeedback';
 import { capitaliseFirstLetter, getIdString } from '@/common/utils';
@@ -10,9 +13,10 @@ import styles from './FeedbackForm.module.css';
 interface FeedbackFormProps {
     feedback?: IFeedback;
     onCancel: () => void;
+    edit?: boolean;
 }
 
-interface feedbackFormState {
+interface FeedbackFormState {
     type: 'compliment' | 'suggestion' | 'complaint';
     feedback: string;
     user: string;
@@ -20,26 +24,39 @@ interface feedbackFormState {
 
 export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     feedback,
-    onCancel
+    onCancel,
+    edit
 }) => {
     const { user, token } = useSelector((state: RootState) => state.auth);
-
     const dispatch = useDispatch();
+
+    const [formData, setFormData] = useState<FeedbackFormState>({
+        type: feedback?.type || 'compliment',
+        feedback: feedback?.feedback || '',
+        user: getIdString(user?._id)
+    });
 
     const handleTypeChange = (
         type: 'compliment' | 'suggestion' | 'complaint'
     ) => {
-        setFormData({ ...formData, type });
+        setFormData((prevFormData) => ({ ...prevFormData, type }));
     };
 
-    const [formData, setFormData] = useState<feedbackFormState>({
-        type: 'compliment',
-        feedback: '',
-        user: getIdString(user?._id)
-    });
+    const handleFeedbackChange = (
+        e: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        const { value } = e.target;
+        setFormData((prevFormData) => ({ ...prevFormData, feedback: value }));
+    };
 
     const handleSave = () => {
-        dispatch(createFeedbackRequest({ formData, token }));
+        if (edit && feedback) {
+            dispatch(
+                updateFeedbackRequest({ id: feedback._id, formData, token })
+            );
+        } else {
+            dispatch(createFeedbackRequest({ formData, token }));
+        }
         onCancel();
     };
 
@@ -47,47 +64,52 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         <div className={styles.feedbackForm}>
             <div className={styles.typeContainer}>
                 <div>
-                    Type: {feedback && capitaliseFirstLetter(feedback.type)}
+                    Type:{' '}
+                    {feedback && !edit && capitaliseFirstLetter(feedback.type)}
                 </div>
-                {!feedback && (
+                {(!feedback || edit) && (
                     <div className={styles.typeButtons}>
-                        <Button
-                            className={styles.feedbackType}
-                            onClick={() => handleTypeChange('compliment')}
-                            style={{ backgroundColor: '#2ecc71' }}
-                        >
-                            Compliment
-                        </Button>
-                        <Button
-                            className={styles.feedbackType}
-                            onClick={() => handleTypeChange('suggestion')}
-                            style={{ backgroundColor: '#b8b8b8' }}
-                        >
-                            Suggestion
-                        </Button>
-                        <Button
-                            className={styles.feedbackType}
-                            onClick={() => handleTypeChange('complaint')}
-                            style={{ backgroundColor: '#e74c3c' }}
-                        >
-                            Complaint
-                        </Button>
+                        {['compliment', 'suggestion', 'complaint'].map(
+                            (type) => (
+                                <Button
+                                    key={type}
+                                    className={
+                                        formData.type === type
+                                            ? 'selectedType'
+                                            : ''
+                                    }
+                                    onClick={() =>
+                                        handleTypeChange(
+                                            type as
+                                                | 'compliment'
+                                                | 'suggestion'
+                                                | 'complaint'
+                                        )
+                                    }
+                                    style={{
+                                        backgroundColor:
+                                            type === 'compliment'
+                                                ? '#2ecc71'
+                                                : type === 'suggestion'
+                                                  ? '#b8b8b8'
+                                                  : '#e74c3c'
+                                    }}
+                                >
+                                    {capitaliseFirstLetter(type)}
+                                </Button>
+                            )
+                        )}
                     </div>
                 )}
             </div>
             <div>
                 <div>Feedback:</div>
-                {!feedback ? (
+                {!feedback || edit ? (
                     <div className={styles.feedbackEdit}>
                         <textarea
                             className={styles.feedbackInput}
                             value={formData.feedback}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    feedback: e.target.value
-                                })
-                            }
+                            onChange={handleFeedbackChange}
                         />
                         <div className={styles.feedbackEditButtons}>
                             <Button

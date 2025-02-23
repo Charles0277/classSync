@@ -70,7 +70,6 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
     return (
         <div>
             <div className={styles.filterAndAddContainer}>
-                {/* Filter Buttons */}
                 <div className={styles.filterButtons}>
                     <Button
                         type="button"

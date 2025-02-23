@@ -104,6 +104,12 @@
     margin-bottom: 1rem;
 }
 
+.actionButtons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .deleteIcon {
     width: 1.5rem;
     cursor: pointer;

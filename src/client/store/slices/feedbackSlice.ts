@@ -40,7 +40,13 @@ const feedbackSlice = createSlice({
             state.loading = true;
         },
         updateFeedbackSuccess: (state, action) => {
-            state.feedback = action.payload;
+            const updatedFeedback = action.payload;
+            state.feedBackCollection = state.feedBackCollection.map(
+                (feedback) =>
+                    feedback._id === updatedFeedback._id
+                        ? updatedFeedback
+                        : feedback
+            );
             state.loading = false;
         },
         updateFeedbackFailure: (state, action) => {
