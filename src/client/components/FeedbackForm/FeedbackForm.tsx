@@ -54,7 +54,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                         <Button
                             className={styles.feedbackType}
                             onClick={() => handleTypeChange('compliment')}
-                            style={{ backgroundColor: '#28a745' }}
+                            style={{ backgroundColor: '#2ecc71' }}
                         >
                             Compliment
                         </Button>
@@ -68,7 +68,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                         <Button
                             className={styles.feedbackType}
                             onClick={() => handleTypeChange('complaint')}
-                            style={{ backgroundColor: '#cc4b4b' }}
+                            style={{ backgroundColor: '#e74c3c' }}
                         >
                             Complaint
                         </Button>

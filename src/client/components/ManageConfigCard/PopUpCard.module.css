@@ -81,3 +81,24 @@
 .entry-4 {
     background-color: #f4e8a9;
 }
+
+.feedbackPopUp {
+    width: 40rem;
+    height: 35rem;
+    color: #555;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.feedbackPopUp::-webkit-scrollbar {
+    width: 7.5px;
+    border-style: none;
+}
+
+.feedbackPopUp::-webkit-scrollbar-thumb {
+    width: 10px;
+    background-color: #868686;
+    height: 10px;
+    border-radius: 5rem;
+    border-style: none;
+}

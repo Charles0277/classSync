@@ -6,6 +6,7 @@ import { RootState } from '@/client/store/store';
 import { IFeedback } from '@/common/types/IFeedback';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import addIcon from '../../assets/addIcon.svg';
 import styles from './Feedback.module.css';
 
 export const Feedback = () => {
@@ -46,23 +47,35 @@ export const Feedback = () => {
             <div className={styles.title}>Feedback</div>
             <div className={styles.feedbackContainer}>
                 <div
-                    className={styles.feedbackItem}
+                    className={styles.submitFeedbackCard}
                     onClick={handleSubmitFeedback}
                 >
                     Submit Feedback
+                    <img src={addIcon} />
                 </div>
                 {feedBackCollection.map((feedback) => (
                     <div
                         key={feedback.id}
-                        className={styles.feedbackItem}
+                        className={styles.feedbackCard}
                         onClick={() => handleViewFeedback(feedback)}
                     >
-                        {feedback.feedback}
+                        <div
+                            className={`${styles.feedbackType} ${styles[feedback.type]}`}
+                        >
+                            {feedback.type}
+                        </div>
+                        <div className={styles.feedbackText}>
+                            {feedback.feedback}
+                        </div>
                     </div>
                 ))}
             </div>
             {writeFeedback && (
-                <PopUpCard title="Submit Feedback" onCancel={handleCancel}>
+                <PopUpCard
+                    title="Submit Feedback"
+                    onCancel={handleCancel}
+                    className="feedbackPopUp"
+                >
                     <FeedbackForm onCancel={handleCancel} feedback={feedback} />
                 </PopUpCard>
             )}
