@@ -3,6 +3,7 @@ import authSaga from './sagas/authSaga';
 import classSaga from './sagas/classSaga';
 import courseSaga from './sagas/courseSaga';
 import courseUnitSaga from './sagas/courseUnitSaga';
+import feedbackSaga from './sagas/feedbackSaga';
 import roomSaga from './sagas/roomSaga';
 import scheduleSaga from './sagas/scheduleSaga';
 import schoolWeekConfigSaga from './sagas/schoolWeekConfigSaga';
@@ -17,6 +18,7 @@ export default function* rootSaga() {
         fork(courseSaga),
         fork(courseUnitSaga),
         fork(scheduleSaga),
-        fork(classSaga)
+        fork(classSaga),
+        fork(feedbackSaga)
     ]);
 }

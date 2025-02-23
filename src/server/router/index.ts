@@ -3,6 +3,7 @@ import authentication from './authentication.js';
 import classEntity from './class.js';
 import course from './course.js';
 import courseUnit from './courseUnit.js';
+import feedback from './feedback.ts';
 import room from './room.js';
 import schedule from './schedule.js';
 import schoolWeekConfig from './schoolWeekConfig.js';
@@ -19,5 +20,6 @@ export default (): express.Router => {
     courseUnit(router);
     classEntity(router);
     schedule(router);
+    feedback(router);
     return router;
 };

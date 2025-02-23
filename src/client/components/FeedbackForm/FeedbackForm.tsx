@@ -1,5 +1,9 @@
+import { createFeedbackRequest } from '@/client/store/slices/feedbackSlice';
+import { RootState } from '@/client/store/store';
 import { IFeedback } from '@/common/types/IFeedback';
+import { getIdString } from '@/common/utils';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '../Button/Button';
 import styles from './FeedbackForm.module.css';
 
@@ -11,12 +15,17 @@ interface FeedbackFormProps {
 interface feedbackFormState {
     type: 'compliment' | 'suggestion' | 'complaint';
     feedback: string;
+    user: string;
 }
 
 export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     feedback,
     onCancel
 }) => {
+    const { user, token } = useSelector((state: RootState) => state.auth);
+
+    const dispatch = useDispatch();
+
     const handleTypeChange = (
         type: 'compliment' | 'suggestion' | 'complaint'
     ) => {
@@ -25,11 +34,12 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
 
     const [formData, setFormData] = useState<feedbackFormState>({
         type: 'compliment',
-        feedback: ''
+        feedback: '',
+        user: getIdString(user?._id)
     });
 
     const handleSave = () => {
-        console.log(formData);
+        dispatch(createFeedbackRequest({ formData, token }));
         onCancel();
     };
 

@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import classReducer from './slices/classSlice';
 import courseReducer from './slices/courseSlice';
 import courseUnitReducer from './slices/courseUnitSlice';
+import feedbackReducer from './slices/feedbackSlice';
 import roomReducer from './slices/roomSlice';
 import scheduleReducer from './slices/scheduleSlice';
 import schoolWeekConfigReducer from './slices/schoolWeekConfigSlice';
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     course: courseReducer,
     courseUnit: courseUnitReducer,
     schedule: scheduleReducer,
-    class: classReducer
+    class: classReducer,
+    feedback: feedbackReducer
 });
 
 export default rootReducer;
