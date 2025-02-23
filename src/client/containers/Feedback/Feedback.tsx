@@ -1,7 +1,8 @@
 import PageContainer from '@/client/components/Common/PageContainer/PageContainer';
-import styles from './Feedback.module.css';
-import { useState } from 'react';
+import { FeedbackForm } from '@/client/components/FeedbackForm/FeedbackForm';
 import { PopUpCard } from '@/client/components/ManageConfigCard/PopUpCard';
+import { useState } from 'react';
+import styles from './Feedback.module.css';
 
 export const Feedback = () => {
     const [writeFeedback, setWriteFeedback] = useState(false);
@@ -28,7 +29,7 @@ export const Feedback = () => {
             </div>
             {writeFeedback && (
                 <PopUpCard title="Submit Feedback" onCancel={handleCancel}>
-                    Submit Feedback
+                    <FeedbackForm onCancel={handleCancel} />
                 </PopUpCard>
             )}
         </PageContainer>

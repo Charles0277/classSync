@@ -12,13 +12,15 @@ const Button: React.FC<ButtonProps> = ({
     children,
     onClick,
     className = '',
-    loading = false
+    loading = false,
+    style = {}
 }) => {
     return (
         <button
             type={type}
             onClick={onClick}
             className={`${styles.btn} ${styles[size]} ${styles[className]}`}
+            style={style}
             disabled={loading}
         >
             {children}
