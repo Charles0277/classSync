@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { LoadingScreen } from './components/LoadingScreen/LoadingScreen';
 import Sidebar from './components/Sidebar/Sidebar';
 import Configuration from './containers/Configurations/Configuration';
+import { Feedback } from './containers/Feedback/Feedback';
 import Home from './containers/Home/Home';
 import Welcome from './containers/Welcome/Welcome';
 import { checkAuthenticationRequest, logOut } from './store/slices/authSlice';
@@ -45,6 +46,10 @@ function MainContent() {
                     <Route
                         path="/"
                         element={isAuthenticated ? <Home /> : <Welcome />}
+                    />
+                    <Route
+                        path="/feedback"
+                        element={isAuthenticated ? <Feedback /> : <Welcome />}
                     />
                     <Route
                         path="/configurations"
