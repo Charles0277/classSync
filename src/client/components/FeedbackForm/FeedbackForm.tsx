@@ -62,13 +62,13 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
 
     return (
         <div className={styles.feedbackForm}>
-            <div className={styles.typeContainer}>
+            <div className={styles.feedbackTypeContainer}>
                 <div>
                     Type:{' '}
                     {feedback && !edit && capitaliseFirstLetter(feedback.type)}
                 </div>
                 {(!feedback || edit) && (
-                    <div className={styles.typeButtons}>
+                    <div className={styles.feedbackTypeButtons}>
                         {['compliment', 'suggestion', 'complaint'].map(
                             (type) => (
                                 <Button
@@ -102,7 +102,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                     </div>
                 )}
             </div>
-            <div>
+            <div className={styles.feedbackContainer}>
                 <div>Feedback:</div>
                 {!feedback || edit ? (
                     <div className={styles.feedbackEdit}>
@@ -117,7 +117,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                                 className="classDetailsSave"
                                 onClick={handleSave}
                             >
-                                Submit
+                                {edit ? 'Save' : 'Submit'}
                             </Button>
                         </div>
                     </div>

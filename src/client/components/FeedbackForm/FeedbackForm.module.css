@@ -7,33 +7,41 @@
     font-weight: 600;
 }
 
-.typeContainer {
+.feedbackTypeContainer {
+    display: flex;
+    flex-direction: row;
+    border: solid 1.5px #686868;
+    border-radius: 10px;
+    padding: 0.4rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+.feedbackTypeButtons {
     display: flex;
     flex-direction: row;
     gap: 1rem;
 }
 
-.typeButtons {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-}
-
-.typeButtons button {
+.feedbackTypeButtons button {
     box-sizing: border-box;
     border: 3px solid transparent;
     transition: all 0.2s ease;
     padding: 0.25rem 0.5rem;
 }
 
-.feedbackType {
-    box-sizing: border-box;
-    border: 3px solid transparent;
-    transition: all 0.2s ease;
+.feedbackContainer {
+    display: flex;
+    flex-direction: column;
+    border: solid 1.5px #686868;
+    border-radius: 10px;
+    padding: 0.4rem;
+    margin-bottom: 0.75rem;
 }
 
-.selectedType {
-    border-color: #2c3e50 !important;
+.selectedFeedbackType {
+    border-color: #2c3e50;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
 }
@@ -41,9 +49,6 @@
 .feedbackEdit {
     display: flex;
     flex-direction: column;
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-top: -0.5rem;
 }
 
 .feedbackEditButtons {
@@ -65,8 +70,6 @@
     background-color: rgba(255, 255, 255, 0.4);
     font-size: 18px;
     padding: 5px 7.5px 5px 7.5px;
-    border-width: 2px;
-    border-color: #929292;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
