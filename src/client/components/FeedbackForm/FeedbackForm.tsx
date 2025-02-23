@@ -75,7 +75,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                                     key={type}
                                     className={
                                         formData.type === type
-                                            ? 'selectedType'
+                                            ? 'selectedFeedbackType'
                                             : ''
                                     }
                                     onClick={() =>

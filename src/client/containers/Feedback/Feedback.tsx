@@ -106,7 +106,7 @@ export const Feedback = () => {
                                         : type === 'suggestion'
                                           ? '#b8b8b8'
                                           : type === 'all'
-                                            ? '#2c3e50'
+                                            ? 'var(--darkBlue-color)'
                                             : '#e74c3c'
                             }}
                         >
