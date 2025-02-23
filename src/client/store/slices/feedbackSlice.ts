@@ -55,8 +55,8 @@ const feedbackSlice = createSlice({
             const newFeedback = action.payload;
             state.feedback = newFeedback;
             state.feedBackCollection = [
-                ...state.feedBackCollection,
-                newFeedback
+                newFeedback,
+                ...state.feedBackCollection
             ];
             state.loading = false;
         },
