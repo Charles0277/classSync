@@ -1,0 +1,31 @@
+.title {
+    font-size: 3rem;
+    font-weight: 600;
+    padding-top: 1rem;
+}
+
+.feedbackContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: start;
+    align-self: flex-start;
+    padding-left: 5rem;
+    width: 100%;
+    height: 100%;
+}
+
+.feedbackItem {
+    border-style: solid;
+    border-width: 2px;
+    border-color: #929292;
+    border-radius: 1rem;
+    width: 10%;
+    padding: 5rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}

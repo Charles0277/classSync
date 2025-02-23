@@ -1,11 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import classSyncLogo from '../../assets/classSyncLogo.svg';
+import createScheduleIcon from '../../assets/createScheduleIcon.svg';
+import feedbackIcon from '../../assets/feedbackIcon.svg';
+import homeIcon from '../../assets/homeIcon.svg';
+import profileIcon from '../../assets/profileIcon.svg';
+import settingsIcon from '../../assets/settingsIcon.svg';
 import { logOut } from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
 import Button from '../Button/Button';
-import styles from './Sidebar.module.css';
 import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
+import styles from './Sidebar.module.css';
 
 const Sidebar: React.FC = () => {
     const dispatch = useDispatch();
@@ -78,7 +84,7 @@ const Sidebar: React.FC = () => {
                         onClick={() => navigate('/')}
                     >
                         <img
-                            src="src/client/assets/classSyncLogo.svg"
+                            src={classSyncLogo}
                             className={styles.classSyncLogo}
                             width="50"
                             height="50"
@@ -90,13 +96,17 @@ const Sidebar: React.FC = () => {
                         className="sidebar"
                         onClick={() => navigate('/')}
                     >
-                        <img src="src/client/assets/homeIcon.svg" alt="Home" />
+                        <img src={homeIcon} alt="Home" />
                     </Button>
                     <Button type="button" className="sidebar">
-                        <img
-                            src="src/client/assets/createScheduleIcon.svg"
-                            alt="Schedule"
-                        />
+                        <img src={createScheduleIcon} alt="Schedule" />
+                    </Button>
+                    <Button
+                        type="button"
+                        className="sidebar"
+                        onClick={() => navigate('/feedback')}
+                    >
+                        <img src={feedbackIcon} alt="Schedule" />
                     </Button>
                     {user && user.role === 'admin' && (
                         <Button
@@ -104,10 +114,7 @@ const Sidebar: React.FC = () => {
                             className="sidebar"
                             onClick={() => navigate('/configurations')}
                         >
-                            <img
-                                src="src/client/assets/settingsIcon.svg"
-                                alt="Settings"
-                            />
+                            <img src={settingsIcon} alt="Settings" />
                         </Button>
                     )}
                 </div>
@@ -117,10 +124,7 @@ const Sidebar: React.FC = () => {
                         className="sidebar"
                         onClick={handleProfileClick}
                     >
-                        <img
-                            src="src/client/assets/profileIcon.svg"
-                            alt="Profile"
-                        />
+                        <img src={profileIcon} alt="Profile" />
                     </Button>
                     {isPopupVisible && (
                         <div ref={popupRef} className={styles.popup}>

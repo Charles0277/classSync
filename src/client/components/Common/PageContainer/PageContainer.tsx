@@ -3,10 +3,18 @@ import styles from './PageContainer.module.css';
 
 interface PageContainerProps {
     children: React.ReactNode;
+    className?: string;
 }
 
-const PageContainer: React.FC<PageContainerProps> = ({ children }) => {
-    return <div className={styles.pageContainer}>{children}</div>;
+const PageContainer: React.FC<PageContainerProps> = ({
+    children,
+    className = ''
+}) => {
+    return (
+        <div className={`${styles.pageContainer} ${styles[className]}`}>
+            {children}
+        </div>
+    );
 };
 
 export default PageContainer;
