@@ -19,7 +19,11 @@ const Button: React.FC<ButtonProps> = ({
         <button
             type={type}
             onClick={onClick}
-            className={`${styles.btn} ${styles[size]} ${styles[className]}`}
+            className={`${styles.btn} ${styles[size]} ${className
+                .split(' ')
+                .filter((c) => c)
+                .map((c) => styles[c])
+                .join(' ')}`}
             style={style}
             disabled={loading}
         >

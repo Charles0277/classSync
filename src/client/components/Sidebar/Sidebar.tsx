@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import classSyncLogo from '../../assets/classSyncLogo.svg';
 import feedbackIcon from '../../assets/feedbackIcon.svg';
 import homeIcon from '../../assets/homeIcon.svg';
@@ -15,6 +15,7 @@ import styles from './Sidebar.module.css';
 const Sidebar: React.FC = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useSelector((state: RootState) => state.auth);
 
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -77,29 +78,30 @@ const Sidebar: React.FC = () => {
             )}
             <div ref={sidebarRef} className={styles.sidebar}>
                 <div className={styles.topIconButtons}>
+                    <img
+                        src={classSyncLogo}
+                        width="58"
+                        height="58"
+                        alt="Logo"
+                    />
                     <Button
                         type="button"
-                        className="sidebar"
-                        onClick={() => navigate('/')}
-                    >
-                        <img
-                            src={classSyncLogo}
-                            className={styles.classSyncLogo}
-                            width="50"
-                            height="50"
-                            alt="Logo"
-                        />
-                    </Button>
-                    <Button
-                        type="button"
-                        className="sidebar"
+                        className={
+                            location.pathname === '/'
+                                ? 'sidebar activeSidebar'
+                                : 'sidebar'
+                        }
                         onClick={() => navigate('/')}
                     >
                         <img src={homeIcon} alt="Home" />
                     </Button>
                     <Button
                         type="button"
-                        className="sidebar"
+                        className={
+                            location.pathname === '/feedback'
+                                ? 'sidebar activeSidebar'
+                                : 'sidebar'
+                        }
                         onClick={() => navigate('/feedback')}
                     >
                         <img src={feedbackIcon} alt="Schedule" />
@@ -107,7 +109,11 @@ const Sidebar: React.FC = () => {
                     {user && user.role === 'admin' && (
                         <Button
                             type="button"
-                            className="sidebar"
+                            className={
+                                location.pathname === '/configurations'
+                                    ? 'sidebar activeSidebar'
+                                    : 'sidebar'
+                            }
                             onClick={() => navigate('/configurations')}
                         >
                             <img src={settingsIcon} alt="Settings" />
