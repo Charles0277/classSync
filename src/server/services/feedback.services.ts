@@ -1,7 +1,7 @@
 import { getIdString } from '@/common/utils.ts';
 import { FeedbackModel } from '../models/feedback.model.ts';
 
-export const fetchFeedback = () => FeedbackModel.find();
+export const fetchFeedback = () => FeedbackModel.find().sort({ updatedAt: -1 });
 
 export const fetchFeedbackById = (id: string) =>
     FeedbackModel.findById({
@@ -9,7 +9,7 @@ export const fetchFeedbackById = (id: string) =>
     });
 
 export const fetchUserFeedback = (userId: string) =>
-    FeedbackModel.find({ user: userId });
+    FeedbackModel.find({ user: userId }).sort({ updatedAt: -1 });
 
 export const deleteFeedbackById = async (
     id: string,
