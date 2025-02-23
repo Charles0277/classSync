@@ -6,14 +6,12 @@
 
 .feedbackContainer {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: start;
-    align-self: flex-start;
-    padding-left: 5rem;
-    width: 100%;
+    justify-content: center;
+    width: 95%;
     height: 100%;
+    gap: 1rem;
+    padding: 0 5rem 5rem;
 }
 
 .feedbackItem {
@@ -21,7 +19,9 @@
     border-width: 2px;
     border-color: #929292;
     border-radius: 1rem;
-    width: 10%;
+    width: 10rem;
+    height: 10rem;
+    height: fit-content;
     padding: 5rem;
     text-align: center;
     display: flex;

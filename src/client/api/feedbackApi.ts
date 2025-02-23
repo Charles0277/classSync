@@ -2,7 +2,7 @@ import { IFeedback } from '@/common/types/IFeedback.js';
 import axios from 'axios';
 
 export const getAllFeedbackApi = (token: string) => {
-    return axios.get<IFeedback[]>(`http://localhost:3000/feedback`, {
+    return axios.get<IFeedback[]>(`http://localhost:3000/all-feedback`, {
         headers: { Authorization: `Bearer ${token}` }
     });
 };

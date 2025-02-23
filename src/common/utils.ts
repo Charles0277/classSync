@@ -128,3 +128,7 @@ export const getIdString = (
     if (!id) return '';
     return id instanceof Types.ObjectId ? id.toString() : id;
 };
+
+export const capitaliseFirstLetter = (input: string): string => {
+    return input.charAt(0).toUpperCase() + input.slice(1);
+};
