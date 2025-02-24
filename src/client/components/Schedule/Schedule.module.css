@@ -1,15 +1,9 @@
 .scheduleContainer {
-    width: 90%;
+    width: 1229px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
-}
-
-.filterLabel {
-    font-size: 1.1rem;
-    font-weight: 600;
 }
 
 .filterContainer {
@@ -18,6 +12,12 @@
     align-self: flex-end;
     gap: 0.5rem;
     align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.filterLabel {
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .dropdown {
@@ -33,7 +33,8 @@
     overflow-y: auto;
     height: 85%;
     overflow-x: hidden;
-    border-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
     background-color: white;
 }
 
@@ -64,16 +65,46 @@
 
 .scheduleContainer ::-webkit-scrollbar {
     width: 7.5px;
-    background-color: var(--brightBlue-color);
+    background-color: #f8f8f8;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
     border-style: none;
 }
 
 .scheduleContainer ::-webkit-scrollbar-thumb {
     width: 10px;
     background-color: #868686;
+    border-top-right-radius: 0.25rem;
     height: 10px;
-    border-radius: 5rem;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     border-style: none;
+}
+
+.actionBar {
+    width: 1229px;
+    display: flex;
+    padding: 0.25rem;
+    background-color: #f8f8f8;
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+    position: relative;
+}
+
+.actionBar button {
+    background-color: #868686;
+    border-radius: 0.25rem;
+}
+
+.weekControls {
+    display: flex;
+    margin-right: auto;
+}
+
+.editClasses {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.settings {
+    margin-left: auto;
 }

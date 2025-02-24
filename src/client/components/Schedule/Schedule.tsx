@@ -6,10 +6,11 @@ import {
     IGlobalScheduleEntry,
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
-import { getIdString } from '@/common/utils';
+import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
+import Button from '../Button/Button';
 import { ClassDetails } from '../ClassDetails/ClassDetails';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
 import { ScheduleEntry } from '../ScheduleEntry/ScheduleEntry';
@@ -34,6 +35,7 @@ const Schedule: React.FC<ScheduleProps> = ({
 
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
+    const [weekOffset, setWeekOffset] = useState(0);
 
     useEffect(() => {
         if (globalSchedule) {
@@ -42,7 +44,36 @@ const Schedule: React.FC<ScheduleProps> = ({
         }
     }, [globalSchedule, token, dispatch]);
 
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const getCurrentWeekMonday = (
+        baseDate: Date,
+        offsetWeeks: number
+    ): Date => {
+        const date = new Date(baseDate);
+        date.setDate(date.getDate() + offsetWeeks * 7);
+        const day = date.getDay(); // 0 (Sun) to 6 (Sat)
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
+        return new Date(date.setDate(diff));
+    };
+
+    const formatScheduleDate = (date: Date): string => {
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    const currentMonday = getCurrentWeekMonday(new Date(), weekOffset);
+    const daysWithDates = Array.from({ length: 5 }).map((_, index) => {
+        const date = new Date(currentMonday);
+        date.setDate(date.getDate() + index);
+        return {
+            name: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][
+                index
+            ],
+            date
+        };
+    });
+
     const hours = Array.from({ length: 10 }, (_, i) => 9 + i);
 
     const schedule = globalSchedule
@@ -108,7 +139,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                 <PopUpCard
                     title="Class Details"
                     onCancel={() => dispatch(closePopUp())}
-                    className={`schedulePopUp entry-${popUp.day}`}
+                    className={`schedulePopUp ${convertRoomTypeToClassType(popUp.classType)}`}
                 >
                     <ClassDetails key={popUp.classId} entry={popUp} />
                 </PopUpCard>
@@ -171,12 +202,12 @@ const Schedule: React.FC<ScheduleProps> = ({
                     <div
                         className={`${styles.gridCell} ${styles.hourLabel}`}
                     ></div>{' '}
-                    {days.map((day, index) => (
+                    {daysWithDates.map((day, index) => (
                         <div
                             key={index}
                             className={`${styles.gridCell} ${styles.dayHeader}`}
                         >
-                            {day}
+                            {day.name} ({formatScheduleDate(day.date)})
                         </div>
                     ))}
                     {hours.map((hour) => (
@@ -184,7 +215,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                             <div
                                 className={`${styles.gridCell} ${styles.hourLabel}`}
                             >{`${hour}:00`}</div>
-                            {days.map((day, dayIndex) => {
+                            {daysWithDates.map((day, dayIndex) => {
                                 const key = `${dayIndex}-${hour}`;
                                 const entry = scheduleMap[key];
                                 return (
@@ -222,6 +253,44 @@ const Schedule: React.FC<ScheduleProps> = ({
                             })}
                         </React.Fragment>
                     ))}
+                </div>
+                <div className={styles.actionBar}>
+                    <div className={styles.weekControls}>
+                        <Button
+                            onClick={() => setWeekOffset((prev) => prev - 1)}
+                            style={{
+                                borderTopLeftRadius: '0.25rem',
+                                borderBottomLeftRadius: '0.25rem',
+                                borderBottomRightRadius: '0',
+                                borderTopRightRadius: '0'
+                            }}
+                        >
+                            ←
+                        </Button>
+                        <Button
+                            onClick={() => setWeekOffset(0)}
+                            style={{ borderRadius: '0' }}
+                        >
+                            Current Week
+                        </Button>
+                        <Button
+                            onClick={() => setWeekOffset((prev) => prev + 1)}
+                            style={{
+                                borderTopRightRadius: '0.25rem',
+                                borderBottomRightRadius: '0.25rem',
+                                borderTopLeftRadius: '0',
+                                borderBottomLeftRadius: '0'
+                            }}
+                        >
+                            →
+                        </Button>
+                    </div>
+                    <div className={styles.editClasses}>
+                        <Button>Edit Classes</Button>
+                    </div>
+                    <div className={styles.settings}>
+                        <Button>Button</Button>
+                    </div>
                 </div>
             </div>
         </>
