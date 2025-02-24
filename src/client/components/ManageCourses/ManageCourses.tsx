@@ -19,7 +19,9 @@ interface ManageCoursesProps {
 const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
     const dispatch = useDispatch();
     const { token } = useSelector((state: RootState) => state.auth);
-    const { courses } = useSelector((state: RootState) => state.course);
+    const { courses, loading } = useSelector(
+        (state: RootState) => state.course
+    );
 
     const [searchTerm, setSearchTerm] = useState('');
     const [courseToDelete, setCourseToDelete] = useState<ICourse | null>(null);
@@ -130,6 +132,8 @@ const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
                             </div>
                         </div>
                     ))
+                ) : loading ? (
+                    <div className={styles.noResults}>Loading courses...</div>
                 ) : (
                     <div className={styles.noResults}>No courses found</div>
                 )}

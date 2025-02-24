@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import styles from './ManageRooms.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store.js';
+import { IRoom } from '../../../common/types/IRoom';
+import addIcon from '../../assets/addIcon.svg';
 import {
     deleteRoomRequest,
     fetchAllRoomsRequest
 } from '../../store/slices/roomSlice';
+import { RootState } from '../../store/store.js';
 import Button from '../Button/Button';
-import { IRoom } from '../../../common/types/IRoom';
-import addIcon from '../../assets/addIcon.svg';
+import styles from './ManageRooms.module.css';
 
 interface ManageRoomsProps {
     onAddEditRoom: (room?: IRoom) => void;
@@ -16,7 +16,7 @@ interface ManageRoomsProps {
 
 const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { rooms } = useSelector((state: RootState) => state.room);
+    const { rooms, loading } = useSelector((state: RootState) => state.room);
 
     const [filter, setFilter] = useState<
         | 'all'
@@ -194,6 +194,8 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
                             </div>
                         </div>
                     ))
+                ) : loading ? (
+                    <div className={styles.noResults}>Loading rooms...</div>
                 ) : (
                     <div className={styles.noResults}>No rooms found</div>
                 )}

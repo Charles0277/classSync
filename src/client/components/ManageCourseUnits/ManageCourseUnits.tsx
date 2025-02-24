@@ -19,7 +19,9 @@ const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
     onAddEditCourseUnit
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { courseUnits } = useSelector((state: RootState) => state.courseUnit);
+    const { courseUnits, loading } = useSelector(
+        (state: RootState) => state.courseUnit
+    );
 
     const [filter, setFilter] = useState<
         'all' | 'Year 1' | 'Year 2' | 'Year 3' | 'Year 4' | 'Year 5' | 'Year 7'
@@ -204,6 +206,10 @@ const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
                             </div>
                         </div>
                     ))
+                ) : loading ? (
+                    <div className={styles.noResults}>
+                        Loading course units...
+                    </div>
                 ) : (
                     <div className={styles.noResults}>
                         No course units found

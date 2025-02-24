@@ -17,11 +17,11 @@ interface ManageUsersProps {
 
 const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { users } = useSelector((state: RootState) => state.user);
+    const { users, loading } = useSelector((state: RootState) => state.user);
 
     const [filter, setFilter] = useState<'all' | 'student' | 'teacher'>('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [userToDelete, setUserToDelete] = useState<IUser | null>(null); // Track user for confirmation
+    const [userToDelete, setUserToDelete] = useState<IUser | null>(null);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -56,7 +56,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
     return (
         <div>
             <div className={styles.filterAndAddContainer}>
-                {/* Filter Buttons */}
                 <div className={styles.filterButtons}>
                     <Button
                         type="button"
@@ -84,7 +83,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                 </div>
             </div>
 
-            {/* Search Bar */}
             <div className={styles.searchBar}>
                 <input
                     type="text"
@@ -94,7 +92,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                 />
             </div>
 
-            {/* User List */}
             <div className={styles.userList}>
                 {filteredUsers && filteredUsers.length > 0 ? (
                     filteredUsers.map((user, index) => (
@@ -120,7 +117,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                                     />
                                 </Button>
                                 {userToDelete?.email === user.email ? (
-                                    // Confirmation UI
                                     <div
                                         className={
                                             styles.confirmDeleteContainer
@@ -144,14 +140,13 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                                                 type="button"
                                                 onClick={() =>
                                                     setUserToDelete(null)
-                                                } // Cancel confirmation
+                                                }
                                             >
                                                 No
                                             </Button>
                                         </div>
                                     </div>
                                 ) : (
-                                    // Trash icon to initiate confirmation
                                     <Button
                                         type="button"
                                         onClick={() => setUserToDelete(user)}
@@ -165,6 +160,8 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                             </div>
                         </div>
                     ))
+                ) : loading ? (
+                    <div className={styles.noResults}>Loading users...</div>
                 ) : (
                     <div className={styles.noResults}>No users found</div>
                 )}
