@@ -1,5 +1,5 @@
 .scheduleContainer {
-    width: 1229px;
+    width: 1204px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -42,8 +42,9 @@
     display: flex;
     background-color: white;
     position: relative;
-    border-style: none solid solid none;
-    border-width: 1.5px;
+    border-style: solid;
+    border-radius: 6px;
+    border-width: 1px;
 }
 
 .dayHeader {
@@ -80,13 +81,15 @@
 }
 
 .actionBar {
-    width: 1229px;
+    width: 1204px;
     display: flex;
     padding: 0.25rem;
     background-color: #f8f8f8;
     border-bottom-left-radius: 0.25rem;
     border-bottom-right-radius: 0.25rem;
     position: relative;
+    height: 1.5rem;
+    align-items: center;
 }
 
 .actionBar button {
@@ -107,4 +110,9 @@
 
 .settings {
     margin-left: auto;
+}
+
+.settings img {
+    width: 1.25rem;
+    height: 1.25rem;
 }

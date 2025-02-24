@@ -10,6 +10,7 @@ import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
+import settingsIcon from '../../assets/settingsIcon.svg';
 import Button from '../Button/Button';
 import { ClassDetails } from '../ClassDetails/ClassDetails';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
@@ -144,7 +145,10 @@ const Schedule: React.FC<ScheduleProps> = ({
                     <ClassDetails key={popUp.classId} entry={popUp} />
                 </PopUpCard>
             )}
-            <div className={styles.scheduleContainer}>
+            <div
+                className={styles.scheduleContainer}
+                style={{ width: `${globalSchedule && '1229px'}` }}
+            >
                 <div className={styles.filterContainer}>
                     <div className={styles.filterLabel}>Filter by Student:</div>
                     <Select
@@ -254,7 +258,10 @@ const Schedule: React.FC<ScheduleProps> = ({
                         </React.Fragment>
                     ))}
                 </div>
-                <div className={styles.actionBar}>
+                <div
+                    className={styles.actionBar}
+                    style={{ width: `${globalSchedule && '1229px'}` }}
+                >
                     <div className={styles.weekControls}>
                         <Button
                             onClick={() => setWeekOffset((prev) => prev - 1)}
@@ -289,7 +296,9 @@ const Schedule: React.FC<ScheduleProps> = ({
                         <Button>Edit Classes</Button>
                     </div>
                     <div className={styles.settings}>
-                        <Button>Button</Button>
+                        <Button>
+                            <img src={settingsIcon} alt="Settings" />
+                        </Button>
                     </div>
                 </div>
             </div>
