@@ -9,6 +9,7 @@ interface UserState {
     error: string | null;
     students?: IUser[];
     teachers?: IUser[];
+    studentsLoading?: boolean;
 }
 
 const initialState: UserState = {
@@ -58,7 +59,7 @@ const userSlice = createSlice({
             state.error = action.payload;
         },
         fetchAllStudentsRequest: (state, action) => {
-            state.loading = true;
+            state.studentsLoading = true;
             state.error = null;
         },
         fetchAllStudentsSuccess: (state, action) => {

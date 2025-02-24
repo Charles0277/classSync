@@ -26,12 +26,14 @@ const Schedule: React.FC<ScheduleProps> = ({
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
     const popUp = useSelector((state: RootState) => state.schedule.popUpClass);
-    const { rooms } = useSelector((state: RootState) => state.room);
-    const { students } = useSelector((state: RootState) => state.user);
+    const { rooms, loading } = useSelector((state: RootState) => state.room);
+    const { students, studentsLoading } = useSelector(
+        (state: RootState) => state.user
+    );
     const dispatch = useDispatch();
 
-    const [selectedRoom, setSelectedRoom] = useState('');
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+    const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
 
     useEffect(() => {
         if (globalSchedule) {
@@ -49,28 +51,36 @@ const Schedule: React.FC<ScheduleProps> = ({
           ? userSchedule
           : [];
 
-    const userOptions = students
+    const studentOptions = students
         ? students.map((student) => ({
               value: getIdString(student._id),
               label: `${student.firstName} ${student.lastName}`
           }))
         : [];
 
+    const roomOptions = rooms
+        ? rooms.map((room) => ({
+              value: getIdString(room._id),
+              label: room.name
+          }))
+        : [];
+
     const filteredSchedule =
-        selectedRoom && selectedStudents.length > 0
+        selectedRoom.length > 0 && selectedStudents.length > 0
             ? schedule.filter(
                   (entry) =>
                       'roomId' in entry &&
                       entry.studentIds &&
-                      entry.roomId === selectedRoom &&
+                      selectedRoom.includes(entry.roomId as string) &&
                       entry.studentIds.some((studentId) =>
                           selectedStudents.includes(studentId)
                       )
               )
-            : selectedRoom
+            : selectedRoom.length > 0
               ? schedule.filter(
                     (entry) =>
-                        'roomId' in entry && entry.roomId === selectedRoom
+                        'roomId' in entry &&
+                        selectedRoom.includes(entry.roomId as string)
                 )
               : selectedStudents.length > 0
                 ? schedule.filter(
@@ -107,7 +117,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                 <div className={styles.filterContainer}>
                     <div className={styles.filterLabel}>Filter by Student:</div>
                     <Select
-                        options={userOptions}
+                        options={studentOptions}
                         isMulti
                         onChange={(selectedOptions) => {
                             const selected = selectedOptions
@@ -124,24 +134,35 @@ const Schedule: React.FC<ScheduleProps> = ({
                                 minWidth: '17rem'
                             })
                         }}
+                        noOptionsMessage={() => {
+                            if (studentsLoading) return 'Loading...';
+                            return 'No Options';
+                        }}
                     />
                     <div className={styles.filterLabel}>Filter by Room:</div>
-                    <select
-                        className={styles.dropdown}
-                        value={selectedRoom}
-                        onChange={(e) => setSelectedRoom(e.target.value)}
-                    >
-                        <option value="">All Rooms</option>
-                        {rooms &&
-                            rooms.map((room) => (
-                                <option
-                                    key={getIdString(room._id)}
-                                    value={getIdString(room._id)}
-                                >
-                                    {room.name}
-                                </option>
-                            ))}
-                    </select>
+                    <Select
+                        options={roomOptions}
+                        isMulti
+                        onChange={(selectedOptions) => {
+                            const selected = selectedOptions
+                                ? selectedOptions.map(
+                                      (option: any) => option.value
+                                  )
+                                : [];
+                            setSelectedRoom(selected);
+                        }}
+                        placeholder="Search and select rooms..."
+                        styles={{
+                            container: (base) => ({
+                                ...base,
+                                minWidth: '17rem'
+                            })
+                        }}
+                        noOptionsMessage={() => {
+                            if (loading) return 'Loading...';
+                            return 'No Options';
+                        }}
+                    />
                 </div>
                 <div
                     className={styles.scheduleGrid}
