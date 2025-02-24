@@ -5,6 +5,7 @@ import {
 import express from 'express';
 import {
     deleteUserById,
+    fetchAllStudents,
     fetchAllTeachers,
     fetchAllUsers,
     fetchUserByEmail,
@@ -43,7 +44,20 @@ export const getAllTeachers = async (
 ) => {
     try {
         const teachers = await fetchAllTeachers();
-        return res.status(201).send(teachers);
+        return res.status(200).send(teachers);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const getAllStudents = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const students = await fetchAllStudents();
+        return res.status(200).send(students);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);

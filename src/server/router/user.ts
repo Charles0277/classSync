@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     deleteUser,
+    getAllStudents,
     getAllTeachers,
     getAllUsers,
     getUser,
@@ -17,6 +18,12 @@ export default (router: express.Router) => {
     router.get('/all-users', authenticateToken, checkAdmin, getAllUsers);
     router.get('/users', authenticateToken, checkTeacher, getUsers);
     router.get('/all-teachers', authenticateToken, checkAdmin, getAllTeachers);
+    router.get(
+        '/all-students',
+        authenticateToken,
+        checkTeacher,
+        getAllStudents
+    );
     router.get('/user/:email', getUser);
     router.delete(
         '/delete-user/:id',

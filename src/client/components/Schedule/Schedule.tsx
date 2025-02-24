@@ -1,5 +1,6 @@
 import { fetchAllRoomsRequest } from '@/client/store/slices/roomSlice';
 import { closePopUp, openPopUp } from '@/client/store/slices/scheduleSlice';
+import { fetchAllStudentsRequest } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import {
     IGlobalScheduleEntry,
@@ -8,6 +9,7 @@ import {
 import { getIdString } from '@/common/utils';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
 import { ClassDetails } from '../ClassDetails/ClassDetails';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
 import { ScheduleEntry } from '../ScheduleEntry/ScheduleEntry';
@@ -25,12 +27,15 @@ const Schedule: React.FC<ScheduleProps> = ({
     const { token } = useSelector((state: RootState) => state.auth);
     const popUp = useSelector((state: RootState) => state.schedule.popUpClass);
     const { rooms } = useSelector((state: RootState) => state.room);
+    const { students } = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
 
     const [selectedRoom, setSelectedRoom] = useState('');
+    const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
 
     useEffect(() => {
         if (globalSchedule) {
+            dispatch(fetchAllStudentsRequest({ token }));
             dispatch(fetchAllRoomsRequest({ token }));
         }
     }, [globalSchedule, token, dispatch]);
@@ -44,11 +49,38 @@ const Schedule: React.FC<ScheduleProps> = ({
           ? userSchedule
           : [];
 
-    const filteredSchedule = selectedRoom
-        ? schedule.filter(
-              (entry) => 'roomId' in entry && entry.roomId === selectedRoom
-          )
-        : schedule;
+    const userOptions = students
+        ? students.map((student) => ({
+              value: getIdString(student._id),
+              label: `${student.firstName} ${student.lastName}`
+          }))
+        : [];
+
+    const filteredSchedule =
+        selectedRoom && selectedStudents.length > 0
+            ? schedule.filter(
+                  (entry) =>
+                      'roomId' in entry &&
+                      entry.studentIds &&
+                      entry.roomId === selectedRoom &&
+                      entry.studentIds.some((studentId) =>
+                          selectedStudents.includes(studentId)
+                      )
+              )
+            : selectedRoom
+              ? schedule.filter(
+                    (entry) =>
+                        'roomId' in entry && entry.roomId === selectedRoom
+                )
+              : selectedStudents.length > 0
+                ? schedule.filter(
+                      (entry) =>
+                          entry.studentIds &&
+                          entry.studentIds.some((studentId) =>
+                              selectedStudents.includes(studentId)
+                          )
+                  )
+                : schedule;
 
     const scheduleMap: {
         [key: string]: (IUserScheduleEntry | IGlobalScheduleEntry)[];
@@ -73,6 +105,26 @@ const Schedule: React.FC<ScheduleProps> = ({
             )}
             <div className={styles.scheduleContainer}>
                 <div className={styles.filterContainer}>
+                    <div className={styles.filterLabel}>Filter by Student:</div>
+                    <Select
+                        options={userOptions}
+                        isMulti
+                        onChange={(selectedOptions) => {
+                            const selected = selectedOptions
+                                ? selectedOptions.map(
+                                      (option: any) => option.value
+                                  )
+                                : [];
+                            setSelectedStudents(selected);
+                        }}
+                        placeholder="Search and select students..."
+                        styles={{
+                            container: (base) => ({
+                                ...base,
+                                minWidth: '17rem'
+                            })
+                        }}
+                    />
                     <div className={styles.filterLabel}>Filter by Room:</div>
                     <select
                         className={styles.dropdown}

@@ -8,7 +8,7 @@ export const fetchUsers = (userIds: string[]) => {
 
 export const fetchAllTeachers = () => UserModel.find({ role: 'teacher' });
 
-export const fetchStudents = () => UserModel.find({ role: 'student' });
+export const fetchAllStudents = () => UserModel.find({ role: 'student' });
 
 export const fetchUserByEmail = (email: string) =>
     UserModel.findOne({ email })

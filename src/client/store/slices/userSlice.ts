@@ -7,6 +7,7 @@ interface UserState {
     user?: IUser;
     loading: boolean;
     error: string | null;
+    students?: IUser[];
     teachers?: IUser[];
 }
 
@@ -53,6 +54,18 @@ const userSlice = createSlice({
             state.teachers = action.payload;
         },
         fetchAllTeachersFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        fetchAllStudentsRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        fetchAllStudentsSuccess: (state, action) => {
+            state.loading = false;
+            state.students = action.payload;
+        },
+        fetchAllStudentsFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },
@@ -104,6 +117,9 @@ export const {
     fetchAllTeachersRequest,
     fetchAllTeachersSuccess,
     fetchAllTeachersFailure,
+    fetchAllStudentsRequest,
+    fetchAllStudentsSuccess,
+    fetchAllStudentsFailure,
     updateUserRequest,
     updateUserSuccess,
     updateUserFailure,

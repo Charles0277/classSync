@@ -3,6 +3,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { IUser } from '../../../common/types/IUser';
 import {
     deleteUserApi,
+    getAllStudentsApi,
     getAllTeachersApi,
     getAllUsersApi,
     getUsersApi,
@@ -12,6 +13,9 @@ import {
     deleteUserFailure,
     deleteUserRequest,
     deleteUserSuccess,
+    fetchAllStudentsFailure,
+    fetchAllStudentsRequest,
+    fetchAllStudentsSuccess,
     fetchAllTeachersFailure,
     fetchAllTeachersRequest,
     fetchAllTeachersSuccess,
@@ -69,6 +73,20 @@ function* handleFetchAllTeachers(action: any) {
     }
 }
 
+function* handleFetchAllStudents(action: any) {
+    const { token } = action.payload;
+
+    try {
+        const response: AxiosResponse<IUser[]> = yield call(
+            getAllStudentsApi,
+            token
+        );
+        yield put(fetchAllStudentsSuccess(response.data));
+    } catch (error: any) {
+        yield put(fetchAllStudentsFailure(error.message));
+    }
+}
+
 function* handleUpdateUser(action: any) {
     let { id, formData, token } = action.payload;
     if (formData.password === '') {
@@ -106,6 +124,7 @@ export default function* userSaga() {
     yield takeLatest(fetchAllUsersRequest.type, handleFetchAllUsers);
     yield takeLatest(fetchUsersRequest.type, handleFetchUsers);
     yield takeLatest(fetchAllTeachersRequest.type, handleFetchAllTeachers);
+    yield takeLatest(fetchAllStudentsRequest.type, handleFetchAllStudents);
     yield takeLatest(updateUserRequest.type, handleUpdateUser);
     yield takeLatest(deleteUserRequest.type, handleDeleteUser);
 }
