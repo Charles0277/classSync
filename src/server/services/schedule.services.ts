@@ -74,6 +74,7 @@ export const fetchGlobalSchedule = async () => {
                 day: 1,
                 hour: 1,
                 instructorName: 1,
+                roomId: 1,
                 roomName: 1,
                 studentIds: 1,
                 type: 1

@@ -1,10 +1,12 @@
+import { fetchAllRoomsRequest } from '@/client/store/slices/roomSlice';
 import { closePopUp, openPopUp } from '@/client/store/slices/scheduleSlice';
 import { RootState } from '@/client/store/store';
 import {
     IGlobalScheduleEntry,
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
-import React from 'react';
+import { getIdString } from '@/common/utils';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClassDetails } from '../ClassDetails/ClassDetails';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
@@ -20,22 +22,39 @@ const Schedule: React.FC<ScheduleProps> = ({
     userSchedule,
     globalSchedule
 }) => {
+    const { token } = useSelector((state: RootState) => state.auth);
     const popUp = useSelector((state: RootState) => state.schedule.popUpClass);
+    const { rooms } = useSelector((state: RootState) => state.room);
+    const dispatch = useDispatch();
+
+    const [selectedRoom, setSelectedRoom] = useState('');
+
+    useEffect(() => {
+        if (globalSchedule) {
+            dispatch(fetchAllRoomsRequest({ token }));
+        }
+    }, [globalSchedule, token, dispatch]);
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     const hours = Array.from({ length: 10 }, (_, i) => 9 + i);
-
-    const dispatch = useDispatch();
-    const scheduleMap: {
-        [key: string]: (IUserScheduleEntry | IGlobalScheduleEntry)[];
-    } = {};
 
     const schedule = globalSchedule
         ? globalSchedule
         : userSchedule
           ? userSchedule
           : [];
-    schedule.forEach((entry) => {
+
+    const filteredSchedule = selectedRoom
+        ? schedule.filter(
+              (entry) => 'roomId' in entry && entry.roomId === selectedRoom
+          )
+        : schedule;
+
+    const scheduleMap: {
+        [key: string]: (IUserScheduleEntry | IGlobalScheduleEntry)[];
+    } = {};
+
+    filteredSchedule.forEach((entry) => {
         const key = `${entry.day}-${entry.hour}`;
         if (!scheduleMap[key]) scheduleMap[key] = [];
         scheduleMap[key].push(entry);
@@ -53,6 +72,25 @@ const Schedule: React.FC<ScheduleProps> = ({
                 </PopUpCard>
             )}
             <div className={styles.scheduleContainer}>
+                <div className={styles.filterContainer}>
+                    <div className={styles.filterLabel}>Filter by Room:</div>
+                    <select
+                        className={styles.dropdown}
+                        value={selectedRoom}
+                        onChange={(e) => setSelectedRoom(e.target.value)}
+                    >
+                        <option value="">All Rooms</option>
+                        {rooms &&
+                            rooms.map((room) => (
+                                <option
+                                    key={getIdString(room._id)}
+                                    value={getIdString(room._id)}
+                                >
+                                    {room.name}
+                                </option>
+                            ))}
+                    </select>
+                </div>
                 <div
                     className={styles.scheduleGrid}
                     style={{ gap: `${globalSchedule && '5px'}` }}

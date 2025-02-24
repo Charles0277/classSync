@@ -7,6 +7,7 @@ export interface IGlobalScheduleEntry {
     day: number;
     hour: number;
     instructorName: string;
+    roomId: string;
     roomName: string;
     classId: string;
     studentIds: string[];

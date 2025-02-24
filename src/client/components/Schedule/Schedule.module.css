@@ -1,8 +1,29 @@
 .scheduleContainer {
-    width: 100%;
+    width: 90%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
+}
+
+.filterLabel {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.filterContainer {
+    display: flex;
+    flex-direction: row;
+    align-self: flex-end;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.dropdown {
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    width: 10rem;
 }
 
 .scheduleGrid {
