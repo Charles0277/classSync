@@ -7,13 +7,15 @@ interface UserState {
     user?: IUser;
     loading: boolean;
     error: string | null;
-    students?: IUser[];
-    teachers?: IUser[];
+    students: IUser[];
+    teachers: IUser[];
     studentsLoading?: boolean;
 }
 
 const initialState: UserState = {
     users: [],
+    students: [],
+    teachers: [],
     loading: false,
     error: null
 };

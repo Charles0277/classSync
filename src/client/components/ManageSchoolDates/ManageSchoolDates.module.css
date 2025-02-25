@@ -1,0 +1,23 @@
+.schoolDates {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.holidayContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid black;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.rangeDatePicker {
+    width: 15rem;
+}

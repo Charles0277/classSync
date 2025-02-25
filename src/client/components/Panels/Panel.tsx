@@ -1,11 +1,8 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ICourse } from '../../../common/types/ICourse';
 import { ICourseUnit } from '../../../common/types/ICourseUnit';
 import { IRoom } from '../../../common/types/IRoom';
 import { IUser } from '../../../common/types/IUser';
-import { updateConfigRequest } from '../../store/slices/schoolWeekConfigSlice';
-import { RootState } from '../../store/store';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
@@ -16,7 +13,7 @@ import ManageCourseUnits from '../ManageCourseUnits/ManageCourseUnits';
 import AddEditRoomCard from '../ManageRooms/AddEditRoomCard/AddEditRoomCard';
 import ManageRooms from '../ManageRooms/ManageRooms';
 import { ManageSchedules } from '../ManageSchedules/ManageSchedules';
-import ManageSchoolWeek from '../ManageSchoolWeek/ManageSchoolWeek';
+import { ManageSchoolDates } from '../ManageSchoolDates/ManageSchoolDates';
 import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
 import ManageUsers from '../ManageUsers/ManageUsers';
 import styles from './Panel.module.css';
@@ -28,22 +25,7 @@ interface CardProps {
     max?: number;
 }
 
-const CONFIG_MAP = {
-    'Days per week': 'daysPerWeek',
-    'Hours per day': 'hoursPerDay',
-    'Start hour': 'startHour',
-    'End hour': 'endHour'
-} as const;
-
-type ConfigTitle = keyof typeof CONFIG_MAP;
-
 const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
-    const dispatch = useDispatch();
-    const { token } = useSelector((state: RootState) => state.auth);
-    const { schoolWeekConfig } = useSelector(
-        (state: RootState) => state.schoolWeekConfig
-    );
-
     const [inputState, setInputState] = useState({ current: '', initial: '' });
     const [modalState, setModalState] = useState({
         showPopup: false,
@@ -57,8 +39,6 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
         editingCourseUnit: undefined as ICourseUnit | undefined,
         editingRoom: undefined as IRoom | undefined
     });
-
-    const configKey = CONFIG_MAP[title as ConfigTitle];
 
     const openModal = (key: keyof typeof modalState, payload?: any) => {
         setModalState((prev) => ({ ...prev, [key]: true, ...payload }));
@@ -87,28 +67,6 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
         [min, max]
     );
 
-    useEffect(() => {
-        if (schoolWeekConfig && configKey) {
-            const currentValue = schoolWeekConfig[configKey]?.toString() || '';
-            setInputState({ current: currentValue, initial: currentValue });
-        }
-    }, [schoolWeekConfig, configKey]);
-
-    useEffect(() => {
-        const { current, initial } = inputState;
-        if (current !== initial && token && configKey) {
-            dispatch(
-                updateConfigRequest({
-                    token,
-                    updatedConfig: {
-                        ...schoolWeekConfig,
-                        [configKey]: Number(current)
-                    }
-                })
-            );
-        }
-    }, [inputState, token, configKey, dispatch, schoolWeekConfig]);
-
     const PopupContent = useMemo(() => {
         const modalComponents = {
             Rooms: (
@@ -118,7 +76,7 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                     }
                 />
             ),
-            'School Week': <ManageSchoolWeek />,
+            'School Dates': <ManageSchoolDates />,
             Users: (
                 <ManageUsers
                     onAddUser={() => openModal('showAddUserForm')}

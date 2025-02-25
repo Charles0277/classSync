@@ -8,7 +8,7 @@ const Configuration = () => {
             <Card title="Configurations" className="settingPanels">
                 <Panel title="Users" rightSideControl="button"></Panel>
                 <Panel title="Rooms" rightSideControl="button"></Panel>
-                <Panel title="School Week" rightSideControl="button"></Panel>
+                <Panel title="School Dates" rightSideControl="button"></Panel>
                 <Panel title="Courses" rightSideControl="button"></Panel>
                 <Panel title="Course Units" rightSideControl="button"></Panel>
                 <Panel title="Schedules" rightSideControl="button"></Panel>
