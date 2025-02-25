@@ -1,3 +1,4 @@
+import { IHoliday } from '@/common/types/IHoliday';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ICourse } from '../../../common/types/ICourse';
 import { ICourseUnit } from '../../../common/types/ICourseUnit';
@@ -10,10 +11,11 @@ import AddEditCourseCard from '../ManageCourses/AddEditCourseCard/AddEditCourseC
 import ManageCourses from '../ManageCourses/ManageCourses';
 import AddEditCourseUnitCard from '../ManageCourseUnits/AddEditCourseUnitCard/AddEditCourseUnitCard';
 import ManageCourseUnits from '../ManageCourseUnits/ManageCourseUnits';
+import AddEditHolidayCard from '../ManageHolidays/AddEditHolidayCard/AddEditHolidayCard';
+import { ManageHolidays } from '../ManageHolidays/ManageHolidays';
 import AddEditRoomCard from '../ManageRooms/AddEditRoomCard/AddEditRoomCard';
 import ManageRooms from '../ManageRooms/ManageRooms';
 import { ManageSchedules } from '../ManageSchedules/ManageSchedules';
-import { ManageSchoolDates } from '../ManageSchoolDates/ManageSchoolDates';
 import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
 import ManageUsers from '../ManageUsers/ManageUsers';
 import styles from './Panel.module.css';
@@ -34,10 +36,12 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
         showAddEditRoom: false,
         showAddEditCourse: false,
         showAddEditCourseUnit: false,
+        showAddEditHoliday: false,
         editingUser: undefined as IUser | undefined,
         editingCourse: undefined as ICourse | undefined,
         editingCourseUnit: undefined as ICourseUnit | undefined,
-        editingRoom: undefined as IRoom | undefined
+        editingRoom: undefined as IRoom | undefined,
+        editingHoliday: undefined as IHoliday | undefined
     });
 
     const openModal = (key: keyof typeof modalState, payload?: any) => {
@@ -76,7 +80,15 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                     }
                 />
             ),
-            'School Dates': <ManageSchoolDates />,
+            'School Dates': (
+                <ManageHolidays
+                    onAddEditHoliday={(holiday) =>
+                        openModal('showAddEditHoliday', {
+                            editingHoliday: holiday
+                        })
+                    }
+                />
+            ),
             Users: (
                 <ManageUsers
                     onAddUser={() => openModal('showAddUserForm')}
@@ -173,6 +185,13 @@ const Panel: React.FC<CardProps> = ({ title, rightSideControl, min, max }) => {
                     courseUnit={modalState.editingCourseUnit}
                     onSave={() => closeModal('showAddEditCourseUnit')}
                     onCancel={() => closeModal('showAddEditCourseUnit')}
+                />
+            )}
+            {modalState.showAddEditHoliday && (
+                <AddEditHolidayCard
+                    holiday={modalState.editingHoliday}
+                    onSave={() => closeModal('showAddEditHoliday')}
+                    onCancel={() => closeModal('showAddEditHoliday')}
                 />
             )}
             <div className={styles.panel}>

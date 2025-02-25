@@ -82,7 +82,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                     </Button>
                 </div>
             </div>
-
             <div className={styles.searchBar}>
                 <input
                     type="text"
@@ -91,7 +90,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                     onChange={handleSearchChange}
                 />
             </div>
-
             <div className={styles.userList}>
                 {filteredUsers && filteredUsers.length > 0 ? (
                     filteredUsers.map((user, index) => (

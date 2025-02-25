@@ -1,6 +1,6 @@
-import { addDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { DateRange } from 'react-day-picker';
 
 import { Button } from '@/client/components/ui/button';
@@ -13,33 +13,15 @@ import {
 import { cn } from '@/client/lib/utils';
 
 export const RangeDatePicker = ({
+    date,
+    setDate,
+    hiddenDates,
     className
-}: React.HTMLAttributes<HTMLDivElement>) => {
-    const [date, setDate] = React.useState<DateRange | undefined>();
-
-    useEffect(() => {
-        const startDate = new Date(
-            !hasAcademicYearStarted
-                ? currentAcademicYear - 1
-                : currentAcademicYear,
-            8,
-            1
-        );
-        const endDate = new Date(
-            !hasAcademicYearStarted
-                ? currentAcademicYear
-                : currentAcademicYear + 1,
-            5,
-            30
-        );
-
-        setDate({ from: startDate, to: endDate });
-    }, []);
-
-    const CurrentDate = new Date();
-    const currentAcademicYear = CurrentDate.getFullYear();
-    const hasAcademicYearStarted = CurrentDate.getMonth() >= 8;
-
+}: {
+    date: DateRange;
+    setDate: (date: DateRange | undefined) => void;
+    hiddenDates: DateRange;
+} & React.HTMLAttributes<HTMLDivElement>) => {
     return (
         <div className={cn('grid gap-2', className)}>
             <Popover>
@@ -75,6 +57,10 @@ export const RangeDatePicker = ({
                         selected={date}
                         onSelect={setDate}
                         numberOfMonths={2}
+                        hidden={{
+                            before: hiddenDates.from!,
+                            after: hiddenDates.to
+                        }}
                     />
                 </PopoverContent>
             </Popover>

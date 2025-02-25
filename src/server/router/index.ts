@@ -4,6 +4,7 @@ import classEntity from './class.js';
 import course from './course.js';
 import courseUnit from './courseUnit.js';
 import feedback from './feedback.ts';
+import holiday from './holiday.ts';
 import room from './room.js';
 import schedule from './schedule.js';
 import user from './user.js';
@@ -19,5 +20,6 @@ export default (): express.Router => {
     classEntity(router);
     schedule(router);
     feedback(router);
+    holiday(router);
     return router;
 };
