@@ -149,56 +149,62 @@ const Schedule: React.FC<ScheduleProps> = ({
                 className={styles.scheduleContainer}
                 style={{ width: `${globalSchedule && '1229px'}` }}
             >
-                <div className={styles.filterContainer}>
-                    <div className={styles.filterLabel}>Filter by Student:</div>
-                    <Select
-                        options={studentOptions}
-                        isMulti
-                        onChange={(selectedOptions) => {
-                            const selected = selectedOptions
-                                ? selectedOptions.map(
-                                      (option: any) => option.value
-                                  )
-                                : [];
-                            setSelectedStudents(selected);
-                        }}
-                        placeholder="Search and select students..."
-                        styles={{
-                            container: (base) => ({
-                                ...base,
-                                minWidth: '17rem'
-                            })
-                        }}
-                        noOptionsMessage={() => {
-                            if (studentsLoading) return 'Loading...';
-                            return 'No Options';
-                        }}
-                    />
-                    <div className={styles.filterLabel}>Filter by Room:</div>
-                    <Select
-                        options={roomOptions}
-                        isMulti
-                        onChange={(selectedOptions) => {
-                            const selected = selectedOptions
-                                ? selectedOptions.map(
-                                      (option: any) => option.value
-                                  )
-                                : [];
-                            setSelectedRoom(selected);
-                        }}
-                        placeholder="Search and select rooms..."
-                        styles={{
-                            container: (base) => ({
-                                ...base,
-                                minWidth: '17rem'
-                            })
-                        }}
-                        noOptionsMessage={() => {
-                            if (loading) return 'Loading...';
-                            return 'No Options';
-                        }}
-                    />
-                </div>
+                {globalSchedule && (
+                    <div className={styles.filterContainer}>
+                        <div className={styles.filterLabel}>
+                            Filter by Student:
+                        </div>
+                        <Select
+                            options={studentOptions}
+                            isMulti
+                            onChange={(selectedOptions) => {
+                                const selected = selectedOptions
+                                    ? selectedOptions.map(
+                                          (option: any) => option.value
+                                      )
+                                    : [];
+                                setSelectedStudents(selected);
+                            }}
+                            placeholder="Search and select students..."
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    minWidth: '17rem'
+                                })
+                            }}
+                            noOptionsMessage={() => {
+                                if (studentsLoading) return 'Loading...';
+                                return 'No Options';
+                            }}
+                        />
+                        <div className={styles.filterLabel}>
+                            Filter by Room:
+                        </div>
+                        <Select
+                            options={roomOptions}
+                            isMulti
+                            onChange={(selectedOptions) => {
+                                const selected = selectedOptions
+                                    ? selectedOptions.map(
+                                          (option: any) => option.value
+                                      )
+                                    : [];
+                                setSelectedRoom(selected);
+                            }}
+                            placeholder="Search and select rooms..."
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    minWidth: '17rem'
+                                })
+                            }}
+                            noOptionsMessage={() => {
+                                if (loading) return 'Loading...';
+                                return 'No Options';
+                            }}
+                        />
+                    </div>
+                )}
                 <div
                     className={styles.scheduleGrid}
                     style={{ gap: `${globalSchedule && '5px'}` }}
@@ -292,9 +298,11 @@ const Schedule: React.FC<ScheduleProps> = ({
                             →
                         </Button>
                     </div>
-                    <div className={styles.editClasses}>
-                        <Button>Edit Classes</Button>
-                    </div>
+                    {globalSchedule && (
+                        <div className={styles.editClasses}>
+                            <Button>Edit Classes</Button>
+                        </div>
+                    )}
                     <div className={styles.settings}>
                         <Button>
                             <img src={settingsIcon} alt="Settings" />
