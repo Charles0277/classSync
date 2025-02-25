@@ -113,7 +113,6 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
                 </Button>
             </div>
 
-            {/* Search Bar */}
             <div className={styles.searchBar}>
                 <input
                     type="text"
@@ -123,7 +122,6 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
                 />
             </div>
 
-            {/* Room List */}
             <div className={styles.roomList}>
                 {filteredRooms && filteredRooms.length > 0 ? (
                     filteredRooms.map((room, index) => (
@@ -149,7 +147,6 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
                                     />
                                 </Button>
                                 {roomToDelete?.name === room.name ? (
-                                    // Confirmation UI
                                     <div
                                         className={
                                             styles.confirmDeleteContainer
@@ -180,7 +177,6 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
                                         </div>
                                     </div>
                                 ) : (
-                                    // Trash icon to initiate confirmation
                                     <Button
                                         type="button"
                                         onClick={() => setRoomToDelete(room)}

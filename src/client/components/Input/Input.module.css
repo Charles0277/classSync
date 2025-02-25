@@ -34,10 +34,9 @@
 .input[type='password'] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #34495e;
     border-radius: 10px;
     resize: vertical;
-    border-color: #34495e;
     border-width: 2px;
     background-color: transparent;
     outline: none;

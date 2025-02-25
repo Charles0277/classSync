@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import Input from '../../Input/Input';
-import styles from '../Forms.module.css';
-import { RangeDatePicker } from '../../RangeDatePicker/RangeDatePicker';
 import { DateRange } from 'react-day-picker';
+import Input from '../../Input/Input';
+import { RangeDatePicker } from '../../RangeDatePicker/RangeDatePicker';
+import styles from '../Forms.module.css';
 
 interface HolidayFormProps {
     formData: {
@@ -94,6 +94,7 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
                     date={date!}
                     setDate={setDate}
                     hiddenDates={hiddenDates}
+                    className={styles.datePicker}
                 />
                 <div className={styles.actionButtonGroup}>
                     <Input

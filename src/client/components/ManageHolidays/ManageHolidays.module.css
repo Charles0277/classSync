@@ -1,9 +1,3 @@
-.schoolDates {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
 .addHolidayButton {
     display: flex;
     justify-content: flex-end;
@@ -26,19 +20,71 @@
 }
 
 .holidayContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
     border-top: 1px solid black;
-    padding: 1rem;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-weight: 600;
+    padding-left: 1rem;
     font-size: 18px;
     transition: background-color 0.3s ease;
-    width: 100%;
-    box-sizing: border-box;
 }
 
-.rangeDatePicker {
-    width: 15rem;
+.holidayContainer:hover {
+    background-color: #e0e0e0;
+}
+
+.noResults {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin-top: 20px;
+}
+
+.rightSideControl {
+    display: flex;
+}
+
+.confirmDeleteContainer {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1rem;
+    font-size: 1rem;
+    margin-top: -1rem;
+    margin-bottom: -1rem;
+    align-self: center;
+}
+
+.confirmDeleteButtonGroup {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.confirmDeleteButtonGroup button {
+    padding: 4px 8px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.confirmDeleteButtonGroup button:hover {
+    background-color: #0056b3;
+}
+
+.confirmDeleteButtonGroup button:focus {
+    outline: 2px solid #0056b3;
+}
+
+.holidayList {
+    max-height: 22rem;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
 }

@@ -73,3 +73,7 @@
 .checkBoxItem {
     display: flex;
 }
+
+.datePicker {
+    width: 110%;
+}
