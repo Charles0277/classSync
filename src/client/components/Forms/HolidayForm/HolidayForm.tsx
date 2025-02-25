@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { DateRange } from 'react-day-picker';
 import Input from '../../Input/Input';
-import { RangeDatePicker } from '../../RangeDatePicker/RangeDatePicker';
+import { RangeDatePicker } from '../../ui/RangeDatePicker';
 import styles from '../Forms.module.css';
 
 interface HolidayFormProps {
