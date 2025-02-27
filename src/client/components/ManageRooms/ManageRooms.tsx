@@ -74,36 +74,50 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('all')}
+                        className={filter === 'all' ? 'selectedButton' : ''}
                     >
                         All
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('lectureTheatre')}
+                        className={
+                            filter === 'lectureTheatre' ? 'selectedButton' : ''
+                        }
                     >
                         Lecture Theatre
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('classroom')}
+                        className={
+                            filter === 'classroom' ? 'selectedButton' : ''
+                        }
                     >
                         Class Room
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('laboratory')}
+                        className={
+                            filter === 'laboratory' ? 'selectedButton' : ''
+                        }
                     >
                         Laboratory
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('office')}
+                        className={filter === 'office' ? 'selectedButton' : ''}
                     >
                         Office
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('computerCluster')}
+                        className={
+                            filter === 'computerCluster' ? 'selectedButton' : ''
+                        }
                     >
                         Computer Cluster
                     </Button>

@@ -60,18 +60,21 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('all')}
+                        className={filter === 'all' ? 'selectedButton' : ''}
                     >
                         All
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('student')}
+                        className={filter === 'student' ? 'selectedButton' : ''}
                     >
                         Students
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('teacher')}
+                        className={filter === 'teacher' ? 'selectedButton' : ''}
                     >
                         Teachers
                     </Button>

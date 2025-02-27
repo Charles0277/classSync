@@ -65,8 +65,8 @@
 .confirmDeleteButtonGroup button {
     padding: 4px 8px;
     border: none;
-    background-color: #007bff;
-    color: white;
+    background-color: #b8b8b8;
+    color: black;
     font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
@@ -74,11 +74,7 @@
 }
 
 .confirmDeleteButtonGroup button:hover {
-    background-color: #0056b3;
-}
-
-.confirmDeleteButtonGroup button:focus {
-    outline: 2px solid #0056b3;
+    background-color: rgb(122, 122, 122);
 }
 
 .holidayList {

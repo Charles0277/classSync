@@ -9,7 +9,7 @@ import {
 } from '../../store/slices/courseUnitSlice';
 import { RootState } from '../../store/store.js';
 import Button from '../Button/Button';
-import styles from './ManageCourseUnits.module.css'; // Update the stylesheet as necessary
+import styles from './ManageCourseUnits.module.css';
 
 interface ManageCourseUnitsProps {
     onAddEditCourseUnit: (courseUnit?: ICourseUnit) => void;
@@ -79,42 +79,49 @@ const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('all')}
+                        className={filter === 'all' ? 'selectedButton' : ''}
                     >
                         All
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('Year 1')}
+                        className={filter === 'Year 1' ? 'selectedButton' : ''}
                     >
                         Year 1
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('Year 2')}
+                        className={filter === 'Year 2' ? 'selectedButton' : ''}
                     >
                         Year 2
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('Year 3')}
+                        className={filter === 'Year 3' ? 'selectedButton' : ''}
                     >
                         Year 3
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('Year 4')}
+                        className={filter === 'Year 4' ? 'selectedButton' : ''}
                     >
                         Year 4
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('Year 5')}
+                        className={filter === 'Year 5' ? 'selectedButton' : ''}
                     >
                         Year 5
                     </Button>
                     <Button
                         type="button"
                         onClick={() => handleFilterChange('Year 7')}
+                        className={filter === 'Year 7' ? 'selectedButton' : ''}
                     >
                         Year 7
                     </Button>
