@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import React from 'react';
 import { DateRange } from 'react-day-picker';
+import './shadcn.css';
 
 import { Button } from '@/client/components/ui/button';
 import { Calendar } from '@/client/components/ui/calendar';
@@ -23,7 +24,7 @@ export const RangeDatePicker = ({
     hiddenDates: DateRange;
 } & React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <div className={cn('grid gap-2', className)}>
+        <div className={cn('index grid gap-2', className)}>
             <Popover>
                 <PopoverTrigger asChild>
                     <Button
