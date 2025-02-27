@@ -67,6 +67,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
 }) => {
     const dispatch = useDispatch();
     const { token } = useSelector((state: RootState) => state.auth);
+    const [isVisible, setIsVisible] = useState(false);
 
     const [formData, setFormData] = useState<SignUpFormData>(
         user && mode === 'edit'
@@ -155,27 +156,37 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
         [dispatch, formData, mode, onSave, token]
     );
 
+    const handleClose = useCallback(() => {
+        setIsVisible(false);
+        setTimeout(onCancel, 200);
+    }, [onCancel]);
+
+    useEffect(() => {
+        requestAnimationFrame(() => {
+            setIsVisible(true);
+        });
+    }, []);
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                onCancel();
+                handleClose();
             }
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onCancel]);
-
-    const contentClass =
-        mode === 'admin' ? styles.noPassword : styles.includesPassword;
+    }, [handleClose]);
 
     return (
         <div
-            className={styles.overlay}
-            onClick={(e) => e.target === e.currentTarget && onCancel()}
+            className={`${styles.overlay} ${isVisible ? styles.overlayVisible : ''}`}
+            onClick={(e) => e.target === e.currentTarget && handleClose()}
         >
-            <div className={styles.popupCard}>
+            <div
+                className={`${styles.popupCard} ${isVisible ? styles.popupCardVisible : ''}`}
+            >
                 <div className={styles.closeIcon}>
-                    <Button type="button" onClick={onCancel}>
+                    <Button type="button" onClick={handleClose}>
                         <img src={closeIcon} alt="Close" />
                     </Button>
                 </div>
