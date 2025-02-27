@@ -25,10 +25,10 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (token) {
+        if (token && (!users || users.length === 0)) {
             dispatch(fetchAllUsersRequest({ token }));
         }
-    }, [token]);
+    }, [token, users, dispatch]);
 
     const handleFilterChange = (newFilter: 'all' | 'student' | 'teacher') => {
         setFilter(newFilter);
