@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
 import { ICourseUnit } from '../../../../common/types/ICourseUnit';
 import { findFirstDigit, getIdString } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
@@ -106,6 +107,23 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 (formData.yearOfStudy ?? '').toString()
         );
     }, [selectedCourseUnits, formData.yearOfStudy]);
+
+    const courseUnitOptions = useMemo(
+        () =>
+            filteredCourseUnits.map((courseUnit) => ({
+                value: getIdString(courseUnit._id),
+                label: (courseUnit as ICourseUnit).name
+            })),
+        [filteredCourseUnits]
+    );
+
+    const selectedCourseUnitOptions = useMemo(
+        () =>
+            courseUnitOptions.filter((option) =>
+                formData.courseUnits.includes(option.value)
+            ),
+        [courseUnitOptions, formData.courseUnits]
+    );
 
     const handleNext = useCallback(
         (e: React.FormEvent) => {
@@ -288,29 +306,35 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 </select>
             </FormField>
             <FormField label="Course Units">
-                <div className={styles.checkBox}>
-                    {filteredCourseUnits.map((courseUnit) => (
-                        <div
-                            key={getIdString(courseUnit._id)}
-                            className={styles.checkBoxItem}
-                        >
-                            <input
-                                type="checkbox"
-                                id={getIdString(courseUnit._id)}
-                                name="courseUnits"
-                                value={getIdString(courseUnit._id)}
-                                onChange={handleInputChange}
-                                disabled={!formData.course}
-                                defaultChecked={formData.courseUnits.includes(
-                                    getIdString(courseUnit._id)
-                                )}
-                            />
-                            <label htmlFor={getIdString(courseUnit._id)}>
-                                {(courseUnit as ICourseUnit).name}
-                            </label>
-                        </div>
-                    ))}
-                </div>
+                <Select
+                    isMulti
+                    options={courseUnitOptions}
+                    value={selectedCourseUnitOptions}
+                    onChange={(selected) => {
+                        const selectedValues = selected
+                            ? selected.map((option) => option.value)
+                            : [];
+                        handleInputChange({
+                            target: {
+                                name: 'courseUnits',
+                                value: selectedValues
+                            }
+                        } as unknown as React.ChangeEvent<HTMLSelectElement>);
+                    }}
+                    isDisabled={!formData.course}
+                    placeholder="Select Course Units"
+                    styles={{
+                        container: (base) => ({
+                            ...base,
+                            width: '110%'
+                        }),
+                        valueContainer: (base) => ({
+                            ...base,
+                            maxHeight: '175px',
+                            overflowY: 'auto'
+                        })
+                    }}
+                />
             </FormField>
         </>
     );

@@ -202,10 +202,15 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                         container: (base) => ({
                             ...base,
                             width: '110%'
+                        }),
+                        valueContainer: (base) => ({
+                            ...base,
+                            maxHeight: '150px',
+                            overflowY: 'auto'
                         })
                     }}
                     isMulti
-                    maxMenuHeight={200}
+                    maxMenuHeight={150}
                 />
 
                 <div className={styles.actionButtonGroup}>

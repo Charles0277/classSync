@@ -115,6 +115,11 @@ const CourseForm: React.FC<CourseFormProps> = ({
                         container: (base) => ({
                             ...base,
                             width: '110%'
+                        }),
+                        valueContainer: (base) => ({
+                            ...base,
+                            maxHeight: '200px',
+                            overflowY: 'auto'
                         })
                     }}
                     maxMenuHeight={200}
