@@ -117,13 +117,15 @@
     align-items: center;
 }
 
-.deleteIcon {
-    width: 1.5rem;
-    cursor: pointer;
-    padding: 0.25rem;
+.actionButtons img {
     transition: transform 0.2s ease;
 }
 
-.deleteIcon:hover {
+.actionButtons img:hover {
     transform: scale(1.1);
+}
+
+.deleteIcon {
+    width: 1.5rem;
+    padding: 0.25rem;
 }
