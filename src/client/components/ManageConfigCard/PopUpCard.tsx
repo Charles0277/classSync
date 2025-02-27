@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import closeIcon from '../../assets/closeIcon.svg';
 import Button from '../Button/Button';
 import styles from './PopUpCard.module.css';
@@ -17,17 +17,29 @@ export const PopUpCard: React.FC<PopUpCardProps> = ({
     children,
     className = ''
 }) => {
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        requestAnimationFrame(() => {
+            setIsVisible(true);
+        });
+    }, []);
+
+    const handleClose = () => {
+        setIsVisible(false);
+        setTimeout(onCancel, 200);
+    };
+
     const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        // Close the popup if clicking outside the popup card
         if (e.target === e.currentTarget) {
-            onCancel();
+            handleClose();
         }
     };
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                onCancel();
+                handleClose();
             }
         };
         document.addEventListener('keydown', handleKeyDown);
@@ -37,21 +49,20 @@ export const PopUpCard: React.FC<PopUpCardProps> = ({
     }, [onCancel]);
 
     return (
-        <div className={styles.overlay} onClick={handleBackgroundClick}>
+        <div
+            className={clsx(styles.overlay, isVisible && styles.overlayVisible)}
+            onClick={handleBackgroundClick}
+        >
             <div
                 className={clsx(
                     styles.popupCard,
+                    isVisible && styles.popupCardVisible,
                     className.split(' ').map((cls) => styles[cls])
                 )}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className={styles.closeIcon}>
-                    <Button
-                        type="button"
-                        onClick={() => {
-                            onCancel();
-                        }}
-                    >
+                    <Button type="button" onClick={handleClose}>
                         <img src={closeIcon} />
                     </Button>
                 </div>
