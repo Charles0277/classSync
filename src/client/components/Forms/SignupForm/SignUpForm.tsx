@@ -339,7 +339,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     );
 
     return (
-        <div className={`${styles.formContainer} ${styles.notSignUp}`}>
+        <div className={`${styles.formContainer}`}>
             {mode === 'signUp' && setMode && (
                 <h2 className={styles.formTitle}>Sign Up</h2>
             )}

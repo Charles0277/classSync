@@ -22,9 +22,6 @@
     justify-self: center;
     width: 75%;
     padding-right: 1.25rem;
-}
-
-.notSignUp {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
@@ -33,7 +30,7 @@
         sans-serif;
 }
 
-.notSignUp label {
+.formContainer label {
     padding: 12px 12px 12px 0;
     display: inline-block;
     margin-bottom: -8px;
