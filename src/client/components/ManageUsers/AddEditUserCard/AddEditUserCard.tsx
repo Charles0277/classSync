@@ -186,7 +186,7 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                           ? `Edit ${user?.firstName} ${user?.lastName}`
                           : 'Edit Profile'}
                 </h2>
-                <div className={contentClass}>
+                <div className={styles.signUpFormContainer}>
                     <SignUpForm
                         formData={formData}
                         handleInputChange={handleInputChange}
