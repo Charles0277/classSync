@@ -142,14 +142,16 @@ const RightColumn: React.FC = () => {
             <>
                 <h2 className={styles.greySectionTitle}>Get started</h2>
                 {BUTTONS.map(({ mode: buttonMode, text }) => (
-                    <Button
-                        key={text}
-                        className="getStarted"
-                        type="button"
-                        onClick={() => setMode(buttonMode)}
-                    >
-                        {text}
-                    </Button>
+                    <div className={styles.buttonContainer}>
+                        <Button
+                            key={text}
+                            className="getStarted"
+                            type="button"
+                            onClick={() => setMode(buttonMode)}
+                        >
+                            {text}
+                        </Button>
+                    </div>
                 ))}
             </>
         ),
