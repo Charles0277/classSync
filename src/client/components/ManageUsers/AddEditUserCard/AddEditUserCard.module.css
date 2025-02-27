@@ -14,7 +14,7 @@
 .popupCard {
     display: flex;
     flex-direction: column;
-    background: #f4f4f4;
+    background: var(--gray-100);
     width: 35%;
     height: 80%;
     border-radius: 8px;

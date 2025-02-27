@@ -5,7 +5,7 @@
     resize: vertical;
     border-radius: 10px;
     border-color: transparent;
-    background-color: #28a745;
+    background-color: var(--success);
     outline: none;
     font-weight: 400;
     color: #ffffff;
@@ -20,7 +20,7 @@
     resize: vertical;
     border-radius: 10px;
     border-color: transparent;
-    background-color: #cc4b4b;
+    background-color: var(--error);
     outline: none;
     font-weight: 400;
     color: #ffffff;
@@ -34,7 +34,7 @@
 .input[type='password'] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #34495e;
+    border: 1px solid var(--darkBlue-color);
     border-radius: 10px;
     resize: vertical;
     border-width: 2px;

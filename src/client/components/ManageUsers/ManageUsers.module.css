@@ -108,7 +108,7 @@
 .confirmDeleteButtonGroup button {
     padding: 4px 8px;
     border: none;
-    background-color: #b8b8b8;
+    background-color: var(--gray-400);
     color: black;
     font-size: 16px;
     border-radius: 4px;
@@ -117,7 +117,7 @@
 }
 
 .confirmDeleteButtonGroup button:hover {
-    background-color: rgb(122, 122, 122);
+    background-color: var(--gray-500);
 }
 
 .userList {
@@ -125,5 +125,5 @@
     overflow-y: auto;
     border: 1px solid #ccc;
     border-radius: 4px;
-    background-color: #f9f9f9;
+    background-color: var(--gray-100);
 }

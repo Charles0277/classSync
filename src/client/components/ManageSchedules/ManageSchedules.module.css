@@ -12,7 +12,7 @@
     justify-content: space-between;
     align-items: center;
     width: 80%;
-    background-color: #dbdbdb;
+    background-color: var(--gray-300);
     border-radius: 10px;
     padding: 1rem;
     font-weight: 600;

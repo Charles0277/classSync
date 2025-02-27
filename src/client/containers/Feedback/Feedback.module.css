@@ -84,7 +84,7 @@
 
 .feedbackText {
     font-size: 1rem;
-    color: #34495e;
+    color: var(--darkBlue-color);
     line-height: 1.5;
     text-align: left;
     overflow: hidden;
@@ -94,15 +94,15 @@
 }
 
 .compliment {
-    background-color: #2ecc71;
+    background-color: var(--success);
 }
 
 .suggestion {
-    background-color: #b8b8b8;
+    background-color: var(--gray-400);
 }
 
 .complaint {
-    background-color: #e74c3c;
+    background-color: var(--error);
 }
 
 .feedbackHeader {

@@ -10,7 +10,7 @@
 .feedbackTypeContainer {
     display: flex;
     flex-direction: row;
-    border: solid 1.5px #686868;
+    border: solid 1.5px var(--gray-600);
     border-radius: 10px;
     padding: 0.4rem;
     align-items: center;
@@ -34,7 +34,7 @@
 .feedbackContainer {
     display: flex;
     flex-direction: column;
-    border: solid 1.5px #686868;
+    border: solid 1.5px var(--gray-600);
     border-radius: 10px;
     padding: 0.4rem;
     margin-bottom: 0.75rem;
@@ -65,7 +65,7 @@
     font-size: 18px;
     padding: 5px 7.5px 5px 7.5px;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    border: solid 1.5px #686868;
+    border: solid 1.5px var(--gray-600);
 }
 
 .feedback {
