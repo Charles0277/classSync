@@ -131,7 +131,7 @@
 }
 
 .courseUnitList {
-    max-height: 22rem;
+    max-height: 26rem;
     overflow-y: auto;
     border: 1px solid #ccc;
     border-radius: 4px;
