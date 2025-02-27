@@ -1,3 +1,4 @@
+import { MANCHESTER_EMAIL_REGEX } from '@/common/validation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -28,6 +29,14 @@ interface FormData {
     yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
     course: string;
     courseUnits: string[];
+}
+
+interface FormErrors {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
 }
 
 interface SignUpFormProps {
@@ -66,13 +75,15 @@ const validateForm = (
     return true;
 };
 
-const FormField: React.FC<{ label: string; children: React.ReactNode }> = ({
-    label,
-    children
-}) => (
+const FormField: React.FC<{
+    label: string;
+    children: React.ReactNode;
+    error?: string;
+}> = ({ label, children, error }) => (
     <div className={styles.formField}>
         <label>{label}:</label>
         {children}
+        {error && <span className={styles.errorMessage}>{error}</span>}
     </div>
 );
 
@@ -87,6 +98,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     const [step, setStep] = useState(1);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
+    const [formErrors, setFormErrors] = useState<FormErrors>({});
+    const [showErrors, setShowErrors] = useState(false);
     const dispatch = useDispatch();
     const { courses } = useSelector((state: RootState) => state.course);
 
@@ -124,31 +137,16 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         [courseUnitOptions, formData.courseUnits]
     );
 
-    const handleNext = useCallback(
-        (e: React.FormEvent) => {
-            e.preventDefault();
-            const isValid = validateForm(
-                formData,
-                mode,
-                setDialogMessage,
-                setDialogVisible
-            );
+    const handleNext = (e: React.FormEvent) => {
+        e.preventDefault();
+        const isValid = validateFields();
+        setShowErrors(true);
 
-            if (!isValid) return;
-
-            if (
-                (mode === 'signUp' || mode === 'edit') &&
-                formData.password !== formData.confirmPassword
-            ) {
-                setDialogMessage('Passwords do not match');
-                setDialogVisible(true);
-                return;
-            }
-
-            setStep(2);
-        },
-        [formData, mode]
-    );
+        if (isValid) {
+            setStep(step + 1);
+            setShowErrors(false);
+        }
+    };
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -172,9 +170,78 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         }
     }, [dispatch, courses]);
 
+    const validateFields = () => {
+        const errors: FormErrors = {};
+
+        // First Name validation
+        if (!formData.firstName?.trim()) {
+            errors.firstName = 'This field is required';
+        } else if (!/^[a-zA-Z]+$/.test(formData.firstName)) {
+            errors.firstName = 'Only letters are allowed';
+        } else if (
+            formData.firstName.length < 2 ||
+            formData.firstName.length > 50
+        ) {
+            errors.firstName = 'Length must be between 2 and 50 characters';
+        }
+
+        // Last Name validation
+        if (!formData.lastName?.trim()) {
+            errors.lastName = 'This field is required';
+        } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
+            errors.lastName = 'Only letters are allowed';
+        } else if (
+            formData.lastName.length < 2 ||
+            formData.lastName.length > 50
+        ) {
+            errors.lastName = 'Length must be between 2 and 50 characters';
+        }
+
+        // Email validation
+        if (!formData.email?.trim()) {
+            errors.email = 'Email is required';
+        } else if (!MANCHESTER_EMAIL_REGEX.test(formData.email)) {
+            errors.email =
+                'Must be a valid University of Manchester email address';
+        }
+
+        // Password validation (only for signup/edit mode)
+        if (mode === 'signUp' || mode === 'edit') {
+            if (!formData.password) {
+                errors.password = 'Password is required';
+            } else if (
+                !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/.test(
+                    formData.password
+                )
+            ) {
+                errors.password =
+                    'Password must contain at least 8 characters, including uppercase, number, and special character';
+            }
+
+            if (!formData.confirmPassword) {
+                errors.confirmPassword = 'Please confirm your password';
+            } else if (formData.confirmPassword !== formData.password) {
+                errors.confirmPassword = 'Passwords do not match';
+            }
+        }
+
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const isValid = validateFields();
+        setShowErrors(true);
+
+        if (isValid) {
+            handleSubmit(e);
+        }
+    };
+
     const renderPersonalInfoFields = () => (
         <>
-            <FormField label="First name">
+            <FormField label="First name" error={formErrors.firstName}>
                 <Input
                     type="text"
                     id="firstName"
@@ -186,10 +253,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     minLength={2}
                     maxLength={50}
                     pattern="^[a-zA-Z]+$"
-                    title="Please enter a valid name (letters only, 2-50 characters)"
                 />
             </FormField>
-            <FormField label="Last name">
+            <FormField label="Last name" error={formErrors.lastName}>
                 <Input
                     type="text"
                     id="lastName"
@@ -201,10 +267,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     minLength={2}
                     maxLength={50}
                     pattern="^[a-zA-Z]+$"
-                    title="Please enter a valid name (letters only, 2-50 characters)"
                 />
             </FormField>
-            <FormField label="Email">
+            <FormField label="Email" error={formErrors.email}>
                 <Input
                     type="email"
                     id="email"
@@ -213,13 +278,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    pattern={/^[^@\s]+@[^@\s]+\.[^@\s]+$/.source}
-                    title="Please enter a valid email address."
                 />
             </FormField>
             {(mode === 'signUp' || mode === 'edit') && (
                 <>
-                    <FormField label="Password">
+                    <FormField label="Password" error={formErrors.password}>
                         <Input
                             type="password"
                             id="password"
@@ -228,11 +291,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             value={formData.password}
                             onChange={handleInputChange}
                             required
-                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}"
-                            title="Password must be at least 8 characters, include uppercase, number, and special character."
                         />
                     </FormField>
-                    <FormField label="Confirm password">
+                    <FormField
+                        label="Confirm password"
+                        error={formErrors.confirmPassword}
+                    >
                         <Input
                             type="password"
                             id="confirmPassword"
@@ -355,7 +419,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             )}
             <form
                 className={styles.formGroup}
-                onSubmit={handleSubmit}
+                onSubmit={handleFormSubmit}
                 onKeyDown={handleKeyDown}
             >
                 <AlertDialog

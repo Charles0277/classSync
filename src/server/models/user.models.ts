@@ -11,8 +11,36 @@ const SALT_WORK_FACTOR = 10;
 
 const UserSchema: Schema<IUser> = new Schema(
     {
-        firstName: { type: String, required: true },
-        lastName: { type: String, required: true },
+        firstName: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (firstName: string) => {
+                    return (
+                        /^[a-zA-Z]+$/.test(firstName) &&
+                        firstName.length >= 2 &&
+                        firstName.length <= 50
+                    );
+                },
+                message: (props) =>
+                    `First name must be between 2 and 50 characters and contain only letters`
+            }
+        },
+        lastName: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (lastName: string) => {
+                    return (
+                        /^[a-zA-Z]+$/.test(lastName) &&
+                        lastName.length >= 2 &&
+                        lastName.length <= 50
+                    );
+                },
+                message: (props) =>
+                    `Last name must be between 2 and 50 characters and contain only letters`
+            }
+        },
         email: {
             type: String,
             required: true,
@@ -30,7 +58,19 @@ const UserSchema: Schema<IUser> = new Schema(
             enum: ['student', 'teacher', 'admin'],
             default: 'student'
         },
-        password: { type: String, required: true },
+        password: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (password: string) => {
+                    return /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/.test(
+                        password
+                    );
+                },
+                message: (props) =>
+                    `Password must contain at least 8 characters, including uppercase, number, and special character`
+            }
+        },
         yearOfStudy: {
             type: Number,
             required: true,
