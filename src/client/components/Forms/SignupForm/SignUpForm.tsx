@@ -331,6 +331,16 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             ...base,
                             maxHeight: '175px',
                             overflowY: 'auto'
+                        }),
+                        menu: (base) => ({
+                            ...base,
+                            maxHeight: '125px',
+                            overflowY: 'auto'
+                        }),
+                        menuList: (base) => ({
+                            ...base,
+                            maxHeight: '125px',
+                            overflowY: 'auto'
                         })
                     }}
                 />
