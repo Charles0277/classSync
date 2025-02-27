@@ -51,7 +51,7 @@ const RightColumn: React.FC = () => {
     const [formData, setFormData] = useState<SignUpFormData>(INITIAL_FORM_DATA);
 
     const dispatch = useDispatch();
-    const { user, token, isAuthenticated } = useSelector(
+    const { user, token, isAuthenticated, error } = useSelector(
         (state: RootState) => state.auth
     );
 
@@ -64,31 +64,34 @@ const RightColumn: React.FC = () => {
 
     // Memoized form validation
     const isFormValid = useMemo(() => {
-        if (mode !== 'signUp') return true;
+        if (mode == 'signUp') {
+            const {
+                firstName,
+                lastName,
+                email,
+                password,
+                confirmPassword,
+                role,
+                yearOfStudy,
+                course,
+                courseUnits
+            } = formData;
 
-        const {
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword,
-            role,
-            yearOfStudy,
-            course,
-            courseUnits
-        } = formData;
-
-        return (
-            firstName.trim() &&
-            lastName.trim() &&
-            email.trim() &&
-            password.trim() &&
-            confirmPassword.trim() &&
-            role.trim() &&
-            yearOfStudy !== undefined &&
-            course.trim() &&
-            courseUnits.length > 0
-        );
+            return (
+                firstName.trim() &&
+                lastName.trim() &&
+                email.trim() &&
+                password.trim() &&
+                confirmPassword.trim() &&
+                role.trim() &&
+                yearOfStudy !== undefined &&
+                course.trim() &&
+                courseUnits.length > 0
+            );
+        } else if (mode == 'logIn') {
+            const { email, password } = formData;
+            return email.trim() && password.trim();
+        }
     }, [formData, mode]);
 
     // Memoized handlers
