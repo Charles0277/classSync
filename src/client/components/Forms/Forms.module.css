@@ -27,7 +27,6 @@
 .notSignUp {
     display: flex;
     justify-content: center;
-    width: 100%;
     gap: 0.5rem;
     font:
         600 20px/1.3 Inter,

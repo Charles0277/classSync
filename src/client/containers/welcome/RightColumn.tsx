@@ -142,7 +142,7 @@ const RightColumn: React.FC = () => {
             <>
                 <h2 className={styles.greySectionTitle}>Get started</h2>
                 {BUTTONS.map(({ mode: buttonMode, text }) => (
-                    <div className={styles.buttonContainer}>
+                    <div className={styles.buttonContainer} key={text}>
                         <Button
                             key={text}
                             className="getStarted"

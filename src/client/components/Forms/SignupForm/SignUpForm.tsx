@@ -39,7 +39,6 @@ interface SignUpFormProps {
     setMode?: React.Dispatch<
         React.SetStateAction<'logIn' | 'signUp' | 'logInAsGuest' | undefined>
     >;
-    signUp?: boolean;
     handleBack?: () => void;
     mode: 'signUp' | 'edit' | 'admin';
 }
@@ -340,9 +339,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     );
 
     return (
-        <div
-            className={`${styles.formContainer} ${mode === 'admin' && styles.notSignUp}`}
-        >
+        <div className={`${styles.formContainer} ${styles.notSignUp}`}>
             {mode === 'signUp' && setMode && (
                 <h2 className={styles.formTitle}>Sign Up</h2>
             )}
