@@ -97,6 +97,11 @@
     border-radius: 0.25rem;
 }
 
+.actionBar button:hover {
+    filter: brightness(85%);
+    transition: filter 0.3s ease;
+}
+
 .weekControls {
     display: flex;
     margin-right: auto;
@@ -110,6 +115,8 @@
 
 .settings {
     margin-left: auto;
+    display: flex;
+    align-items: center;
 }
 
 .settings img {

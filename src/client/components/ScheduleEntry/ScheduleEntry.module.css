@@ -88,4 +88,5 @@
 
 .globalScheduleEntry:hover {
     filter: brightness(90%);
+    transition: filter 0.2s ease;
 }
