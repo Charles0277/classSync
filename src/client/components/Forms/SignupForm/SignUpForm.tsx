@@ -7,17 +7,11 @@ import { findFirstDigit, getIdString } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
 import Input from '../../Input/Input';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger
-} from '../../ui/alert-dialog';
 import styles from '../Forms.module.css';
+
+// Type definitions
+type UserRole = 'student' | 'teacher';
+type StudyYear = 1 | 2 | 3 | 4 | 5 | 7;
 
 interface FormData {
     firstName: string;
@@ -25,8 +19,8 @@ interface FormData {
     email: string;
     password?: string;
     confirmPassword?: string;
-    role: 'student' | 'teacher';
-    yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
+    role: UserRole;
+    yearOfStudy?: StudyYear;
     course: string;
     courseUnits: string[];
 }
@@ -39,6 +33,8 @@ interface FormErrors {
     confirmPassword?: string;
 }
 
+type FormMode = 'signUp' | 'edit' | 'admin';
+
 interface SignUpFormProps {
     formData: FormData;
     handleInputChange: (
@@ -48,205 +44,184 @@ interface SignUpFormProps {
     setMode?: React.Dispatch<
         React.SetStateAction<'logIn' | 'signUp' | undefined>
     >;
-    handleBack?: () => void;
-    mode: 'signUp' | 'edit' | 'admin';
+    mode: FormMode;
 }
 
-const validateForm = (
-    formData: FormData,
-    mode: 'signUp' | 'edit' | 'admin',
-    setDialogMessage: React.Dispatch<React.SetStateAction<string>>,
-    setDialogVisible: React.Dispatch<React.SetStateAction<boolean>>
-): boolean => {
-    const { firstName, lastName, email, password, confirmPassword } = formData;
-
-    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-        setDialogMessage('All fields are required');
-        setDialogVisible(true);
-        return false;
-    }
-
-    if (mode === 'signUp' && (!password?.trim() || !confirmPassword?.trim())) {
-        setDialogMessage('Password fields are required');
-        setDialogVisible(true);
-        return false;
-    }
-
-    return true;
-};
-
+// Form Field component
 const FormField: React.FC<{
     label: string;
     children: React.ReactNode;
     error?: string;
-}> = ({ label, children, error }) => (
+    showError?: boolean;
+}> = ({ label, children, error, showError }) => (
     <div className={styles.formField}>
         <label>{label}:</label>
         {children}
-        {error && <span className={styles.errorMessage}>{error}</span>}
+        {error && showError && (
+            <span className={styles.errorMessage}>{error}</span>
+        )}
     </div>
 );
+
+// Custom hook for course data
+const useCourseData = (selectedCourseId: string) => {
+    const dispatch = useDispatch();
+    const { courses } = useSelector((state: RootState) => state.course);
+
+    useEffect(() => {
+        if (!courses.length) {
+            dispatch(fetchAllCoursesRequest());
+        }
+    }, [dispatch, courses.length]);
+
+    const { selectedCourseUnits, courseOptions } = useMemo(() => {
+        const selectedCourse = courses.find(
+            (course) => getIdString(course._id) === selectedCourseId
+        );
+        return {
+            selectedCourseUnits: selectedCourse?.courseUnits || [],
+            courseOptions: courses.map((course) => ({
+                value: getIdString(course._id),
+                label: course.name
+            }))
+        };
+    }, [courses, selectedCourseId]);
+
+    return { selectedCourseUnits, courseOptions };
+};
 
 const SignUpForm: React.FC<SignUpFormProps> = ({
     formData,
     handleInputChange,
     handleSubmit,
     setMode,
-    mode,
-    handleBack
+    mode
 }) => {
     const [step, setStep] = useState(1);
-    const [dialogVisible, setDialogVisible] = useState(false);
-    const [dialogMessage, setDialogMessage] = useState('');
     const [formErrors, setFormErrors] = useState<FormErrors>({});
-    const [showErrors, setShowErrors] = useState(false);
-    const dispatch = useDispatch();
-    const { courses } = useSelector((state: RootState) => state.course);
+    const [showError, setShowError] = useState(false);
+    const { selectedCourseUnits, courseOptions } = useCourseData(
+        formData.course
+    );
 
-    const selectedCourseUnits = useMemo(() => {
-        if (!formData.course || !courses) return [];
-        const selectedCourse = courses.find(
-            (course) => course._id === formData.course
-        );
-        return selectedCourse ? selectedCourse.courseUnits || [] : [];
-    }, [formData.course, courses]);
-
+    // Derived data
     const filteredCourseUnits = useMemo(() => {
         if (!formData.yearOfStudy) return [];
         return selectedCourseUnits.filter(
-            (courseUnit) =>
-                findFirstDigit((courseUnit as ICourseUnit).code) ===
-                (formData.yearOfStudy ?? '').toString()
+            (unit) =>
+                findFirstDigit((unit as ICourseUnit).code) ===
+                String(formData.yearOfStudy)
         );
     }, [selectedCourseUnits, formData.yearOfStudy]);
 
     const courseUnitOptions = useMemo(
         () =>
-            filteredCourseUnits.map((courseUnit) => ({
-                value: getIdString(courseUnit._id),
-                label: (courseUnit as ICourseUnit).name
+            filteredCourseUnits.map((unit) => ({
+                value: getIdString(unit._id),
+                label: (unit as ICourseUnit).name
             })),
         [filteredCourseUnits]
     );
 
     const selectedCourseUnitOptions = useMemo(
         () =>
-            courseUnitOptions.filter((option) =>
-                formData.courseUnits.includes(option.value)
+            courseUnitOptions.filter((opt) =>
+                formData.courseUnits.includes(opt.value)
             ),
         [courseUnitOptions, formData.courseUnits]
     );
 
-    const handleNext = (e: React.FormEvent) => {
-        e.preventDefault();
-        const isValid = validateFields();
-        setShowErrors(true);
-
-        if (isValid) {
-            setStep(step + 1);
-            setShowErrors(false);
-        }
-    };
-
-    const handleKeyDown = useCallback(
-        (e: React.KeyboardEvent<HTMLFormElement>) => {
-            if (e.key === 'Enter' && step === 1) {
-                e.preventDefault();
-                handleNext(e as unknown as React.FormEvent);
-            }
-        },
-        [handleNext, step]
-    );
-
-    const handlePrevious = useCallback(() => setStep(1), []);
-    const handleBackClick = useCallback(() => {
-        if (setMode) setMode(undefined);
-        else handleBack?.();
-    }, [setMode, handleBack]);
-
-    useEffect(() => {
-        if (!courses.length) {
-            dispatch(fetchAllCoursesRequest());
-        }
-    }, [dispatch, courses]);
-
-    const validateFields = () => {
+    // Validation logic
+    const validateFields = useCallback(() => {
         const errors: FormErrors = {};
+        const { firstName, lastName, email, password, confirmPassword } =
+            formData;
 
-        // First Name validation
-        if (!formData.firstName?.trim()) {
-            errors.firstName = 'This field is required';
-        } else if (!/^[a-zA-Z]+$/.test(formData.firstName)) {
-            errors.firstName = 'Only letters are allowed';
-        } else if (
-            formData.firstName.length < 2 ||
-            formData.firstName.length > 50
-        ) {
-            errors.firstName = 'Length must be between 2 and 50 characters';
-        }
+        // Name validations
+        const validateName = (name: string, field: keyof FormErrors) => {
+            if (!name.trim()) {
+                errors[field] = 'This field is required';
+            } else if (!/^[a-zA-Z]+$/.test(name)) {
+                errors[field] = 'Only letters are allowed';
+            } else if (name.length < 2 || name.length > 50) {
+                errors[field] = 'Length must be between 2 and 50 characters';
+            }
+        };
 
-        // Last Name validation
-        if (!formData.lastName?.trim()) {
-            errors.lastName = 'This field is required';
-        } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
-            errors.lastName = 'Only letters are allowed';
-        } else if (
-            formData.lastName.length < 2 ||
-            formData.lastName.length > 50
-        ) {
-            errors.lastName = 'Length must be between 2 and 50 characters';
-        }
+        validateName(firstName, 'firstName');
+        validateName(lastName, 'lastName');
 
         // Email validation
-        if (!formData.email?.trim()) {
+        if (!email.trim()) {
             errors.email = 'Email is required';
-        } else if (!MANCHESTER_EMAIL_REGEX.test(formData.email)) {
+        } else if (!MANCHESTER_EMAIL_REGEX.test(email)) {
             errors.email =
                 'Must be a valid University of Manchester email address';
         }
 
-        // Password validation (only for signup/edit mode)
-        if (mode === 'signUp' || mode === 'edit') {
-            if (!formData.password) {
+        // Password validation
+        if (mode !== 'admin') {
+            if (!password) {
                 errors.password = 'Password is required';
             } else if (
                 !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/.test(
-                    formData.password
+                    password
                 )
             ) {
                 errors.password =
                     'Password must contain at least 8 characters, including uppercase, number, and special character';
             }
 
-            if (!formData.confirmPassword) {
+            if (!confirmPassword) {
                 errors.confirmPassword = 'Please confirm your password';
-            } else if (formData.confirmPassword !== formData.password) {
+            } else if (confirmPassword !== password) {
                 errors.confirmPassword = 'Passwords do not match';
             }
         }
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
+    }, [formData, mode]);
+
+    useEffect(() => {
+        validateFields();
+    }, [validateFields]);
+
+    // Form handlers
+    const handleNext = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (validateFields()) {
+            setStep(2);
+            setShowError(false);
+        } else setShowError(true);
     };
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const isValid = validateFields();
-        setShowErrors(true);
-
-        if (isValid) {
+        if (validateFields()) {
             handleSubmit(e);
-        }
+            setShowError(false);
+        } else setShowError(true);
     };
 
-    const renderPersonalInfoFields = () => (
+    const handleCourseUnitsChange = (selected: any) => {
+        const values = selected.map((opt: any) => opt.value);
+        handleInputChange({
+            target: { name: 'courseUnits', value: values }
+        } as React.ChangeEvent<HTMLSelectElement>);
+    };
+
+    // Form sections
+    const renderPersonalInfo = () => (
         <>
-            <FormField label="First name" error={formErrors.firstName}>
+            <FormField
+                label="First name"
+                error={formErrors.firstName}
+                showError={showError}
+            >
                 <Input
                     type="text"
-                    id="firstName"
                     name="firstName"
-                    placeholder="First name"
                     value={formData.firstName}
                     onChange={handleInputChange}
                     required
@@ -255,12 +230,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     pattern="^[a-zA-Z]+$"
                 />
             </FormField>
-            <FormField label="Last name" error={formErrors.lastName}>
+            <FormField
+                label="Last name"
+                error={formErrors.lastName}
+                showError={showError}
+            >
                 <Input
                     type="text"
-                    id="lastName"
                     name="lastName"
-                    placeholder="Last name"
                     value={formData.lastName}
                     onChange={handleInputChange}
                     required
@@ -269,12 +246,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     pattern="^[a-zA-Z]+$"
                 />
             </FormField>
-            <FormField label="Email" error={formErrors.email}>
+            <FormField
+                label="Email"
+                error={formErrors.email}
+                showError={showError}
+            >
                 <Input
                     type="email"
-                    id="email"
                     name="email"
-                    placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
                     required
@@ -282,12 +261,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             </FormField>
             {(mode === 'signUp' || mode === 'edit') && (
                 <>
-                    <FormField label="Password" error={formErrors.password}>
+                    <FormField
+                        label="Password"
+                        error={formErrors.password}
+                        showError={showError}
+                    >
                         <Input
                             type="password"
-                            id="password"
                             name="password"
-                            placeholder="Password"
                             value={formData.password}
                             onChange={handleInputChange}
                             required
@@ -296,12 +277,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     <FormField
                         label="Confirm password"
                         error={formErrors.confirmPassword}
+                        showError={showError}
                     >
                         <Input
                             type="password"
-                            id="confirmPassword"
                             name="confirmPassword"
-                            placeholder="Confirm password"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
                             required
@@ -312,32 +292,30 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         </>
     );
 
-    const renderAcademicInfoFields = () => (
+    const renderAcademicInfo = () => (
         <>
-            <FormField label="Role">
+            <FormField label="Role" showError={showError}>
                 <select
-                    id="role"
                     name="role"
                     value={formData.role}
                     onChange={handleInputChange}
-                    required
                     className={styles.select}
+                    required
                 >
                     <option value="student">Student</option>
                     <option value="teacher">Teacher</option>
                 </select>
             </FormField>
-            <FormField label="Year of Study">
+            <FormField label="Year of Study" showError={showError}>
                 <select
-                    id="yearOfStudy"
                     name="yearOfStudy"
                     value={formData.yearOfStudy || ''}
                     onChange={handleInputChange}
-                    required
                     className={styles.select}
+                    required
                 >
                     <option value="" disabled>
-                        Select a Year of Study
+                        Select a Year
                     </option>
                     {[1, 2, 3, 4, 5, 7].map((year) => (
                         <option key={year} value={year}>
@@ -346,66 +324,40 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     ))}
                 </select>
             </FormField>
-            <FormField label="Course">
+            <FormField label="Course" showError={showError}>
                 <select
-                    id="course"
                     name="course"
-                    value={formData.course || ''}
+                    value={formData.course}
                     onChange={handleInputChange}
-                    required
                     className={styles.select}
+                    required
                 >
                     <option value="" disabled>
                         Select a course
                     </option>
-                    {courses.map((course) => (
-                        <option
-                            key={course._id as string}
-                            value={course._id as string}
-                        >
-                            {course.name}
+                    {courseOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                            {opt.label}
                         </option>
                     ))}
                 </select>
             </FormField>
-            <FormField label="Course Units">
+            <FormField label="Course Units" showError={showError}>
                 <Select
                     isMulti
                     options={courseUnitOptions}
                     value={selectedCourseUnitOptions}
-                    onChange={(selected) => {
-                        const selectedValues = selected
-                            ? selected.map((option) => option.value)
-                            : [];
-                        handleInputChange({
-                            target: {
-                                name: 'courseUnits',
-                                value: selectedValues
-                            }
-                        } as unknown as React.ChangeEvent<HTMLSelectElement>);
-                    }}
+                    onChange={handleCourseUnitsChange}
                     isDisabled={!formData.course}
-                    placeholder="Select Course Units"
                     styles={{
-                        container: (base) => ({
-                            ...base,
-                            width: '110%'
-                        }),
+                        container: (base) => ({ ...base, width: '110%' }),
                         valueContainer: (base) => ({
                             ...base,
                             maxHeight: '175px',
                             overflowY: 'auto'
                         }),
-                        menu: (base) => ({
-                            ...base,
-                            maxHeight: '125px',
-                            overflowY: 'auto'
-                        }),
-                        menuList: (base) => ({
-                            ...base,
-                            maxHeight: '125px',
-                            overflowY: 'auto'
-                        })
+                        menu: (base) => ({ ...base, maxHeight: '125px' }),
+                        menuList: (base) => ({ ...base, maxHeight: '125px' })
                     }}
                 />
             </FormField>
@@ -413,81 +365,40 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     );
 
     return (
-        <div className={`${styles.formContainer}`}>
-            {mode === 'signUp' && setMode && (
-                <h2 className={styles.formTitle}>Sign Up</h2>
-            )}
-            <form
-                className={styles.formGroup}
-                onSubmit={handleFormSubmit}
-                onKeyDown={handleKeyDown}
-            >
-                <AlertDialog
-                    open={dialogVisible}
-                    onOpenChange={setDialogVisible}
-                >
-                    <AlertDialogTrigger asChild>
-                        <div style={{ display: 'none' }} />
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>
-                                Validation Error
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {dialogMessage}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogAction
-                                onClick={() => setDialogVisible(false)}
-                            >
-                                OK
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-                {step === 1 ? (
-                    <>
-                        {renderPersonalInfoFields()}
-                        <div className={styles.actionButtonGroup}>
+        <div className={styles.formContainer}>
+            {mode === 'signUp' && <h2 className={styles.formTitle}>Sign Up</h2>}
+            <form onSubmit={handleFormSubmit} className={styles.formGroup}>
+                {step === 1 ? renderPersonalInfo() : renderAcademicInfo()}
+
+                <div className={styles.actionButtonGroup}>
+                    {step === 1 ? (
+                        <>
                             <Input
                                 type="button"
-                                id="back"
-                                name="back"
                                 value="Back"
-                                onClick={handleBackClick}
+                                onClick={() => setMode?.(undefined)}
                             />
                             <Input
                                 type="button"
-                                id="next"
-                                name="next"
                                 value="Next"
                                 onClick={handleNext}
                                 style={{ backgroundColor: '#28a745' }}
                             />
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        {renderAcademicInfoFields()}
-                        <div className={styles.actionButtonGroup}>
+                        </>
+                    ) : (
+                        <>
                             <Input
                                 type="button"
-                                id="previous"
-                                name="previous"
                                 value="Previous"
-                                onClick={handlePrevious}
+                                onClick={() => setStep(1)}
                             />
                             <Input
                                 type="submit"
-                                id="signUp"
-                                name="signUp"
                                 value={mode === 'signUp' ? 'Sign Up' : 'Save'}
                             />
-                        </div>
-                    </>
-                )}
+                        </>
+                    )}
+                </div>
             </form>
         </div>
     );

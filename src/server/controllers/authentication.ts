@@ -89,7 +89,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         const user = await fetchUserByEmail(email.toLowerCase());
         if (!user) {
             return res.status(401).json({
-                error: 'Invalid email or password'
+                error: 'Email does not exist'
             });
         }
 
@@ -97,7 +97,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({
-                error: 'Invalid email or password'
+                error: 'Incorrect email or password'
             });
         }
 
