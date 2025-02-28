@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
         <button
             type={type}
             onClick={onClick}
-            className={`${styles.btn} ${styles[size]} ${className
+            className={`${styles.btn} ${styles[size]} ${disabled ? styles.disabled : ''} ${className
                 .split(' ')
                 .filter((c) => c)
                 .map((c) => styles[c])

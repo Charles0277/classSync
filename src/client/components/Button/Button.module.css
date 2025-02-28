@@ -171,3 +171,8 @@
     font-size: medium;
     font-family: Inter, sans-serif;
 }
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
