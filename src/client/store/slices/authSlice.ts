@@ -9,14 +9,19 @@ interface AuthState {
     error: string | null;
     isAuthenticated: boolean;
     createdUser?: IUser;
+    loggingIn: boolean;
+    signingUp: boolean;
 }
 
 const initialState: AuthState = {
     user: undefined,
     token: localStorage.getItem('token'),
     isLoading: localStorage.getItem('token') ? true : false,
+
     error: null,
-    isAuthenticated: false
+    isAuthenticated: false,
+    loggingIn: false,
+    signingUp: false
 };
 
 const authSlice = createSlice({
@@ -24,31 +29,31 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         logInRequest: (state, action) => {
-            state.isLoading = true;
+            state.loggingIn = true;
             state.error = null;
         },
         logInSuccess: (state, action) => {
             const { user, token } = action.payload;
-            state.isLoading = false;
+            state.loggingIn = false;
             state.user = user;
             state.token = token;
             state.isAuthenticated = user;
             localStorage.setItem('token', token);
         },
         logInFailure: (state, action) => {
-            state.isLoading = false;
+            state.loggingIn = false;
             state.error = action.payload;
         },
         signUpRequest: (state, action) => {
-            state.isLoading = true;
+            state.signingUp = true;
             state.error = null;
         },
         signUpSuccess: (state, action) => {
             state.createdUser = action.payload;
-            state.isLoading = false;
+            state.signingUp = false;
         },
         signUpFailure: (state, action) => {
-            state.isLoading = false;
+            state.signingUp = false;
             state.error = action.payload;
         },
         checkAuthenticationRequest: (state, action) => {
