@@ -29,7 +29,7 @@ function* handleFetchAllCourseUnits(action: any) {
             yield call(fetchCourseUnitsApi);
         yield put(fetchAllCourseUnitsSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchAllCourseUnitsFailure(error.message));
+        yield put(fetchAllCourseUnitsFailure(error.response.data.error));
     }
 }
 
@@ -43,7 +43,7 @@ function* handleDeleteCourseUnit(action: any) {
         );
         yield put(deleteCourseUnitSuccess(response.data));
     } catch (error: any) {
-        yield put(deleteCourseUnitFailure(error.message));
+        yield put(deleteCourseUnitFailure(error.response.data.error));
     }
 }
 
@@ -58,7 +58,7 @@ function* handleUpdateCourseUnit(action: any) {
         );
         yield put(updateCourseUnitSuccess(response.data));
     } catch (error: any) {
-        yield put(updateCourseUnitFailure(error.message));
+        yield put(updateCourseUnitFailure(error.response.data.error));
     }
 }
 
@@ -72,7 +72,7 @@ function* handleCreateCourseUnit(action: any) {
         );
         yield put(createCourseUnitSuccess(response.data));
     } catch (error: any) {
-        yield put(createCourseUnitFailure(error.message));
+        yield put(createCourseUnitFailure(error.response.data.error));
     }
 }
 

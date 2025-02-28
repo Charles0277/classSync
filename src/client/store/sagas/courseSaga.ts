@@ -27,7 +27,7 @@ function* handleFetchAllCourses() {
         const response: AxiosResponse<ICourse[]> = yield call(fetchCoursesApi);
         yield put(fetchAllCoursesSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchAllCoursesFailure(error.message));
+        yield put(fetchAllCoursesFailure(error.response.data.error));
     }
 }
 
@@ -41,7 +41,7 @@ function* handleDeleteCourse(action: any) {
         );
         yield put(deleteCourseSuccess(response.data));
     } catch (error: any) {
-        yield put(deleteCourseFailure(error.message));
+        yield put(deleteCourseFailure(error.response.data.error));
     }
 }
 
@@ -56,7 +56,7 @@ function* handleUpdateCourse(action: any) {
         );
         yield put(updateCourseSuccess(response.data));
     } catch (error: any) {
-        yield put(updateCourseFailure(error.message));
+        yield put(updateCourseFailure(error.response.data.error));
     }
 }
 
@@ -70,7 +70,7 @@ function* handleCreateCourse(action: any) {
         );
         yield put(createCourseSuccess(response.data));
     } catch (error: any) {
-        yield put(createCourseFailure(error.message));
+        yield put(createCourseFailure(error.response.data.error));
     }
 }
 

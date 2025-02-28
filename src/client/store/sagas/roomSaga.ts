@@ -32,7 +32,7 @@ function* handleFetchAllRooms(action: any) {
         );
         yield put(fetchAllRoomsSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchAllRoomsFailure(error.message));
+        yield put(fetchAllRoomsFailure(error.response.data.error));
     }
 }
 
@@ -46,7 +46,7 @@ function* handleDeleteRoom(action: any) {
         );
         yield put(deleteRoomSuccess(response.data));
     } catch (error: any) {
-        yield put(deleteRoomFailure(error.message));
+        yield put(deleteRoomFailure(error.response.data.error));
     }
 }
 
@@ -61,7 +61,7 @@ function* handleUpdateRoom(action: any) {
         );
         yield put(updateRoomSuccess(response.data));
     } catch (error: any) {
-        yield put(updateRoomFailure(error.message));
+        yield put(updateRoomFailure(error.response.data.error));
     }
 }
 
@@ -75,7 +75,7 @@ function* handleCreateRoom(action: any) {
         );
         yield put(createRoomSuccess(response.data));
     } catch (error: any) {
-        yield put(createRoomFailure(error.message));
+        yield put(createRoomFailure(error.response.data.error));
     }
 }
 

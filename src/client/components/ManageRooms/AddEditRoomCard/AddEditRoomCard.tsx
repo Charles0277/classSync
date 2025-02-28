@@ -36,6 +36,11 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
     onCancel,
     room
 }) => {
+    const { token } = useSelector((state: RootState) => state.auth);
+    const { loading, error } = useSelector((state: RootState) => state.room);
+
+    const dispatch = useDispatch();
+
     const [formData, setFormData] = useState<RoomFormData>({
         name: room ? room.name : '',
         type: room ? room.type : '',
@@ -43,17 +48,30 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
         chairs: room ? room.chairs : undefined,
         tables: room ? room.tables : undefined
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { token } = useSelector((state: RootState) => state.auth);
+    useEffect(() => {
+        if (isSubmitting && !loading && !error) {
+            onSave();
+        }
+    }, [loading, error, onSave, isSubmitting]);
 
-    const dispatch = useDispatch();
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onCancel();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [onCancel]);
 
     const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
             const target = e.target;
             const { name, value } = target;
 
-            // Handle all other inputs
             setFormData((prev) => ({ ...prev, [name]: value }));
         },
         []
@@ -70,12 +88,12 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
                 return;
             }
 
+            setIsSubmitting(true);
             room
                 ? dispatch(updateRoomRequest({ id: room._id, formData, token }))
                 : dispatch(createRoomRequest({ formData, token }));
-            onSave();
         },
-        [dispatch, formData, onSave]
+        [dispatch, formData, room, token]
     );
 
     const handleBackgroundClick = useCallback(
@@ -86,17 +104,6 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
         },
         [onCancel]
     );
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                onCancel();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onCancel]);
 
     const formProps = useMemo(
         () => ({
@@ -109,12 +116,6 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
         [formData, handleInputChange, handleSubmit]
     );
 
-    const CloseButton = memo(() => (
-        <Button type="button" onClick={onCancel}>
-            <img src={closeIcon} alt="Close" />
-        </Button>
-    ));
-
     return (
         <div className={styles.overlay} onClick={handleBackgroundClick}>
             <div
@@ -124,7 +125,9 @@ const AddEditRoomForm: React.FC<AddEditRoomFormProps> = ({
                 aria-labelledby="add-room-title"
             >
                 <div className={styles.closeIcon}>
-                    <CloseButton />
+                    <Button type="button" onClick={onCancel}>
+                        <img src={closeIcon} alt="Close" />
+                    </Button>
                 </div>
                 <h2 id="add/edit-room-title" className={styles.popupTitle}>
                     {room ? `Edit ${room.name}` : 'Add a New Room'}

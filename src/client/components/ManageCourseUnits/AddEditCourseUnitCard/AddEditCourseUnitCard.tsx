@@ -35,16 +35,37 @@ const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
     onCancel,
     courseUnit
 }) => {
+    const { token } = useSelector((state: RootState) => state.auth);
+    const { loading, error } = useSelector(
+        (state: RootState) => state.courseUnit
+    );
+
+    const dispatch = useDispatch();
+
     const [formData, setFormData] = useState<CourseUnitFormData>({
         name: courseUnit ? courseUnit.name : '',
         code: courseUnit ? courseUnit.code : '',
         instructor: courseUnit ? courseUnit.instructor._id.toString() : '',
         classTypes: courseUnit ? courseUnit.classTypes : []
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { token } = useSelector((state: RootState) => state.auth);
+    useEffect(() => {
+        if (isSubmitting && !loading && !error) {
+            onSave();
+        }
+    }, [loading, error, onSave, isSubmitting]);
 
-    const dispatch = useDispatch();
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onCancel();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [onCancel]);
 
     const handleInputChange = useCallback(
         (
@@ -74,6 +95,7 @@ const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
                 return;
             }
 
+            setIsSubmitting(true);
             courseUnit
                 ? dispatch(
                       updateCourseUnitRequest({
@@ -83,7 +105,6 @@ const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
                       })
                   )
                 : dispatch(createCourseUnitRequest({ formData, token }));
-            onSave();
         },
         [dispatch, formData, courseUnit, onSave, token]
     );
@@ -96,17 +117,6 @@ const AddEditCourseUnitForm: React.FC<AddEditCourseUnitFormProps> = ({
         },
         [onCancel]
     );
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                onCancel();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onCancel]);
 
     const formProps = useMemo(
         () => ({

@@ -51,7 +51,7 @@ export const updateHoliday = async (
         if (invalidFields.length > 0) {
             return res
                 .status(400)
-                .send(`Invalid fields: ${invalidFields.join(', ')}`);
+                .send(`Invalid fields: ${invalidFields.join(', ')}.`);
         }
 
         const updatedValues = Object.fromEntries(
@@ -76,14 +76,14 @@ export const createNewHoliday = async (
 
         if (!name || !startDate || !endDate) {
             return res.status(400).send({
-                error: 'Please provide a name, start date, and end date'
+                error: 'Please provide a name, start date, and end date.'
             });
         }
 
         const existingHoliday = await fetchHolidayByName(name);
 
         if (existingHoliday) {
-            return res.status(400).send({ error: 'Holiday already exists' });
+            return res.status(400).send({ error: 'Holiday already exists.' });
         }
 
         const newHoliday = await createHoliday({
@@ -94,6 +94,7 @@ export const createNewHoliday = async (
 
         return res.status(201).send(newHoliday);
     } catch (error) {
+        console.log(error);
         return res.status(400).send(error);
     }
 };

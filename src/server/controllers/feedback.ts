@@ -86,7 +86,7 @@ export const updateFeedback = async (
         if (invalidFields.length > 0) {
             return res
                 .status(400)
-                .send(`Invalid fields: ${invalidFields.join(', ')}`);
+                .send(`Invalid fields: ${invalidFields.join(', ')}.`);
         }
 
         const updatedValues = Object.fromEntries(
@@ -116,7 +116,7 @@ export const createNewFeedback = async (
 
         if (!type || !feedback || !user) {
             return res.status(400).send({
-                error: 'Please provide a type, feedback, and user'
+                error: 'Please provide a type, feedback, and user.'
             });
         }
 

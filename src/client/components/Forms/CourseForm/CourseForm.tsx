@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchAllCourseUnitsRequest } from '../../../store/slices/courseUnitSlice';
 import { RootState } from '../../../store/store';
+import Button from '../../Button/Button';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
 
@@ -28,8 +29,10 @@ const CourseForm: React.FC<CourseFormProps> = ({
     handleBack,
     edit
 }) => {
-    const dispatch = useDispatch();
     const { courseUnits } = useSelector((state: RootState) => state.courseUnit);
+    const { error } = useSelector((state: RootState) => state.course);
+
+    const dispatch = useDispatch();
 
     const [selectedCourseUnits, setSelectedCourseUnits] = useState<
         { value: string; label: string }[]
@@ -44,6 +47,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 label: unit!.name
             }))
     );
+    const [showResponseError, setShowResponseError] = useState(false);
 
     useEffect(() => {
         if (selectedCourseUnits.length === 0) {
@@ -79,6 +83,11 @@ const CourseForm: React.FC<CourseFormProps> = ({
         value: getIdString(unit._id),
         label: unit.name
     }));
+
+    const isFormFilled =
+        formData.name.trim() !== '' &&
+        formData.code.trim() !== '' &&
+        formData.courseUnits.length > 0;
 
     return (
         <div className={`${styles.formContainer} ${styles.notSignUp}`}>
@@ -124,21 +133,23 @@ const CourseForm: React.FC<CourseFormProps> = ({
                     }}
                     maxMenuHeight={200}
                 />
-
+                {error && showResponseError && (
+                    <span className={styles.errorMessage}>{error}</span>
+                )}
                 <div className={styles.actionButtonGroup}>
-                    <Input
-                        type="button"
-                        id="back"
-                        name="back"
-                        value="Back"
-                        onClick={handleBack}
-                    />
-                    <Input
+                    <Button type="button" onClick={handleBack} className="back">
+                        Back
+                    </Button>
+                    <Button
                         type="submit"
-                        id="submit"
-                        name="submit"
-                        value={edit ? 'Save' : 'Submit'}
-                    />
+                        className="logIn"
+                        disabled={!isFormFilled}
+                        onClick={() => {
+                            setShowResponseError(true);
+                        }}
+                    >
+                        {edit ? 'Save' : 'Submit'}
+                    </Button>
                 </div>
             </form>
         </div>

@@ -66,7 +66,7 @@ export const updateCourse = async (
         if (invalidFields.length > 0) {
             return res
                 .status(400)
-                .send(`Invalid fields: ${invalidFields.join(', ')}`);
+                .send(`Invalid fields: ${invalidFields.join(', ')}.`);
         }
 
         const updatedValues = Object.fromEntries(
@@ -91,14 +91,14 @@ export const createNewCourse = async (
 
         if (!name || !code || !courseUnits) {
             return res.status(400).send({
-                error: 'Please provide a name, code, and at least 1 course unit'
+                error: 'Please provide a name, code, and at least 1 course unit.'
             });
         }
 
         const existingCourse = await fetchCourseByCode(code);
 
         if (existingCourse) {
-            return res.status(400).send({ error: 'Course already exists' });
+            return res.status(400).send({ error: 'Course already exists.' });
         }
 
         const newCourse = await createCourse({

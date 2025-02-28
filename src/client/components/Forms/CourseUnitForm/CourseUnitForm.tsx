@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { RootState } from '../../../store/store';
+import Button from '../../Button/Button';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
 
@@ -29,26 +30,13 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
     handleBack,
     edit
 }) => {
-    const dispatch = useDispatch();
     const { teachers } = useSelector((state: RootState) => state.user);
     const { token } = useSelector((state: RootState) => state.auth);
+    const { error } = useSelector((state: RootState) => state.courseUnit);
 
-    const classTypes = [
-        'lectureTheatre',
-        'laboratory',
-        'classroom',
-        'office',
-        'computerCluster'
-    ];
+    const dispatch = useDispatch();
 
-    const classTypesMap = {
-        lectureTheatre: 'Lecture Theatre',
-        laboratory: 'Laboratory',
-        classroom: 'Classroom',
-        office: 'Office',
-        computerCluster: 'Computer Cluster'
-    };
-
+    const [showResponseError, setShowResponseError] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState<{
         value: string;
         label: string;
@@ -67,7 +55,6 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
               }
             : null
     );
-
     const [selectedClassTypes, setSelectedClassTypes] = useState<
         { value: string; label: string }[]
     >(() =>
@@ -81,6 +68,22 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                 label: classTypesMap[classType as keyof typeof classTypesMap]
             }))
     );
+
+    const classTypes = [
+        'lectureTheatre',
+        'laboratory',
+        'classroom',
+        'office',
+        'computerCluster'
+    ];
+
+    const classTypesMap = {
+        lectureTheatre: 'Lecture Theatre',
+        laboratory: 'Laboratory',
+        classroom: 'Classroom',
+        office: 'Office',
+        computerCluster: 'Computer Cluster'
+    };
 
     useEffect(() => {
         if (selectedClassTypes?.length === 0) {
@@ -152,6 +155,12 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
             label: classTypesMap[classType as keyof typeof classTypesMap]
         })) || [];
 
+    const isFormFilled =
+        formData.name.trim() !== '' &&
+        formData.code.trim() !== '' &&
+        formData.instructor !== '' &&
+        formData.classTypes.length > 0;
+
     return (
         <div className={`${styles.formContainer} ${styles.notSignUp}`}>
             <form className={styles.formGroup} onSubmit={handleSubmit}>
@@ -212,21 +221,23 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                     isMulti
                     maxMenuHeight={150}
                 />
-
+                {error && showResponseError && (
+                    <span className={styles.errorMessage}>{error}</span>
+                )}
                 <div className={styles.actionButtonGroup}>
-                    <Input
-                        type="button"
-                        id="back"
-                        name="back"
-                        value="Back"
-                        onClick={handleBack}
-                    />
-                    <Input
+                    <Button type="button" onClick={handleBack} className="back">
+                        Back
+                    </Button>
+                    <Button
                         type="submit"
-                        id="submit"
-                        name="submit"
-                        value={edit ? 'Save' : 'Submit'}
-                    />
+                        className="logIn"
+                        disabled={!isFormFilled}
+                        onClick={() => {
+                            setShowResponseError(true);
+                        }}
+                    >
+                        {edit ? 'Save' : 'Submit'}
+                    </Button>
                 </div>
             </form>
         </div>

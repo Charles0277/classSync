@@ -66,7 +66,7 @@ export const updateCourseUnit = async (
         if (invalidFields.length > 0) {
             return res
                 .status(400)
-                .send(`Invalid fields: ${invalidFields.join(', ')}`);
+                .send(`Invalid fields: ${invalidFields.join(', ')}.`);
         }
 
         const updatedValues = Object.fromEntries(
@@ -91,7 +91,7 @@ export const createNewCourseUnit = async (
 
         if (!name || !code || !instructor || !classTypes) {
             return res.status(400).send({
-                error: 'Please provide a name, code, class type, and a instructor'
+                error: 'Please provide a name, code, class type, and a instructor.'
             });
         }
 
@@ -100,7 +100,7 @@ export const createNewCourseUnit = async (
         if (existingCourseUnit) {
             return res
                 .status(400)
-                .send({ error: 'Course unit already exists' });
+                .send({ error: 'Course unit already exists.' });
         }
 
         const newCourseUnit = await createCourseUnit({

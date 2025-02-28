@@ -12,6 +12,7 @@ import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
 
 type StudyYear = 1 | 2 | 3 | 4 | 5 | 7;
+type FormMode = 'signUp' | 'edit' | 'admin';
 
 interface FormData {
     firstName: string;
@@ -32,8 +33,6 @@ interface FormErrors {
     confirmPassword?: string;
 }
 
-type FormMode = 'signUp' | 'edit' | 'admin';
-
 interface SignUpFormProps {
     formData: FormData;
     handleInputChange: (
@@ -45,7 +44,6 @@ interface SignUpFormProps {
     handleBack?: () => void;
 }
 
-// Form Field component
 const FormField: React.FC<{
     label: string;
     children: React.ReactNode;
@@ -61,7 +59,6 @@ const FormField: React.FC<{
     </div>
 );
 
-// Custom hook for course data
 const useCourseData = (selectedCourseId: string) => {
     const dispatch = useDispatch();
     const { courses } = useSelector((state: RootState) => state.course);
@@ -72,7 +69,7 @@ const useCourseData = (selectedCourseId: string) => {
         }
     }, [dispatch, courses.length]);
 
-    const { selectedCourseUnits, courseOptions } = useMemo(() => {
+    return useMemo(() => {
         const selectedCourse = courses.find(
             (course) => getIdString(course._id) === selectedCourseId
         );
@@ -84,8 +81,6 @@ const useCourseData = (selectedCourseId: string) => {
             }))
         };
     }, [courses, selectedCourseId]);
-
-    return { selectedCourseUnits, courseOptions };
 };
 
 const SignUpForm: React.FC<SignUpFormProps> = ({
@@ -96,17 +91,17 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     signingUp,
     handleBack
 }) => {
+    const { error } = useSelector((state: RootState) => state.auth);
+    const dispatch = useDispatch();
+
     const [step, setStep] = useState(1);
     const [formErrors, setFormErrors] = useState<FormErrors>({});
-    const { error } = useSelector((state: RootState) => state.auth);
     const [showError, setShowError] = useState(false);
     const [showResponseError, setShowResponseError] = useState(false);
     const { selectedCourseUnits, courseOptions } = useCourseData(
         formData.course
     );
 
-    const dispatch = useDispatch();
-    // Derived data
     const filteredCourseUnits = useMemo(() => {
         if (!formData.yearOfStudy) return [];
         return selectedCourseUnits.filter(
@@ -133,13 +128,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         [courseUnitOptions, formData.courseUnits]
     );
 
-    // Validation logic
     const validateFields = useCallback(() => {
         const errors: FormErrors = {};
         const { firstName, lastName, email, password, confirmPassword } =
             formData;
 
-        // Name validations
         const validateName = (name: string, field: keyof FormErrors) => {
             if (!name.trim()) {
                 errors[field] = 'This field is required';
@@ -153,7 +146,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         validateName(firstName, 'firstName');
         validateName(lastName, 'lastName');
 
-        // Email validation
         if (!email.trim()) {
             errors.email = 'Email is required';
         } else if (!MANCHESTER_EMAIL_REGEX.test(email)) {
@@ -161,7 +153,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 'Must be a valid University of Manchester email address';
         }
 
-        // Password validation
         if (mode === 'signUp') {
             if (!password) {
                 errors.password = 'Password is required';
@@ -189,7 +180,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         validateFields();
     }, [validateFields]);
 
-    // Form handlers
     const handleNext = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateFields()) {
@@ -213,7 +203,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         } as React.ChangeEvent<HTMLSelectElement>);
     };
 
-    // Form sections
+    const isFormFilled =
+        formData.firstName.trim() === '' ||
+        formData.lastName.trim() === '' ||
+        formData.email.trim() === '' ||
+        (mode === 'signUp' &&
+            (formData.password === '' || formData.confirmPassword === ''));
+
     const renderPersonalInfo = () => (
         <>
             <FormField
@@ -404,14 +400,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             <Button
                                 type="button"
                                 onClick={handleNext}
-                                disabled={
-                                    formData.firstName === '' ||
-                                    formData.lastName === '' ||
-                                    formData.email === '' ||
-                                    (mode === 'signUp' &&
-                                        (formData.password === '' ||
-                                            formData.confirmPassword === ''))
-                                }
+                                disabled={!isFormFilled}
                                 style={{ backgroundColor: '#28a745' }}
                                 className="logIn"
                             >
@@ -436,7 +425,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                                     setShowResponseError(true);
                                 }}
                             >
-                                {signingUp ? 'Signing Up...' : 'Sign Up'}
+                                {mode !== 'signUp' ? 'Save' : 'Submit'}
                             </Button>
                         </>
                     )}

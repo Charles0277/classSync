@@ -28,6 +28,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     edit
 }) => {
     const { user, token } = useSelector((state: RootState) => state.auth);
+
     const dispatch = useDispatch();
 
     const [formData, setFormData] = useState<FeedbackFormState>({
@@ -117,6 +118,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                                 type="button"
                                 className="classDetailsSave"
                                 onClick={handleSave}
+                                disabled={formData.feedback.trim().length === 0}
                             >
                                 {edit ? 'Save' : 'Submit'}
                             </Button>

@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DateRange } from 'react-day-picker';
+import Button from '../../Button/Button';
 import Input from '../../Input/Input';
 import { RangeDatePicker } from '../../ui/RangeDatePicker';
 import styles from '../Forms.module.css';
+import { RootState } from '@/client/store/store';
+import { useSelector } from 'react-redux';
 
 interface HolidayFormProps {
     formData: {
@@ -27,6 +30,9 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
     handleBack,
     edit
 }) => {
+    const { error } = useSelector((state: RootState) => state.holiday);
+
+    const [showResponseError, setShowResponseError] = useState(false);
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: formData.startDate ? new Date(formData.startDate) : undefined,
         to: formData.endDate ? new Date(formData.endDate) : undefined
@@ -36,9 +42,14 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
         to: new Date()
     });
 
-    const CurrentDate = new Date();
-    const currentAcademicYear = CurrentDate.getFullYear();
-    const hasAcademicYearStarted = CurrentDate.getMonth() >= 8;
+    const { currentAcademicYear, hasAcademicYearStarted } = useMemo(() => {
+        const now = new Date();
+        const year = now.getFullYear();
+        return {
+            currentAcademicYear: year,
+            hasAcademicYearStarted: now.getMonth() >= 8
+        };
+    }, []);
 
     useEffect(() => {
         setHiddenDates({
@@ -57,7 +68,7 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
                 30
             )
         });
-    }, []);
+    }, [currentAcademicYear, hasAcademicYearStarted]);
 
     useEffect(() => {
         if (date?.from && date?.to) {
@@ -76,6 +87,11 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
             });
         }
     }, [date]);
+
+    const isFormFilled =
+        formData.name.trim() !== '' &&
+        formData.startDate !== undefined &&
+        formData.endDate !== undefined;
 
     return (
         <div className={`${styles.formContainer} ${styles.notSignUp}`}>
@@ -96,20 +112,23 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
                     hiddenDates={hiddenDates}
                     className={styles.datePicker}
                 />
+                {error && showResponseError && (
+                    <span className={styles.errorMessage}>{error}</span>
+                )}
                 <div className={styles.actionButtonGroup}>
-                    <Input
-                        type="button"
-                        id="back"
-                        name="back"
-                        value="Back"
-                        onClick={handleBack}
-                    />
-                    <Input
+                    <Button type="button" onClick={handleBack} className="back">
+                        Back
+                    </Button>
+                    <Button
                         type="submit"
-                        id="submit"
-                        name="submit"
-                        value={edit ? 'Save' : 'Submit'}
-                    />
+                        className="logIn"
+                        disabled={!isFormFilled}
+                        onClick={() => {
+                            setShowResponseError(true);
+                        }}
+                    >
+                        {edit ? 'Save' : 'Submit'}
+                    </Button>
                 </div>
             </form>
         </div>

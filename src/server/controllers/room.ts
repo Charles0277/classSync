@@ -62,7 +62,7 @@ export const updateRoom = async (
         if (invalidFields.length > 0) {
             return res
                 .status(400)
-                .send(`Invalid fields: ${invalidFields.join(', ')}`);
+                .send(`Invalid fields: ${invalidFields.join(', ')}.`);
         }
 
         const updatedValues = Object.fromEntries(
@@ -87,14 +87,14 @@ export const createNewRoom = async (
 
         if (!name || !type || !capacity || !chairs || !tables) {
             return res.status(400).send({
-                error: 'Please provide a name, room type, capacity, number of chairs, and number of tables'
+                error: 'Please provide a name, room type, capacity, number of chairs, and number of tables.'
             });
         }
 
         const existingRoom = await fetchRoomByName(name);
 
         if (existingRoom) {
-            return res.status(400).send({ error: 'Room already exists' });
+            return res.status(400).send({ error: 'Room already exists.' });
         }
 
         const newRoom = await createRoom({

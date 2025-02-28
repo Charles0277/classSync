@@ -32,7 +32,7 @@ function* handleGetAllHolidays(action: any) {
         );
         yield put(getAllHolidaysSuccess(response.data));
     } catch (error: any) {
-        yield put(getAllHolidaysFailure(error.message));
+        yield put(getAllHolidaysFailure(error.response.data.error));
     }
 }
 
@@ -46,7 +46,7 @@ function* handleDeleteHoliday(action: any) {
         );
         yield put(deleteHolidaySuccess(response.data));
     } catch (error: any) {
-        yield put(deleteHolidayFailure(error.message));
+        yield put(deleteHolidayFailure(error.response.data.error));
     }
 }
 
@@ -61,7 +61,7 @@ function* handleUpdateHoliday(action: any) {
         );
         yield put(updateHolidaySuccess(response.data));
     } catch (error: any) {
-        yield put(updateHolidayFailure(error.message));
+        yield put(updateHolidayFailure(error.response.data.error));
     }
 }
 
@@ -75,7 +75,7 @@ function* handleCreateHoliday(action: any) {
         );
         yield put(createHolidaySuccess(response.data));
     } catch (error: any) {
-        yield put(createHolidayFailure(error.message));
+        yield put(createHolidayFailure(error.response.data.error));
     }
 }
 
