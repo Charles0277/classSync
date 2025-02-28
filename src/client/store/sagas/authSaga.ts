@@ -23,7 +23,6 @@ function* signUp(action: any) {
             email,
             password,
             confirmPassword,
-            role,
             yearOfStudy,
             course,
             courseUnits
@@ -35,7 +34,6 @@ function* signUp(action: any) {
             email,
             password,
             confirmPassword,
-            role,
             yearOfStudy,
             course,
             courseUnits

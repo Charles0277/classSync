@@ -24,7 +24,6 @@ export interface SignUpFormData {
     email: string;
     password: string;
     confirmPassword: string;
-    role: 'student' | 'teacher';
     yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
     course: string;
     courseUnits: string[];
@@ -36,7 +35,6 @@ const INITIAL_FORM_DATA: SignUpFormData = {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student',
     yearOfStudy: undefined,
     course: '',
     courseUnits: []
@@ -68,7 +66,6 @@ const RightColumn: React.FC = () => {
                 email,
                 password,
                 confirmPassword,
-                role,
                 yearOfStudy,
                 course,
                 courseUnits
@@ -80,7 +77,6 @@ const RightColumn: React.FC = () => {
                 email.trim() !== '' &&
                 password.trim() !== '' &&
                 confirmPassword.trim() !== '' &&
-                role.trim() !== '' &&
                 yearOfStudy !== undefined &&
                 course.trim() !== '' &&
                 courseUnits.length > 0

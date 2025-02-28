@@ -16,7 +16,6 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             email,
             password,
             confirmPassword,
-            role,
             yearOfStudy,
             course,
             courseUnits
@@ -28,7 +27,6 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             !email ||
             !password ||
             !confirmPassword ||
-            !role ||
             !yearOfStudy ||
             !course ||
             !courseUnits
@@ -59,7 +57,6 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             lastName,
             email,
             password,
-            role,
             yearOfStudy,
             course,
             courseUnits

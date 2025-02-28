@@ -11,8 +11,6 @@ import Button from '../../Button/Button';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
 
-// Type definitions
-type UserRole = 'student' | 'teacher';
 type StudyYear = 1 | 2 | 3 | 4 | 5 | 7;
 
 interface FormData {
@@ -21,7 +19,6 @@ interface FormData {
     email: string;
     password?: string;
     confirmPassword?: string;
-    role: UserRole;
     yearOfStudy?: StudyYear;
     course: string;
     courseUnits: string[];
@@ -44,8 +41,8 @@ interface SignUpFormProps {
     ) => void;
     handleSubmit: (e: React.FormEvent) => void;
     mode: FormMode;
-    signingUp: boolean;
-    isFormValid: boolean;
+    signingUp?: boolean;
+    handleBack?: () => void;
 }
 
 // Form Field component
@@ -97,7 +94,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     handleSubmit,
     mode,
     signingUp,
-    isFormValid
+    handleBack
 }) => {
     const [step, setStep] = useState(1);
     const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -165,7 +162,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         }
 
         // Password validation
-        if (mode !== 'admin') {
+        if (mode === 'signUp') {
             if (!password) {
                 errors.password = 'Password is required';
             } else if (
@@ -314,21 +311,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 
     const renderAcademicInfo = () => (
         <>
-            <FormField label="Role" showError={showError}>
-                <select
-                    name="role"
-                    value={formData.role}
-                    onChange={(e) => {
-                        handleInputChange(e);
-                        setShowResponseError(false);
-                    }}
-                    className={styles.select}
-                    required
-                >
-                    <option value="student">Student</option>
-                    <option value="teacher">Teacher</option>
-                </select>
-            </FormField>
             <FormField label="Year of Study" showError={showError}>
                 <select
                     name="yearOfStudy"
@@ -395,7 +377,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 
     return (
         <div className={styles.formContainer}>
-            {mode === 'signUp' && <h2 className={styles.formTitle}>Sign Up</h2>}
+            {mode === 'signUp' && !handleBack && (
+                <h2 className={styles.formTitle}>Sign Up</h2>
+            )}
             <form onSubmit={handleFormSubmit} className={styles.formGroup}>
                 {step === 1 ? renderPersonalInfo() : renderAcademicInfo()}
                 {error && showResponseError && (
@@ -406,7 +390,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                         <>
                             <Button
                                 type="button"
-                                onClick={() => dispatch(setMode(undefined))}
+                                onClick={() => {
+                                    mode === 'signUp'
+                                        ? dispatch(setMode(undefined))
+                                        : handleBack?.();
+                                }}
                                 className="back"
                             >
                                 Back
@@ -418,8 +406,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                                     formData.firstName === '' ||
                                     formData.lastName === '' ||
                                     formData.email === '' ||
-                                    formData.password === '' ||
-                                    formData.confirmPassword === ''
+                                    (mode === 'signUp' &&
+                                        (formData.password === '' ||
+                                            formData.confirmPassword === ''))
                                 }
                                 style={{ backgroundColor: '#28a745' }}
                                 className="logIn"
@@ -438,7 +427,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={!isFormValid}
+                                disabled={Object.keys(formErrors).length > 0}
                                 loading={signingUp}
                                 className="logIn"
                                 onClick={() => {

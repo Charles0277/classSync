@@ -20,7 +20,6 @@ interface SignUpFormData {
     firstName: string;
     lastName: string;
     email: string;
-    role: 'student' | 'teacher';
     yearOfStudy: 1 | 2 | 3 | 4 | 5 | 7 | undefined;
     course: string;
     courseUnits: string[];
@@ -32,27 +31,18 @@ const INITIAL_FORM_DATA: SignUpFormData = {
     firstName: '',
     lastName: '',
     email: '',
-    role: 'student',
     yearOfStudy: undefined,
     course: '',
     courseUnits: []
 };
 
 const validateForm = (formData: SignUpFormData): boolean => {
-    const {
-        firstName,
-        lastName,
-        email,
-        role,
-        yearOfStudy,
-        course,
-        courseUnits
-    } = formData;
+    const { firstName, lastName, email, yearOfStudy, course, courseUnits } =
+        formData;
     return Boolean(
         firstName.trim() &&
             lastName.trim() &&
             email.trim() &&
-            role.trim() &&
             yearOfStudy !== undefined &&
             course.trim() &&
             courseUnits.length > 0
@@ -75,7 +65,6 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                   firstName: user.firstName,
                   lastName: user.lastName,
                   email: user.email,
-                  role: user.role as 'student' | 'teacher',
                   yearOfStudy: user.yearOfStudy as
                       | 1
                       | 2
@@ -98,7 +87,6 @@ const AddEditUserCard: React.FC<UserCardProps> = ({
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email,
-                    role: user.role as 'student' | 'teacher',
                     yearOfStudy: user.yearOfStudy as
                         | 1
                         | 2

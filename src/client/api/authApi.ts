@@ -7,7 +7,6 @@ export const signUpApi = async (
     email: string,
     password: string,
     confirmPassword: string,
-    role: string,
     yearOfStudy: number,
     course: string,
     courseUnits: string
@@ -18,7 +17,6 @@ export const signUpApi = async (
         email,
         password,
         confirmPassword,
-        role,
         yearOfStudy,
         course,
         courseUnits
