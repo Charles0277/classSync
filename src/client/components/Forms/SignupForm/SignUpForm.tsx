@@ -318,6 +318,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     onChange={(e) => {
                         handleInputChange(e);
                         setShowResponseError(false);
+                        formData.courseUnits = [];
                     }}
                     className={styles.select}
                     required
@@ -339,6 +340,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     onChange={(e) => {
                         handleInputChange(e);
                         setShowResponseError(false);
+                        formData.courseUnits = [];
                     }}
                     className={styles.select}
                     required
