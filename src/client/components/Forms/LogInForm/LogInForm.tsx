@@ -1,7 +1,10 @@
-import React from 'react';
-import styles from '../Forms.module.css';
-import Input from '../../Input/Input';
+import { setMode } from '@/client/store/slices/authSlice';
+import { RootState } from '@/client/store/store';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../Button/Button';
+import Input from '../../Input/Input';
+import styles from '../Forms.module.css';
 
 interface LogInFormProps {
     formData: {
@@ -10,63 +13,71 @@ interface LogInFormProps {
     };
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent) => void;
-    setMode: React.Dispatch<
-        React.SetStateAction<'logIn' | 'signUp' | undefined>
-    >;
     loggingIn: boolean;
     isFormValid: boolean;
 }
 
-const LogInForm: React.FC<LogInFormProps> = ({
+export const LogInForm: React.FC<LogInFormProps> = ({
     formData,
     handleInputChange,
     handleSubmit,
-    setMode,
     loggingIn,
     isFormValid
-}) => (
-    <div className={styles.formContainer}>
-        <h2 className={styles.formTitle}>Log in</h2>
-        <form className={styles.formGroup} onSubmit={handleSubmit}>
-            <label htmlFor="email">Email:</label>
-            <Input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleInputChange}
-            />
-            <label htmlFor="password">Password:</label>
-            <Input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleInputChange}
-            />
-            <div className={styles.actionButtonGroup}>
+}) => {
+    const { error } = useSelector((state: RootState) => state.auth);
+    const [showError, setShowError] = useState(false);
+    const dispatch = useDispatch();
+
+    return (
+        <div className={styles.formContainer}>
+            <h2 className={styles.formTitle}>Log in</h2>
+            <form className={styles.formGroup} onSubmit={handleSubmit}>
+                <label htmlFor="email">Email:</label>
+                <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowError(false);
+                    }}
+                />
+                <label htmlFor="password">Password:</label>
+                <Input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowError(false);
+                    }}
+                />
+                {error && showError && (
+                    <span className={styles.errorMessage}>{error}</span>
+                )}
                 <div className={styles.actionButtonGroup}>
                     <Button
-                        type="button" // Explicitly set to prevent form submission
-                        onClick={() => setMode(undefined)}
+                        type="button"
+                        onClick={() => dispatch(setMode(undefined))}
                         className="back"
                     >
                         Back
                     </Button>
                     <Button
-                        type="submit" // This will trigger form submission
+                        type="submit"
                         disabled={!isFormValid}
                         loading={loggingIn}
                         className="logIn"
+                        onClick={() => setShowError(true)}
                     >
                         {loggingIn ? 'Logging In...' : 'Log In'}
                     </Button>
                 </div>
-            </div>
-        </form>
-    </div>
-);
-
-export default LogInForm;
+            </form>
+        </div>
+    );
+};

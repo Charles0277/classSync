@@ -1,9 +1,13 @@
+import { LogInForm } from '@/client/components/Forms/LogInForm/LogInForm';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/Button/Button';
-import LogInForm from '../../components/Forms/LogInForm/LogInForm';
 import SignUpForm from '../../components/Forms/SignupForm/SignUpForm';
-import { logInRequest, signUpRequest } from '../../store/slices/authSlice';
+import {
+    logInRequest,
+    setMode,
+    signUpRequest
+} from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
 import styles from './Welcome.module.css';
 
@@ -44,13 +48,11 @@ const BUTTONS: ButtonConfig[] = [
 ] as const;
 
 const RightColumn: React.FC = () => {
-    const [mode, setMode] = useState<Mode>(undefined);
     const [formData, setFormData] = useState<SignUpFormData>(INITIAL_FORM_DATA);
     const dispatch = useDispatch();
 
-    const { user, token, isAuthenticated, loggingIn, signingUp } = useSelector(
-        (state: RootState) => state.auth
-    );
+    const { user, token, isAuthenticated, loggingIn, signingUp, mode } =
+        useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         if (user && token && isAuthenticated) {
@@ -142,7 +144,7 @@ const RightColumn: React.FC = () => {
                         <Button
                             type="button"
                             className="getStarted"
-                            onClick={() => setMode(buttonMode)}
+                            onClick={() => dispatch(setMode(buttonMode))}
                         >
                             {text}
                         </Button>
@@ -158,7 +160,6 @@ const RightColumn: React.FC = () => {
             formData,
             handleInputChange,
             handleSubmit,
-            setMode,
             loggingIn,
             signingUp,
             isFormValid

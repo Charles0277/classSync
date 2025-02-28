@@ -1,3 +1,4 @@
+import { setMode } from '@/client/store/slices/authSlice';
 import { MANCHESTER_EMAIL_REGEX } from '@/common/validation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +7,7 @@ import { ICourseUnit } from '../../../../common/types/ICourseUnit';
 import { findFirstDigit, getIdString } from '../../../../common/utils';
 import { fetchAllCoursesRequest } from '../../../store/slices/courseSlice';
 import { RootState } from '../../../store/store';
+import Button from '../../Button/Button';
 import Input from '../../Input/Input';
 import styles from '../Forms.module.css';
 
@@ -41,10 +43,9 @@ interface SignUpFormProps {
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => void;
     handleSubmit: (e: React.FormEvent) => void;
-    setMode?: React.Dispatch<
-        React.SetStateAction<'logIn' | 'signUp' | undefined>
-    >;
     mode: FormMode;
+    signingUp: boolean;
+    isFormValid: boolean;
 }
 
 // Form Field component
@@ -94,16 +95,20 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     formData,
     handleInputChange,
     handleSubmit,
-    setMode,
-    mode
+    mode,
+    signingUp,
+    isFormValid
 }) => {
     const [step, setStep] = useState(1);
     const [formErrors, setFormErrors] = useState<FormErrors>({});
+    const { error } = useSelector((state: RootState) => state.auth);
     const [showError, setShowError] = useState(false);
+    const [showResponseError, setShowResponseError] = useState(false);
     const { selectedCourseUnits, courseOptions } = useCourseData(
         formData.course
     );
 
+    const dispatch = useDispatch();
     // Derived data
     const filteredCourseUnits = useMemo(() => {
         if (!formData.yearOfStudy) return [];
@@ -223,7 +228,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     type="text"
                     name="firstName"
                     value={formData.firstName}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowResponseError(false);
+                    }}
                     required
                     minLength={2}
                     maxLength={50}
@@ -239,7 +247,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     type="text"
                     name="lastName"
                     value={formData.lastName}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowResponseError(false);
+                    }}
                     required
                     minLength={2}
                     maxLength={50}
@@ -255,7 +266,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowResponseError(false);
+                    }}
                     required
                 />
             </FormField>
@@ -270,7 +284,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             type="password"
                             name="password"
                             value={formData.password}
-                            onChange={handleInputChange}
+                            onChange={(e) => {
+                                handleInputChange(e);
+                                setShowResponseError(false);
+                            }}
                             required
                         />
                     </FormField>
@@ -283,7 +300,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             type="password"
                             name="confirmPassword"
                             value={formData.confirmPassword}
-                            onChange={handleInputChange}
+                            onChange={(e) => {
+                                handleInputChange(e);
+                                setShowResponseError(false);
+                            }}
                             required
                         />
                     </FormField>
@@ -298,7 +318,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 <select
                     name="role"
                     value={formData.role}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowResponseError(false);
+                    }}
                     className={styles.select}
                     required
                 >
@@ -310,7 +333,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 <select
                     name="yearOfStudy"
                     value={formData.yearOfStudy || ''}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowResponseError(false);
+                    }}
                     className={styles.select}
                     required
                 >
@@ -328,7 +354,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                 <select
                     name="course"
                     value={formData.course}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        setShowResponseError(false);
+                    }}
                     className={styles.select}
                     required
                 >
@@ -369,33 +398,55 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             {mode === 'signUp' && <h2 className={styles.formTitle}>Sign Up</h2>}
             <form onSubmit={handleFormSubmit} className={styles.formGroup}>
                 {step === 1 ? renderPersonalInfo() : renderAcademicInfo()}
-
+                {error && showResponseError && (
+                    <span className={styles.errorMessage}>{error}</span>
+                )}
                 <div className={styles.actionButtonGroup}>
                     {step === 1 ? (
                         <>
-                            <Input
+                            <Button
                                 type="button"
-                                value="Back"
-                                onClick={() => setMode?.(undefined)}
-                            />
-                            <Input
+                                onClick={() => dispatch(setMode(undefined))}
+                                className="back"
+                            >
+                                Back
+                            </Button>
+                            <Button
                                 type="button"
-                                value="Next"
                                 onClick={handleNext}
+                                disabled={
+                                    formData.firstName === '' ||
+                                    formData.lastName === '' ||
+                                    formData.email === '' ||
+                                    formData.password === '' ||
+                                    formData.confirmPassword === ''
+                                }
                                 style={{ backgroundColor: '#28a745' }}
-                            />
+                                className="logIn"
+                            >
+                                Next
+                            </Button>
                         </>
                     ) : (
                         <>
-                            <Input
+                            <Button
                                 type="button"
-                                value="Previous"
                                 onClick={() => setStep(1)}
-                            />
-                            <Input
+                                className="back"
+                            >
+                                Previous
+                            </Button>
+                            <Button
                                 type="submit"
-                                value={mode === 'signUp' ? 'Sign Up' : 'Save'}
-                            />
+                                disabled={!isFormValid}
+                                loading={signingUp}
+                                className="logIn"
+                                onClick={() => {
+                                    setShowResponseError(true);
+                                }}
+                            >
+                                {signingUp ? 'Signing Up...' : 'Sign Up'}
+                            </Button>
                         </>
                     )}
                 </div>

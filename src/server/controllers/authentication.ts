@@ -34,7 +34,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             !courseUnits
         ) {
             return res.status(400).json({
-                error: 'Please fill in all required fields'
+                error: 'Please fill in all required fields.'
             });
         }
 
@@ -49,7 +49,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
         const existingUser = await fetchUserByEmail(email);
         if (existingUser) {
             return res.status(409).json({
-                error: 'An account with this email already exists'
+                error: 'An account with this email already exists.'
             });
         }
 
@@ -81,7 +81,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         // Validate required fields
         if (!email || !password) {
             return res.status(400).json({
-                error: 'Please provide both email and password'
+                error: 'Please provide both email and password.'
             });
         }
 
@@ -89,7 +89,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         const user = await fetchUserByEmail(email.toLowerCase());
         if (!user) {
             return res.status(401).json({
-                error: 'Email does not exist'
+                error: 'Email does not exist.'
             });
         }
 
@@ -97,7 +97,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({
-                error: 'Incorrect email or password'
+                error: 'Incorrect password.'
             });
         }
 

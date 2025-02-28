@@ -42,7 +42,7 @@ function* signUp(action: any) {
         );
         yield put(signUpSuccess(response.data));
     } catch (error: any) {
-        yield put(signUpFailure(error.message));
+        yield put(signUpFailure(error.response.data.error));
     }
 }
 
@@ -56,7 +56,7 @@ function* logIn(action: any) {
         );
         yield put(logInSuccess(response.data));
     } catch (error: any) {
-        yield put(logInFailure(error.message));
+        yield put(logInFailure(error.response.data.error));
     }
 }
 
@@ -66,7 +66,7 @@ function* checkAuthentication(action: any) {
         const response: AxiosResponse<IUser> = yield call(getUserApi, email);
         yield put(checkAuthenticationSuccess(response.data));
     } catch (error: any) {
-        yield put(checkAuthenticationFailure(error.message));
+        yield put(checkAuthenticationFailure(error.response.data.error));
     }
 }
 

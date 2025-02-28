@@ -11,6 +11,7 @@ interface AuthState {
     createdUser?: IUser;
     loggingIn: boolean;
     signingUp: boolean;
+    mode: 'logIn' | 'signUp' | undefined;
 }
 
 const initialState: AuthState = {
@@ -21,7 +22,8 @@ const initialState: AuthState = {
     error: null,
     isAuthenticated: false,
     loggingIn: false,
-    signingUp: false
+    signingUp: false,
+    mode: undefined
 };
 
 const authSlice = createSlice({
@@ -51,6 +53,7 @@ const authSlice = createSlice({
         signUpSuccess: (state, action) => {
             state.createdUser = action.payload;
             state.signingUp = false;
+            state.mode = undefined;
         },
         signUpFailure: (state, action) => {
             state.signingUp = false;
@@ -73,6 +76,9 @@ const authSlice = createSlice({
             state.token = null;
             state.isAuthenticated = false;
             localStorage.removeItem('token');
+        },
+        setMode: (state, action) => {
+            state.mode = action.payload;
         }
     },
     extraReducers(builder) {
@@ -95,7 +101,8 @@ export const {
     logOut,
     checkAuthenticationRequest,
     checkAuthenticationSuccess,
-    checkAuthenticationFailure
+    checkAuthenticationFailure,
+    setMode
 } = authSlice.actions;
 
 export default authSlice.reducer;
