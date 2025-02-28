@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/Button/Button';
 import LogInForm from '../../components/Forms/LogInForm/LogInForm';
@@ -7,8 +7,7 @@ import { logInRequest, signUpRequest } from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
 import styles from './Welcome.module.css';
 
-// Move types to separate file (e.g., types.ts)
-type Mode = 'logIn' | 'signUp' | 'logInAsGuest' | undefined;
+type Mode = 'logIn' | 'signUp' | undefined;
 
 interface ButtonConfig {
     text: string;
@@ -27,7 +26,6 @@ export interface SignUpFormData {
     courseUnits: string[];
 }
 
-// Constants moved outside component
 const INITIAL_FORM_DATA: SignUpFormData = {
     firstName: '',
     lastName: '',
@@ -42,29 +40,26 @@ const INITIAL_FORM_DATA: SignUpFormData = {
 
 const BUTTONS: ButtonConfig[] = [
     { text: 'Log in', mode: 'logIn' },
-    { text: 'Create account', mode: 'signUp' },
-    { text: 'Log in as guest', mode: 'logInAsGuest' }
+    { text: 'Create account', mode: 'signUp' }
 ] as const;
 
 const RightColumn: React.FC = () => {
     const [mode, setMode] = useState<Mode>(undefined);
     const [formData, setFormData] = useState<SignUpFormData>(INITIAL_FORM_DATA);
-
     const dispatch = useDispatch();
-    const { user, token, isAuthenticated, error } = useSelector(
+
+    const { user, token, isAuthenticated, loggingIn, signingUp } = useSelector(
         (state: RootState) => state.auth
     );
 
-    // Handle token storage
     useEffect(() => {
         if (user && token && isAuthenticated) {
             localStorage.setItem('token', token);
         }
     }, [user, token, isAuthenticated]);
 
-    // Memoized form validation
     const isFormValid = useMemo(() => {
-        if (mode == 'signUp') {
+        if (mode === 'signUp') {
             const {
                 firstName,
                 lastName,
@@ -78,23 +73,23 @@ const RightColumn: React.FC = () => {
             } = formData;
 
             return (
-                firstName.trim() &&
-                lastName.trim() &&
-                email.trim() &&
-                password.trim() &&
-                confirmPassword.trim() &&
-                role.trim() &&
+                firstName.trim() !== '' &&
+                lastName.trim() !== '' &&
+                email.trim() !== '' &&
+                password.trim() !== '' &&
+                confirmPassword.trim() !== '' &&
+                role.trim() !== '' &&
                 yearOfStudy !== undefined &&
-                course.trim() &&
+                course.trim() !== '' &&
                 courseUnits.length > 0
             );
-        } else if (mode == 'logIn') {
+        } else if (mode === 'logIn') {
             const { email, password } = formData;
-            return email.trim() && password.trim();
+            return email.trim() !== '' && password.trim() !== '';
         }
+        return false;
     }, [formData, mode]);
 
-    // Memoized handlers
     const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
             const { name, value, type } = e.target;
@@ -111,10 +106,9 @@ const RightColumn: React.FC = () => {
                         ? [...prev.courseUnits, value]
                         : prev.courseUnits.filter((unit) => unit !== value)
                 }));
-                return;
+            } else {
+                setFormData((prev) => ({ ...prev, [name]: value }));
             }
-
-            setFormData((prev) => ({ ...prev, [name]: value }));
         },
         []
     );
@@ -130,16 +124,15 @@ const RightColumn: React.FC = () => {
                 return;
             }
 
-            dispatch(
-                mode === 'logIn'
-                    ? logInRequest(formData)
-                    : signUpRequest(formData)
-            );
+            if (mode === 'logIn') {
+                dispatch(logInRequest(formData));
+            } else if (mode === 'signUp') {
+                dispatch(signUpRequest(formData));
+            }
         },
         [dispatch, formData, isFormValid, mode]
     );
 
-    // Memoized components
     const GetStartedSection = useMemo(
         () => (
             <>
@@ -147,9 +140,8 @@ const RightColumn: React.FC = () => {
                 {BUTTONS.map(({ mode: buttonMode, text }) => (
                     <div className={styles.buttonContainer} key={text}>
                         <Button
-                            key={text}
-                            className="getStarted"
                             type="button"
+                            className="getStarted"
                             onClick={() => setMode(buttonMode)}
                         >
                             {text}
@@ -166,17 +158,18 @@ const RightColumn: React.FC = () => {
             formData,
             handleInputChange,
             handleSubmit,
-            setMode
+            setMode,
+            loggingIn,
+            signingUp,
+            isFormValid
         };
 
-        switch (mode) {
-            case 'logIn':
-                return <LogInForm {...props} />;
-            case 'signUp':
-                return <SignUpForm {...props} mode="signUp" />;
-            default:
-                return GetStartedSection;
+        if (mode === 'logIn') {
+            return <LogInForm {...props} />;
+        } else if (mode === 'signUp') {
+            return <SignUpForm {...props} mode="signUp" />;
         }
+        return GetStartedSection;
     }, [mode, formData, handleInputChange, handleSubmit, GetStartedSection]);
 
     return (
@@ -186,4 +179,4 @@ const RightColumn: React.FC = () => {
     );
 };
 
-export default memo(RightColumn);
+export default React.memo(RightColumn);

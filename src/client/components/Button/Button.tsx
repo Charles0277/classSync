@@ -13,7 +13,8 @@ const Button: React.FC<ButtonProps> = ({
     onClick,
     className = '',
     loading = false,
-    style = {}
+    style = {},
+    disabled = false
 }) => {
     return (
         <button
@@ -25,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
                 .map((c) => styles[c])
                 .join(' ')}`}
             style={style}
-            disabled={loading}
+            disabled={disabled || loading}
         >
             {children}
             {loading && <span className={styles.spinner}></span>}

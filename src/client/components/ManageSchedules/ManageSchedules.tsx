@@ -33,7 +33,7 @@ export const ManageSchedules = () => {
                     Generate Semester 2 Schedule
                     <Button
                         className="generate"
-                        onClick={() => handleSubmit(1)}
+                        onClick={() => handleSubmit(2)}
                         loading={generateSemester2Loading}
                     >
                         Generate

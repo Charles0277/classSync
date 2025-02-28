@@ -46,7 +46,7 @@ interface SignUpFormProps {
     ) => void;
     handleSubmit: (e: React.FormEvent) => void;
     setMode?: React.Dispatch<
-        React.SetStateAction<'logIn' | 'signUp' | 'logInAsGuest' | undefined>
+        React.SetStateAction<'logIn' | 'signUp' | undefined>
     >;
     handleBack?: () => void;
     mode: 'signUp' | 'edit' | 'admin';

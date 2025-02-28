@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from '../Forms.module.css';
 import Input from '../../Input/Input';
+import Button from '../../Button/Button';
 
 interface LogInFormProps {
     formData: {
@@ -10,15 +11,19 @@ interface LogInFormProps {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent) => void;
     setMode: React.Dispatch<
-        React.SetStateAction<'logIn' | 'signUp' | 'logInAsGuest' | undefined>
+        React.SetStateAction<'logIn' | 'signUp' | undefined>
     >;
+    loggingIn: boolean;
+    isFormValid: boolean;
 }
 
 const LogInForm: React.FC<LogInFormProps> = ({
     formData,
     handleInputChange,
     handleSubmit,
-    setMode
+    setMode,
+    loggingIn,
+    isFormValid
 }) => (
     <div className={styles.formContainer}>
         <h2 className={styles.formTitle}>Log in</h2>
@@ -42,14 +47,23 @@ const LogInForm: React.FC<LogInFormProps> = ({
                 onChange={handleInputChange}
             />
             <div className={styles.actionButtonGroup}>
-                <Input
-                    type="button"
-                    id="back"
-                    name="back"
-                    value="Back"
-                    onClick={() => setMode(undefined)}
-                />
-                <Input type="submit" id="logIn" name="logIn" value="Log in" />
+                <div className={styles.actionButtonGroup}>
+                    <Button
+                        type="button" // Explicitly set to prevent form submission
+                        onClick={() => setMode(undefined)}
+                        className="back"
+                    >
+                        Back
+                    </Button>
+                    <Button
+                        type="submit" // This will trigger form submission
+                        disabled={!isFormValid}
+                        loading={loggingIn}
+                        className="logIn"
+                    >
+                        {loggingIn ? 'Logging In...' : 'Log In'}
+                    </Button>
+                </div>
             </div>
         </form>
     </div>

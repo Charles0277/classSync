@@ -141,3 +141,33 @@
     border-color: rgb(0, 0, 0) !important;
     transform: scale(1.1);
 }
+
+.logIn {
+    width: 7.5rem;
+    height: 2.75rem;
+    margin-top: 1rem;
+    resize: vertical;
+    border-radius: 10px;
+    border-color: transparent;
+    background-color: var(--success);
+    outline: none;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: medium;
+    font-family: Inter, sans-serif;
+}
+
+.back {
+    width: 7.5rem;
+    height: 2.75rem;
+    margin-top: 1rem;
+    resize: vertical;
+    border-radius: 10px;
+    border-color: transparent;
+    background-color: var(--error);
+    outline: none;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: medium;
+    font-family: Inter, sans-serif;
+}
