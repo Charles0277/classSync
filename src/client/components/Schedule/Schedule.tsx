@@ -1,3 +1,4 @@
+import { getAllHolidaysRequest } from '@/client/store/slices/holidaySlice';
 import { fetchAllRoomsRequest } from '@/client/store/slices/roomSlice';
 import { closePopUp, openPopUp } from '@/client/store/slices/scheduleSlice';
 import { fetchAllStudentsRequest } from '@/client/store/slices/userSlice';
@@ -7,7 +8,7 @@ import {
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import settingsIcon from '../../assets/settingsIcon.svg';
@@ -32,10 +33,11 @@ const Schedule: React.FC<ScheduleProps> = ({
     const { students, studentsLoading } = useSelector(
         (state: RootState) => state.user
     );
+    const { holidays } = useSelector((state: RootState) => state.holiday);
     const dispatch = useDispatch();
 
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-    const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
+    const [SelectedRooms, setSelectedRooms] = useState<string[]>([]);
     const [weekOffset, setWeekOffset] = useState(0);
 
     useEffect(() => {
@@ -46,7 +48,18 @@ const Schedule: React.FC<ScheduleProps> = ({
         if (rooms.length === 0) {
             dispatch(fetchAllRoomsRequest({ token }));
         }
-    }, [globalSchedule, token, dispatch]);
+    }, [globalSchedule, token, dispatch, students, rooms]);
+
+    useEffect(() => {
+        if (holidays.length === 0) {
+            dispatch(getAllHolidaysRequest({ token }));
+        }
+    }, [holidays]);
+
+    const holidayDates = holidays.map((holiday) => ({
+        from: new Date(holiday.startDate),
+        to: new Date(holiday.endDate)
+    }));
 
     const getCurrentWeekMonday = (
         baseDate: Date,
@@ -101,21 +114,21 @@ const Schedule: React.FC<ScheduleProps> = ({
         : [];
 
     const filteredSchedule =
-        selectedRoom.length > 0 && selectedStudents.length > 0
+        SelectedRooms.length > 0 && selectedStudents.length > 0
             ? schedule.filter(
                   (entry) =>
                       'roomId' in entry &&
                       entry.studentIds &&
-                      selectedRoom.includes(entry.roomId as string) &&
+                      SelectedRooms.includes(entry.roomId as string) &&
                       entry.studentIds.some((studentId) =>
                           selectedStudents.includes(studentId)
                       )
               )
-            : selectedRoom.length > 0
+            : SelectedRooms.length > 0
               ? schedule.filter(
                     (entry) =>
                         'roomId' in entry &&
-                        selectedRoom.includes(entry.roomId as string)
+                        SelectedRooms.includes(entry.roomId as string)
                 )
               : selectedStudents.length > 0
                 ? schedule.filter(
@@ -192,7 +205,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                                           (option: any) => option.value
                                       )
                                     : [];
-                                setSelectedRoom(selected);
+                                setSelectedRooms(selected);
                             }}
                             placeholder="Search and select rooms..."
                             styles={{
@@ -230,36 +243,45 @@ const Schedule: React.FC<ScheduleProps> = ({
                             >{`${hour}:00`}</div>
                             {daysWithDates.map((day, dayIndex) => {
                                 const key = `${dayIndex}-${hour}`;
-                                const entry = scheduleMap[key];
                                 return (
                                     <div
                                         key={dayIndex}
                                         className={styles.gridCell}
                                     >
-                                        {scheduleMap[key] &&
-                                            scheduleMap[key].map(
-                                                (entry, idx, arr) => (
-                                                    <div
-                                                        key={idx}
-                                                        style={{
-                                                            width: `${100 / arr.length}%`
-                                                        }}
-                                                    >
-                                                        <ScheduleEntry
-                                                            entry={entry}
-                                                            classType={
-                                                                entry.classType
-                                                            }
-                                                            onClick={() =>
-                                                                dispatch(
-                                                                    openPopUp(
+                                        {!holidayDates.some(
+                                            (holiday) =>
+                                                day.date >= holiday.from &&
+                                                day.date <= holiday.to
+                                        ) &&
+                                            scheduleMap[key]?.map(
+                                                (entry, idx, arr) =>
+                                                    scheduleMap[key] &&
+                                                    scheduleMap[key].map(
+                                                        (entry, idx, arr) => (
+                                                            <div
+                                                                key={idx}
+                                                                style={{
+                                                                    width: `${100 / arr.length}%`
+                                                                }}
+                                                            >
+                                                                <ScheduleEntry
+                                                                    entry={
                                                                         entry
-                                                                    )
-                                                                )
-                                                            }
-                                                        />
-                                                    </div>
-                                                )
+                                                                    }
+                                                                    classType={
+                                                                        entry.classType
+                                                                    }
+                                                                    onClick={() =>
+                                                                        dispatch(
+                                                                            openPopUp(
+                                                                                entry
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        )
+                                                    )
                                             )}
                                     </div>
                                 );

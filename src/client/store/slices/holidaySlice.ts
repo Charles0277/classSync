@@ -70,10 +70,6 @@ const holidaySlice = createSlice({
         deleteHolidayFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
-        },
-        updateDateSelected: (state, action) => {
-            state.loading = false;
-            state.date = action.payload;
         }
     }
 });
@@ -90,8 +86,7 @@ export const {
     createHolidayFailure,
     deleteHolidayRequest,
     deleteHolidaySuccess,
-    deleteHolidayFailure,
-    updateDateSelected
+    deleteHolidayFailure
 } = holidaySlice.actions;
 
 export default holidaySlice.reducer;
