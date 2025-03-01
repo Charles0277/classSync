@@ -11,7 +11,7 @@ import userReducer from './slices/userSlice';
 
 export const RESET_STATE = 'RESET_STATE';
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
     user: userReducer,
     auth: authReducer,
     room: roomReducer,
@@ -23,11 +23,11 @@ const rootReducer = combineReducers({
     holiday: holidayReducer
 });
 
-const rootReducerWithReset = (state: any, action: any) => {
+const rootReducer = (state: any, action: any) => {
     if (action.type === RESET_STATE) {
-        state = undefined;
+        return appReducer(undefined, action);
     }
-    return rootReducer(state, action);
+    return appReducer(state, action);
 };
 
-export default rootReducerWithReset;
+export default rootReducer;
