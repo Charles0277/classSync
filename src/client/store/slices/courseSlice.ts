@@ -71,7 +71,6 @@ const courseSlice = createSlice({
         },
         createCourseFailure: (state, action) => {
             state.loading = false;
-            console.log('🚀 ~ action.payload:', action.payload);
             state.error = action.payload;
         }
     }

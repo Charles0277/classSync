@@ -1,6 +1,6 @@
 import { fetchAllTeachersRequest } from '@/client/store/slices/userSlice';
 import { getIdString } from '@/common/utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { RootState } from '../../../store/store';
@@ -55,6 +55,29 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
               }
             : null
     );
+
+    const classTypes = useMemo(
+        () => [
+            'lectureTheatre',
+            'laboratory',
+            'classroom',
+            'office',
+            'computerCluster'
+        ],
+        []
+    );
+
+    const classTypesMap = useMemo(
+        () => ({
+            lectureTheatre: 'Lecture Theatre',
+            laboratory: 'Laboratory',
+            classroom: 'Classroom',
+            office: 'Office',
+            computerCluster: 'Computer Cluster'
+        }),
+        []
+    );
+
     const [selectedClassTypes, setSelectedClassTypes] = useState<
         { value: string; label: string }[]
     >(() =>
@@ -68,22 +91,6 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                 label: classTypesMap[classType as keyof typeof classTypesMap]
             }))
     );
-
-    const classTypes = [
-        'lectureTheatre',
-        'laboratory',
-        'classroom',
-        'office',
-        'computerCluster'
-    ];
-
-    const classTypesMap = {
-        lectureTheatre: 'Lecture Theatre',
-        laboratory: 'Laboratory',
-        classroom: 'Classroom',
-        office: 'Office',
-        computerCluster: 'Computer Cluster'
-    };
 
     useEffect(() => {
         if (selectedClassTypes?.length === 0) {
@@ -143,17 +150,23 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
         handleInputChange({ name: 'classTypes', value: updatedClassTypes });
     };
 
-    const teacherOptions =
-        teachers?.map((teacher) => ({
-            value: getIdString(teacher._id),
-            label: `${teacher.firstName} ${teacher.lastName}`
-        })) || [];
+    const teacherOptions = useMemo(
+        () =>
+            teachers.map((teacher) => ({
+                value: getIdString(teacher._id),
+                label: `${teacher.firstName} ${teacher.lastName}`
+            })),
+        [teachers]
+    );
 
-    const classTypeOptions =
-        classTypes?.map((classType) => ({
-            value: classType,
-            label: classTypesMap[classType as keyof typeof classTypesMap]
-        })) || [];
+    const classTypeOptions = useMemo(
+        () =>
+            classTypes.map((classType) => ({
+                value: classType,
+                label: classTypesMap[classType as keyof typeof classTypesMap]
+            })),
+        [classTypes, classTypesMap]
+    );
 
     const isFormFilled =
         formData.name.trim() !== '' &&
