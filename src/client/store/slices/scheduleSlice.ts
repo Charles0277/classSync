@@ -67,7 +67,6 @@ const scheduleSlice = createSlice({
             state.error = null;
         },
         generateGlobalScheduleSuccess: (state, action) => {
-            state.globalSchedule = action.payload;
             state.generateSemester1Loading = false;
             state.generateSemester2Loading = false;
         },

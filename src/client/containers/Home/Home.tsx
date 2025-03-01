@@ -55,7 +55,11 @@ const Home = () => {
         }
     }, [token, userId, isAdmin, userSchedule, globalSchedule, dispatch]);
 
-    if (!fetchRequested || loading || !minLoadingElapsed) {
+    if (
+        (!fetchRequested && !globalSchedule && user) ||
+        loading ||
+        !minLoadingElapsed
+    ) {
         return <LoadingScreen />;
     }
 
@@ -64,7 +68,7 @@ const Home = () => {
             {userSchedule ? (
                 <Schedule userSchedule={userSchedule} />
             ) : user?.role === 'admin' ? (
-                globalSchedule && globalSchedule?.length > 0 ? (
+                globalSchedule ? (
                     <Schedule globalSchedule={globalSchedule} />
                 ) : (
                     <GenerateSchedule />

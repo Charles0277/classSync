@@ -39,8 +39,11 @@ const Schedule: React.FC<ScheduleProps> = ({
     const [weekOffset, setWeekOffset] = useState(0);
 
     useEffect(() => {
-        if (globalSchedule) {
+        if (!globalSchedule) return;
+        if (students.length === 0) {
             dispatch(fetchAllStudentsRequest({ token }));
+        }
+        if (rooms.length === 0) {
             dispatch(fetchAllRoomsRequest({ token }));
         }
     }, [globalSchedule, token, dispatch]);

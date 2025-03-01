@@ -47,14 +47,14 @@ export const Feedback = () => {
         : 'Submit Feedback';
 
     useEffect(() => {
-        if (token) {
+        if (token && feedBackCollection?.length === 0) {
             if (user?._id && !isAdmin) {
                 dispatch(getUserFeedbackRequest({ token, userId: user._id }));
             } else {
                 dispatch(getAllFeedbackRequest({ token }));
             }
         }
-    }, [user?._id, token, dispatch, isAdmin]);
+    }, [user?._id, token, dispatch, isAdmin, feedBackCollection]);
 
     const handleFeedbackAction = (
         action: 'view' | 'edit' | 'submit',
