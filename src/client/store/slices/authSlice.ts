@@ -71,8 +71,8 @@ const authSlice = createSlice({
         checkAuthenticationFailure: (state, action) => {
             state.isLoading = false;
         },
-        logOut: () => {
-            localStorage.removeItem('token');
+        logOut: (state) => {
+            state.isLoading = false;
         },
         setMode: (state, action) => {
             state.mode = action.payload;

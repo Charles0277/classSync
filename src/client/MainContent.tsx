@@ -8,6 +8,7 @@ import Configuration from './containers/Configurations/Configuration';
 import { Feedback } from './containers/Feedback/Feedback';
 import Home from './containers/Home/Home';
 import Welcome from './containers/Welcome/Welcome';
+import { RESET_STATE } from './store/rootReducer';
 import { checkAuthenticationRequest, logOut } from './store/slices/authSlice';
 import { RootState } from './store/store';
 
@@ -15,26 +16,27 @@ function MainContent() {
     const { isAuthenticated, isLoading, user } = useSelector(
         (state: RootState) => state.auth
     );
-
     const dispatch = useDispatch();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
-            const decodedToken: any = jwtDecode(token);
-            if (decodedToken.exp * 1000 < Date.now()) {
-                dispatch(logOut());
-            } else if (decodedToken.userEmail) {
-                dispatch(
-                    checkAuthenticationRequest({
-                        email: decodedToken.userEmail
-                    })
-                );
-            }
+        if (!token) {
+            return;
+        }
+        const decodedToken: any = jwtDecode(token);
+        if (decodedToken.exp * 1000 < Date.now()) {
+            dispatch(logOut());
+            dispatch({ type: RESET_STATE });
+        } else if (decodedToken.userEmail) {
+            dispatch(
+                checkAuthenticationRequest({
+                    email: decodedToken.userEmail
+                })
+            );
         }
     }, [dispatch]);
 
-    if (!!isLoading) {
+    if (isLoading) {
         return <LoadingScreen />;
     }
 
