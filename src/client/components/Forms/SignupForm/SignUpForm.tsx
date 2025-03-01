@@ -203,12 +203,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         } as React.ChangeEvent<HTMLSelectElement>);
     };
 
-    const isFormFilled =
-        formData.firstName.trim() === '' ||
-        formData.lastName.trim() === '' ||
-        formData.email.trim() === '' ||
-        (mode === 'signUp' &&
-            (formData.password === '' || formData.confirmPassword === ''));
+    const isPersonalInfoFormFilled =
+        formData.firstName.trim() !== '' &&
+        formData.lastName.trim() !== '' &&
+        formData.email.trim() !== '' &&
+        (mode === 'signUp'
+            ? formData.password !== '' && formData.confirmPassword !== ''
+            : true);
 
     const renderPersonalInfo = () => (
         <>
@@ -400,7 +401,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             <Button
                                 type="button"
                                 onClick={handleNext}
-                                disabled={!isFormFilled}
+                                disabled={!isPersonalInfoFormFilled}
                                 style={{ backgroundColor: '#28a745' }}
                                 className="logIn"
                             >
