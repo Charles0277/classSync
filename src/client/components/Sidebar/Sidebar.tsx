@@ -65,7 +65,7 @@ const Sidebar: React.FC = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         dispatch({ type: RESET_STATE });
-        //For some reason, even after resetting the state, isLoading is true even after the token is removed beforehand so logOut is called to set isLoading to false
+        // After state reset, intiial state logic is not recalculated so isLoading is true even after the token is removed beforehand as it was first set to true when the token was present
         dispatch(logOut());
         setIsPopupVisible(false);
         navigate('/');
