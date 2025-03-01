@@ -7,16 +7,17 @@ import homeIcon from '../../assets/homeIcon.svg';
 import profileIcon from '../../assets/profileIcon.svg';
 import settingsIcon from '../../assets/settingsIcon.svg';
 import { logOut } from '../../store/slices/authSlice';
+import { RESET_STATE } from '../../store/rootReducer';
 import { RootState } from '../../store/store';
 import Button from '../Button/Button';
 import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
 import styles from './Sidebar.module.css';
 
 const Sidebar: React.FC = () => {
+    const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
-    const { user } = useSelector((state: RootState) => state.auth);
 
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [isEditCardVisible, setIsEditCardVisible] = useState(false);
@@ -63,7 +64,9 @@ const Sidebar: React.FC = () => {
 
     const handleLogout = () => {
         dispatch(logOut());
+        dispatch({ type: RESET_STATE });
         setIsPopupVisible(false);
+        navigate('/');
     };
 
     return (

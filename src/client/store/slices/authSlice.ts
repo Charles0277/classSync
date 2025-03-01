@@ -71,10 +71,7 @@ const authSlice = createSlice({
         checkAuthenticationFailure: (state, action) => {
             state.isLoading = false;
         },
-        logOut: (state) => {
-            state.user = undefined;
-            state.token = null;
-            state.isAuthenticated = false;
+        logOut: () => {
             localStorage.removeItem('token');
         },
         setMode: (state, action) => {
