@@ -253,35 +253,30 @@ const Schedule: React.FC<ScheduleProps> = ({
                                                 day.date >= holiday.from &&
                                                 day.date <= holiday.to
                                         ) &&
-                                            scheduleMap[key]?.map(
-                                                (entry, idx, arr) =>
-                                                    scheduleMap[key] &&
-                                                    scheduleMap[key].map(
-                                                        (entry, idx, arr) => (
-                                                            <div
-                                                                key={idx}
-                                                                style={{
-                                                                    width: `${100 / arr.length}%`
-                                                                }}
-                                                            >
-                                                                <ScheduleEntry
-                                                                    entry={
+                                            scheduleMap[key] &&
+                                            scheduleMap[key].map(
+                                                (entry, idx, arr) => (
+                                                    <div
+                                                        key={idx}
+                                                        style={{
+                                                            width: `${100 / arr.length}%`
+                                                        }}
+                                                    >
+                                                        <ScheduleEntry
+                                                            entry={entry}
+                                                            classType={
+                                                                entry.classType
+                                                            }
+                                                            onClick={() =>
+                                                                dispatch(
+                                                                    openPopUp(
                                                                         entry
-                                                                    }
-                                                                    classType={
-                                                                        entry.classType
-                                                                    }
-                                                                    onClick={() =>
-                                                                        dispatch(
-                                                                            openPopUp(
-                                                                                entry
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                />
-                                                            </div>
-                                                        )
-                                                    )
+                                                                    )
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                )
                                             )}
                                     </div>
                                 );
