@@ -3,29 +3,45 @@ import {
     resetClassEntity,
     updateClassRequest
 } from '@/client/store/slices/classSlice';
-import { fetchUsersRequest } from '@/client/store/slices/userSlice';
+import { updateGlobalScheduleRequest } from '@/client/store/slices/scheduleSlice';
+import {
+    fetchAllTeachersRequest,
+    fetchUsersRequest
+} from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
-import { IUserScheduleEntry } from '@/common/types/ISchedule';
+import {
+    IGlobalScheduleEntry,
+    IUserScheduleEntry
+} from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
 import Button from '../Button/Button';
 import styles from './ClassDetails.module.css';
 
 interface ClassDetailsProps {
-    entry: IUserScheduleEntry;
+    entry: IUserScheduleEntry | IGlobalScheduleEntry;
 }
 
 export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
+    console.log('🚀 ~ entry:', entry);
     const dispatch = useDispatch();
     const { classEntity } = useSelector((state: RootState) => state.class);
     const { token, user } = useSelector((state: RootState) => state.auth);
     const { users } = useSelector((state: RootState) => state.user);
+    const { rooms } = useSelector((state: RootState) => state.room);
+    const { teachers } = useSelector((state: RootState) => state.user);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [description, setDescription] = useState(
-        classEntity?.description || 'No description provided.'
-    );
+    const [editedFields, setEditedFields] = useState({
+        className: entry.className,
+        roomId: (entry as IGlobalScheduleEntry).roomId,
+        classType: entry.classType,
+        hour: entry.hour,
+        instructorId: entry.instructorName,
+        description: classEntity?.description || 'No description provided.'
+    });
 
     useEffect(() => {
         if (token && getIdString(classEntity?._id) !== entry.classId) {
@@ -51,7 +67,10 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
     }, [dispatch, classEntity?.students]);
 
     useEffect(() => {
-        setDescription(classEntity?.description || 'No description provided.');
+        setEditedFields((fields) => ({
+            ...fields,
+            description: classEntity?.description || 'No description provided.'
+        }));
     }, [classEntity?.description]);
 
     useEffect(() => {
@@ -60,50 +79,271 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         };
     }, [dispatch]);
 
+    useEffect(() => {
+        if (teachers.length === 0) {
+            dispatch(fetchAllTeachersRequest({ token }));
+        }
+    }, [dispatch, token, teachers]);
+
+    const teacherOptions = teachers
+        ? teachers.map((teacher) => ({
+              value: getIdString(teacher._id),
+              label: `${teacher.firstName} ${teacher.lastName}`
+          }))
+        : [];
+
+    const roomOptions = rooms
+        ? rooms.map((room) => ({
+              value: getIdString(room._id),
+              label: room.name
+          }))
+        : [];
+
+    const classTypesOptions = [
+        { value: 'lectureTheatre', label: 'Lecture' },
+        { value: 'laboratory', label: 'Laboratory' },
+        { value: 'workshop', label: 'Workshop' },
+        { value: 'seminar', label: 'Seminar' },
+        { value: 'office', label: 'Meeting' }
+    ];
+
+    const timeOptions = Array.from({ length: 10 }, (_, index) => {
+        const hour = index + 9;
+        const startTime = hour.toString().padStart(2, '0');
+        const endTime = (hour + 1).toString().padStart(2, '0');
+        return {
+            value: hour,
+            label: `${startTime}:00 - ${endTime}:00`
+        };
+    });
+
     const handleEdit = () => setIsEditing(true);
 
     const handleSave = () => {
         if (classEntity?._id) {
-            dispatch(
-                updateClassRequest({
-                    token,
-                    id: classEntity._id,
-                    formData: { description }
-                })
-            );
+            const changedClassFields: Record<string, any> = {};
+            const changedScheduleFields: Record<string, any> = {};
+
+            if (editedFields.className !== entry.className) {
+                changedClassFields.name = editedFields.className;
+            }
+            if (editedFields.instructorId !== entry.instructorName) {
+                changedClassFields.instructor = editedFields.instructorId;
+                changedScheduleFields.instructor = editedFields.instructorId;
+            }
+            if (editedFields.classType !== entry.classType) {
+                changedClassFields.classTypes = [editedFields.classType];
+            }
+            if (editedFields.description !== classEntity.description) {
+                changedClassFields.description = editedFields.description;
+            }
+            if (
+                editedFields.roomId !== (entry as IGlobalScheduleEntry).roomId
+            ) {
+                changedScheduleFields.roomId = editedFields.roomId;
+            }
+            if (editedFields.hour !== entry.hour) {
+                changedScheduleFields.hour = editedFields.hour;
+            }
+
+            if (Object.keys(changedScheduleFields).length > 0) {
+                console.log(changedScheduleFields);
+                dispatch(
+                    updateGlobalScheduleRequest({
+                        token,
+                        id: entry.classId,
+                        formData: changedScheduleFields
+                    })
+                );
+            }
+            if (Object.keys(changedClassFields).length > 0) {
+                dispatch(
+                    updateClassRequest({
+                        token,
+                        id: classEntity._id,
+                        formData: changedClassFields
+                    })
+                );
+            }
         }
         setIsEditing(false);
     };
 
     const handleCancel = () => {
-        setDescription(classEntity?.description || 'No description provided.');
+        setEditedFields({
+            className: entry.className,
+            roomId: entry.roomName,
+            classType: entry.classType,
+            hour: entry.hour,
+            instructorId: entry.instructorName,
+            description: classEntity?.description || 'No description provided.'
+        });
         setIsEditing(false);
     };
 
     return (
         <div className={styles.classDetails}>
+            {user?.role === 'admin' && !isEditing && (
+                <div className={styles.editButton}>
+                    <Button
+                        type="button"
+                        className="classDetails"
+                        onClick={handleEdit}
+                    >
+                        Edit
+                    </Button>
+                </div>
+            )}
             <div className={styles.classProperty}>
-                <span className={styles.title}>Title:</span> {entry.className}
+                <span className={styles.title}>Title:</span>
+                {isEditing ? (
+                    <input
+                        className={styles.descriptionInput}
+                        type="text"
+                        value={editedFields.className}
+                        onChange={(e) =>
+                            setEditedFields({
+                                ...editedFields,
+                                className: e.target.value
+                            })
+                        }
+                    />
+                ) : (
+                    <span>{entry.className}</span>
+                )}
             </div>
             <div className={styles.classProperty}>
-                <span className={styles.title}>Room:</span> {entry.roomName}
+                <span className={styles.title}>Room:</span>
+                {isEditing ? (
+                    <Select
+                        options={roomOptions}
+                        defaultValue={{
+                            value: (entry as IGlobalScheduleEntry).roomId,
+                            label: entry.roomName
+                        }}
+                        onChange={(selectedRoom) => {
+                            if (selectedRoom) {
+                                setEditedFields({
+                                    ...editedFields,
+                                    roomId: selectedRoom.value
+                                });
+                            }
+                        }}
+                        placeholder="Select Room"
+                        styles={{
+                            container: (base) => ({
+                                ...base,
+                                minWidth: '17rem',
+                                padding: '0.5rem',
+                                marginRight: '-0.5rem',
+                                marginLeft: '-0.5rem'
+                            })
+                        }}
+                    />
+                ) : (
+                    <span>{entry.roomName}</span>
+                )}
             </div>
             <div className={styles.classProperty}>
                 <span className={styles.title}>Class Type:</span>{' '}
-                {convertRoomTypeToClassType(entry.classType)}
+                {isEditing ? (
+                    <Select
+                        options={classTypesOptions}
+                        defaultValue={{
+                            value: entry.classType,
+                            label: convertRoomTypeToClassType(entry.classType)
+                        }}
+                        onChange={(selectedClassType) => {
+                            if (selectedClassType) {
+                                setEditedFields({
+                                    ...editedFields,
+                                    classType: selectedClassType.value
+                                });
+                            }
+                        }}
+                        placeholder="Select Class Type"
+                        styles={{
+                            container: (base) => ({
+                                ...base,
+                                minWidth: '17rem',
+                                padding: '0.5rem',
+                                marginRight: '-0.5rem',
+                                marginLeft: '-0.5rem'
+                            })
+                        }}
+                    />
+                ) : (
+                    <span>{convertRoomTypeToClassType(entry.classType)}</span>
+                )}
             </div>
             <div className={styles.classProperty}>
                 <span className={styles.title}>Time:</span>{' '}
-                {`${entry.hour}:00 - ${entry.hour + 1}:00`}
+                {isEditing ? (
+                    <Select
+                        options={timeOptions}
+                        defaultValue={{
+                            value: entry.hour,
+                            label: `${entry.hour}:00 - ${entry.hour + 1}:00`
+                        }}
+                        onChange={(selectedTime) => {
+                            if (selectedTime) {
+                                setEditedFields({
+                                    ...editedFields,
+                                    hour: selectedTime.value
+                                });
+                            }
+                        }}
+                        placeholder="Select Time"
+                        styles={{
+                            container: (base) => ({
+                                ...base,
+                                minWidth: '17rem',
+                                padding: '0.5rem',
+                                marginRight: '-0.5rem',
+                                marginLeft: '-0.5rem'
+                            })
+                        }}
+                    />
+                ) : (
+                    <span>{`${entry.hour}:00 - ${entry.hour + 1}:00`}</span>
+                )}
             </div>
             <div className={styles.classProperty}>
                 <span className={styles.title}>Teacher:</span>{' '}
-                {entry.instructorName}
+                {isEditing ? (
+                    <Select
+                        options={teacherOptions}
+                        defaultValue={{
+                            value: getIdString(classEntity?.instructor),
+                            label: entry.instructorName
+                        }}
+                        onChange={(selectedTeacher) => {
+                            if (selectedTeacher) {
+                                setEditedFields({
+                                    ...editedFields,
+                                    instructorId: selectedTeacher.value
+                                });
+                            }
+                        }}
+                        placeholder="Select Teacher"
+                        styles={{
+                            container: (base) => ({
+                                ...base,
+                                minWidth: '17rem',
+                                padding: '0.5rem',
+                                marginRight: '-0.5rem',
+                                marginLeft: '-0.5rem'
+                            })
+                        }}
+                    />
+                ) : (
+                    <span>{entry.instructorName}</span>
+                )}
             </div>
             <div className={styles.classProperty}>
                 <div className={styles.descriptionActions}>
                     <span className={styles.title}>Description:</span>
-                    {user?.role !== 'student' && !isEditing && (
+                    {user?.role === 'teacher' && !isEditing && (
                         <Button
                             type="button"
                             className="classDetails"
@@ -117,8 +357,13 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                     <div className={styles.descriptionEdit}>
                         <textarea
                             className={styles.descriptionInput}
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            value={editedFields.description}
+                            onChange={(e) =>
+                                setEditedFields({
+                                    ...editedFields,
+                                    description: e.target.value
+                                })
+                            }
                         />
                         <div className={styles.descriptionEditButtons}>
                             <Button
@@ -138,17 +383,21 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                         </div>
                     </div>
                 ) : (
-                    <div className={styles.description}>{description}</div>
+                    <div className={styles.description}>
+                        {editedFields.description}
+                    </div>
                 )}
             </div>
-            <div className={styles.classProperty}>
-                <span className={styles.title}>Enrolled Students:</span>{' '}
-                <div className={styles.students}>
-                    {users.map(
-                        (user) => `${user.firstName} ${user.lastName} \n`
-                    )}
+            {user?.role !== 'student' && (
+                <div className={styles.classProperty}>
+                    <span className={styles.title}>Enrolled Students:</span>{' '}
+                    <div className={styles.students}>
+                        {users.map(
+                            (user) => `${user.firstName} ${user.lastName} \n`
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

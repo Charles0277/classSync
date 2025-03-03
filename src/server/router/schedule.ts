@@ -3,7 +3,8 @@ import {
     deleteGlobalSchedule,
     generateGlobalSchedule,
     getGlobalSchedule,
-    getUserSchedule
+    getUserSchedule,
+    updateGlobalSchedule
 } from '../controllers/schedule.js';
 import {
     authenticateToken,
@@ -29,5 +30,11 @@ export default (router: express.Router) => {
         authenticateToken,
         checkAdmin,
         deleteGlobalSchedule
+    );
+    router.put(
+        '/update-global-schedule/:id',
+        authenticateToken,
+        checkAdmin,
+        updateGlobalSchedule
     );
 };

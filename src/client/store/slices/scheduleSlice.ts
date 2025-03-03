@@ -3,7 +3,6 @@ import {
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import { createSlice } from '@reduxjs/toolkit';
-import { logOut } from './authSlice';
 
 interface scheduleState {
     globalSchedule?: IGlobalScheduleEntry[];
@@ -74,13 +73,24 @@ const scheduleSlice = createSlice({
             state.error = action.payload;
             state.generateSemester1Loading = false;
             state.generateSemester2Loading = false;
+        },
+        updateGlobalScheduleRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        updateGlobalScheduleSuccess: (state, action) => {
+            const updatedEntry = action.payload;
+            state.popUpClass = updatedEntry;
+            const updatedGlobalSchedule = state.globalSchedule?.map((entry) =>
+                entry._id === updatedEntry._id ? updatedEntry : entry
+            );
+            state.globalSchedule = updatedGlobalSchedule;
+            state.loading = false;
+        },
+        updateGlobalScheduleFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
-    },
-    extraReducers(builder) {
-        builder.addCase(logOut, (state) => {
-            state.userSchedule = undefined;
-            state.globalSchedule = undefined;
-        });
     }
 });
 
@@ -95,7 +105,10 @@ export const {
     generateGlobalScheduleSuccess,
     generateGlobalScheduleFailure,
     openPopUp,
-    closePopUp
+    closePopUp,
+    updateGlobalScheduleRequest,
+    updateGlobalScheduleSuccess,
+    updateGlobalScheduleFailure
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

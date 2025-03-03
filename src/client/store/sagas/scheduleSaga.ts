@@ -1,7 +1,8 @@
 import {
     generateGlobalScheduleApi,
     getGlobalScheduleApi,
-    getUserScheduleApi
+    getUserScheduleApi,
+    updateGlobalScheduleApi
 } from '@/client/api/scheduleApi';
 import {
     IGlobalSchedule,
@@ -19,7 +20,10 @@ import {
     getGlobalScheduleSuccess,
     getUserScheduleFailure,
     getUserScheduleRequest,
-    getUserScheduleSuccess
+    getUserScheduleSuccess,
+    updateGlobalScheduleFailure,
+    updateGlobalScheduleRequest,
+    updateGlobalScheduleSuccess
 } from '../slices/scheduleSlice';
 
 function* getGlobalSchedule(action: any) {
@@ -64,6 +68,21 @@ function* generateGlobalSchedule(action: any) {
     }
 }
 
+function* updateGlobalSchedule(action: any) {
+    const { token, id, formData } = action.payload;
+    try {
+        const response: AxiosResponse<IGlobalSchedule> = yield call(
+            updateGlobalScheduleApi,
+            token,
+            id,
+            formData
+        );
+        yield put(updateGlobalScheduleSuccess(response.data));
+    } catch (error: any) {
+        yield put(updateGlobalScheduleFailure(error.message));
+    }
+}
+
 export default function* scheduleSaga() {
     yield takeLatest(getGlobalScheduleRequest.type, getGlobalSchedule);
     yield takeLatest(getUserScheduleRequest.type, getUserSchedule);
@@ -71,4 +90,5 @@ export default function* scheduleSaga() {
         generateGlobalScheduleRequest.type,
         generateGlobalSchedule
     );
+    yield takeLatest(updateGlobalScheduleRequest.type, updateGlobalSchedule);
 }

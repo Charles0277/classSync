@@ -1,3 +1,9 @@
+import {
+    ClassPopulated,
+    IGlobalScheduleEntry,
+    InstructorPopulated,
+    RoomPopulated
+} from '@/common/types/ISchedule.ts';
 import mongoose from 'mongoose';
 import { GlobalScheduleModel } from '../models/schedule.model.js';
 
@@ -73,6 +79,7 @@ export const fetchGlobalSchedule = async () => {
                 classType: 1,
                 day: 1,
                 hour: 1,
+                instructorId: 1,
                 instructorName: 1,
                 roomId: 1,
                 roomName: 1,
@@ -173,11 +180,56 @@ export const createSchedule = (values: Record<string, any>) =>
         .save()
         .then((savedSchedule) => savedSchedule.toObject());
 
-export const updateScheduleById = (id: string, values: Record<string, any>) =>
-    GlobalScheduleModel.findByIdAndUpdate({ _id: id }, values, {
-        new: true,
-        runValidators: true
-    });
+export const updateScheduleById = (id: string, values: Record<string, any>) => {
+    const update = { $set: {} as Record<string, any> };
+
+    for (const key in values) {
+        update.$set[`entries.${id}.${key}`] = values[key];
+    }
+
+    return GlobalScheduleModel.findOneAndUpdate(
+        { [`entries.${id}`]: { $exists: true } },
+        update,
+        { new: true, runValidators: true }
+    )
+        .populate({
+            path: `entries.${id}.instructorId`,
+            select: 'firstName lastName'
+        })
+        .populate({
+            path: `entries.${id}.roomId`,
+            select: 'name'
+        })
+        .populate({
+            path: `entries.${id}.classId`,
+            select: 'name classTypes'
+        })
+        .lean() // Convert to plain JavaScript object
+        .exec()
+        .then((doc) => {
+            if (doc && doc.entries[id]) {
+                const entry: IGlobalScheduleEntry = doc.entries[id];
+                // Transform instructor data
+                if (entry.instructorId) {
+                    entry.instructorName = `${(entry.instructorId as InstructorPopulated).firstName} ${
+                        (entry.instructorId as InstructorPopulated).lastName
+                    }`;
+                }
+                // Transform room data
+                if (entry.roomId) {
+                    entry.roomName = (entry.roomId as RoomPopulated).name;
+                }
+                // Transform class data
+                if (entry.classId) {
+                    entry.className = (entry.classId as ClassPopulated).name;
+                    entry.classType = (
+                        entry.classId as ClassPopulated
+                    ).classTypes;
+                }
+            }
+            return doc;
+        });
+};
 
 export const deleteScheduleById = (id: string) =>
     GlobalScheduleModel.findByIdAndDelete({ _id: id });

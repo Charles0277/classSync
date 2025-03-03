@@ -15,7 +15,8 @@ import {
     createSchedule,
     deleteScheduleById,
     fetchGlobalSchedule,
-    fetchUserSchedule
+    fetchUserSchedule,
+    updateScheduleById
 } from '../services/schedule.services.js';
 import {
     fetchAllStudents,
@@ -28,7 +29,7 @@ export const getGlobalSchedule = async (
 ) => {
     try {
         const globalSchedule = await fetchGlobalSchedule();
-        return res.status(201).send(globalSchedule);
+        return res.status(200).send(globalSchedule);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);
@@ -70,7 +71,41 @@ export const deleteGlobalSchedule = async (
         const { id } = req.params;
         const deletedGlobalSchedule = await deleteScheduleById(id);
 
-        return res.status(201).send(deletedGlobalSchedule);
+        return res.status(200).send(deletedGlobalSchedule);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const updateGlobalSchedule = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { id } = req.params;
+        const formData = req.body;
+
+        if (!id || !formData) {
+            return res.status(400).send({ error: 'Missing id or formData.' });
+        }
+
+        const updatedGlobalSchedule = await updateScheduleById(id, formData);
+
+        const entries =
+            updatedGlobalSchedule?.entries instanceof Map
+                ? Object.fromEntries(updatedGlobalSchedule.entries)
+                : updatedGlobalSchedule?.entries;
+
+        const updatedEntry = entries?.[id];
+
+        if (!updatedEntry) {
+            return res
+                .status(404)
+                .send({ error: 'Entry not found after update' });
+        }
+
+        return res.status(200).send(updatedEntry);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);

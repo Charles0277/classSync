@@ -113,7 +113,7 @@ export const updateClass = async (
             updatedValues
         );
 
-        return res.status(201).send(updatedClass);
+        return res.status(200).send(updatedClass);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);

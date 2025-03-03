@@ -29,3 +29,15 @@ export const generateGlobalScheduleApi = (token: string, semester: number) => {
         { headers: { Authorization: `Bearer ${token}` } }
     );
 };
+
+export const updateGlobalScheduleApi = (
+    token: string,
+    id: string,
+    formData: any
+) => {
+    return axios.put<IGlobalSchedule>(
+        `http://localhost:3000/update-global-schedule/${id}`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+};
