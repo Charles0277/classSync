@@ -1,33 +1,16 @@
 import { Document, Types } from 'mongoose';
 
-export interface InstructorPopulated {
-    _id: string;
-    firstName: string;
-    lastName: string;
-}
-
-export interface ClassPopulated {
-    _id: string;
-    name: string;
-    classTypes: string;
-}
-
-export interface RoomPopulated {
-    _id: string;
-    name: string;
-}
-
 export interface IGlobalScheduleEntry {
     _id?: Types.ObjectId;
     className: string;
-    classType: string;
+    classType: string[];
     day: number;
     hour: number;
-    instructorId: string | InstructorPopulated;
+    instructorId: string;
     instructorName: string;
-    roomId: string | RoomPopulated;
+    roomId: string;
     roomName: string;
-    classId: string | ClassPopulated;
+    classId: string;
     studentIds: string[];
     type: string;
 }
@@ -41,7 +24,7 @@ export interface GlobalSchedule {
 export interface IUserScheduleEntry {
     _id?: Types.ObjectId;
     className: string;
-    classType: string;
+    classType: string[];
     day: number;
     hour: number;
     instructorName: string;

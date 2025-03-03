@@ -1,11 +1,23 @@
-import {
-    ClassPopulated,
-    IGlobalScheduleEntry,
-    InstructorPopulated,
-    RoomPopulated
-} from '@/common/types/ISchedule.ts';
+import { IGlobalScheduleEntry } from '@/common/types/ISchedule.ts';
 import mongoose from 'mongoose';
 import { GlobalScheduleModel } from '../models/schedule.model.js';
+
+interface InstructorPopulated {
+    _id: string;
+    firstName: string;
+    lastName: string;
+}
+
+interface ClassPopulated {
+    _id: string;
+    name: string;
+    classTypes: string;
+}
+
+interface RoomPopulated {
+    _id: string;
+    name: string;
+}
 
 export const fetchGlobalSchedule = async () => {
     const globalSchedule = await GlobalScheduleModel.aggregate([
@@ -208,24 +220,32 @@ export const updateScheduleById = (id: string, values: Record<string, any>) => {
         .exec()
         .then((doc) => {
             if (doc && doc.entries[id]) {
-                const entry: IGlobalScheduleEntry = doc.entries[id];
-                // Transform instructor data
+                const entry = doc.entries[id] as IGlobalScheduleEntry;
+
+                // 1. Flatten nested IDs while extracting derived fields
                 if (entry.instructorId) {
-                    entry.instructorName = `${(entry.instructorId as InstructorPopulated).firstName} ${
-                        (entry.instructorId as InstructorPopulated).lastName
-                    }`;
+                    const instructor =
+                        entry.instructorId as unknown as InstructorPopulated;
+                    entry.instructorName = `${instructor.firstName} ${instructor.lastName}`;
+                    entry.instructorId = instructor._id.toString();
                 }
-                // Transform room data
+
                 if (entry.roomId) {
-                    entry.roomName = (entry.roomId as RoomPopulated).name;
+                    const room = entry.roomId as unknown as RoomPopulated;
+                    entry.roomName = room.name;
+                    entry.roomId = room._id.toString();
                 }
-                // Transform class data
+
                 if (entry.classId) {
-                    entry.className = (entry.classId as ClassPopulated).name;
-                    entry.classType = (
-                        entry.classId as ClassPopulated
-                    ).classTypes;
+                    const classData =
+                        entry.classId as unknown as ClassPopulated;
+                    entry.className = classData.name;
+                    entry.classType =
+                        classData.classTypes as unknown as string[];
+                    entry.classId = classData._id.toString();
                 }
+
+                entry.type = 'global';
             }
             return doc;
         });

@@ -1,8 +1,11 @@
+import { IClass } from '@/common/types/IClass';
 import {
     IGlobalScheduleEntry,
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
+import { getIdString } from '@/common/utils';
 import { createSlice } from '@reduxjs/toolkit';
+import { updateClassSuccess } from './classSlice';
 
 interface scheduleState {
     globalSchedule?: IGlobalScheduleEntry[];
@@ -12,7 +15,7 @@ interface scheduleState {
     generateSemester1Loading?: boolean;
     generateSemester2Loading?: boolean;
     error: string | null;
-    popUpClass?: IUserScheduleEntry;
+    popUpEntry?: IUserScheduleEntry;
 }
 
 const initialState: scheduleState = {
@@ -52,10 +55,10 @@ const scheduleSlice = createSlice({
             state.error = action.payload;
         },
         openPopUp: (state, action) => {
-            state.popUpClass = action.payload;
+            state.popUpEntry = action.payload;
         },
         closePopUp: (state) => {
-            state.popUpClass = undefined;
+            state.popUpEntry = undefined;
         },
         generateGlobalScheduleRequest: (state, action) => {
             if (action.payload.semester === 1) {
@@ -75,22 +78,40 @@ const scheduleSlice = createSlice({
             state.generateSemester2Loading = false;
         },
         updateGlobalScheduleRequest: (state, action) => {
-            state.loading = true;
             state.error = null;
         },
         updateGlobalScheduleSuccess: (state, action) => {
             const updatedEntry = action.payload;
-            state.popUpClass = updatedEntry;
+            state.popUpEntry = updatedEntry;
             const updatedGlobalSchedule = state.globalSchedule?.map((entry) =>
                 entry._id === updatedEntry._id ? updatedEntry : entry
             );
             state.globalSchedule = updatedGlobalSchedule;
-            state.loading = false;
         },
         updateGlobalScheduleFailure: (state, action) => {
-            state.loading = false;
             state.error = action.payload;
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(updateClassSuccess, (state, action) => {
+            const updatedClass = action.payload as IClass;
+            if (state.globalSchedule) {
+                const updatedGlobalSchedule = state.globalSchedule.map(
+                    (entry) =>
+                        entry.classId === getIdString(updatedClass._id)
+                            ? {
+                                  ...entry,
+                                  className: updatedClass.name,
+                                  classType: updatedClass.classTypes
+                              }
+                            : entry
+                );
+                state.globalSchedule = updatedGlobalSchedule;
+                state.popUpEntry = updatedGlobalSchedule.find(
+                    (entry) => entry.classId === getIdString(updatedClass._id)
+                );
+            }
+        });
     }
 });
 

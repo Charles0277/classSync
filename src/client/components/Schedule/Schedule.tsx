@@ -28,12 +28,13 @@ const Schedule: React.FC<ScheduleProps> = ({
     globalSchedule
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const popUp = useSelector((state: RootState) => state.schedule.popUpClass);
+    const { popUpEntry } = useSelector((state: RootState) => state.schedule);
     const { rooms, loading } = useSelector((state: RootState) => state.room);
     const { students, studentsLoading } = useSelector(
         (state: RootState) => state.user
     );
     const { holidays } = useSelector((state: RootState) => state.holiday);
+    const { classEntity } = useSelector((state: RootState) => state.class);
     const dispatch = useDispatch();
 
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
@@ -152,13 +153,15 @@ const Schedule: React.FC<ScheduleProps> = ({
 
     return (
         <>
-            {popUp && (
+            {popUpEntry && (
                 <PopUpCard
                     title="Class Details"
                     onCancel={() => dispatch(closePopUp())}
-                    className={`schedulePopUp ${convertRoomTypeToClassType(popUp.classType)}`}
+                    className={`schedulePopUp ${convertRoomTypeToClassType(
+                        popUpEntry.classType
+                    )}`}
                 >
-                    <ClassDetails key={popUp.classId} entry={popUp} />
+                    <ClassDetails key={popUpEntry.classId} entry={popUpEntry} />
                 </PopUpCard>
             )}
             <div

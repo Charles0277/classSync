@@ -10,7 +10,7 @@ import styles from './ScheduleEntry.module.css';
 
 interface SchedulEntryProps {
     entry: IUserScheduleEntry | IGlobalScheduleEntry;
-    classType: string;
+    classType: string[];
     onClick: () => void;
 }
 

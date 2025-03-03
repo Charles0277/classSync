@@ -25,13 +25,13 @@ interface ClassDetailsProps {
 }
 
 export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
-    console.log('🚀 ~ entry:', entry);
-    const dispatch = useDispatch();
     const { classEntity } = useSelector((state: RootState) => state.class);
     const { token, user } = useSelector((state: RootState) => state.auth);
     const { users } = useSelector((state: RootState) => state.user);
     const { rooms } = useSelector((state: RootState) => state.room);
     const { teachers } = useSelector((state: RootState) => state.user);
+
+    const dispatch = useDispatch();
 
     const [isEditing, setIsEditing] = useState(false);
     const [editedFields, setEditedFields] = useState({
@@ -39,7 +39,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         roomId: (entry as IGlobalScheduleEntry).roomId,
         classType: entry.classType,
         hour: entry.hour,
-        instructorId: entry.instructorName,
+        instructorId: (entry as IGlobalScheduleEntry).instructorId,
         description: classEntity?.description || 'No description provided.'
     });
 
@@ -100,11 +100,11 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         : [];
 
     const classTypesOptions = [
-        { value: 'lectureTheatre', label: 'Lecture' },
-        { value: 'laboratory', label: 'Laboratory' },
-        { value: 'workshop', label: 'Workshop' },
-        { value: 'seminar', label: 'Seminar' },
-        { value: 'office', label: 'Meeting' }
+        { value: ['lectureTheatre'], label: 'Lecture' },
+        { value: ['laboratory'], label: 'Laboratory' },
+        { value: ['workshop'], label: 'Workshop' },
+        { value: ['seminar'], label: 'Seminar' },
+        { value: ['office'], label: 'Meeting' }
     ];
 
     const timeOptions = Array.from({ length: 10 }, (_, index) => {
@@ -127,12 +127,15 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
             if (editedFields.className !== entry.className) {
                 changedClassFields.name = editedFields.className;
             }
-            if (editedFields.instructorId !== entry.instructorName) {
+            if (
+                editedFields.instructorId !==
+                (entry as IGlobalScheduleEntry).instructorId
+            ) {
                 changedClassFields.instructor = editedFields.instructorId;
-                changedScheduleFields.instructor = editedFields.instructorId;
+                changedScheduleFields.instructorId = editedFields.instructorId;
             }
             if (editedFields.classType !== entry.classType) {
-                changedClassFields.classTypes = [editedFields.classType];
+                changedClassFields.classTypes = editedFields.classType;
             }
             if (editedFields.description !== classEntity.description) {
                 changedClassFields.description = editedFields.description;
@@ -147,7 +150,6 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
             }
 
             if (Object.keys(changedScheduleFields).length > 0) {
-                console.log(changedScheduleFields);
                 dispatch(
                     updateGlobalScheduleRequest({
                         token,
@@ -314,7 +316,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                     <Select
                         options={teacherOptions}
                         defaultValue={{
-                            value: getIdString(classEntity?.instructor),
+                            value: (entry as IGlobalScheduleEntry).instructorId,
                             label: entry.instructorName
                         }}
                         onChange={(selectedTeacher) => {
