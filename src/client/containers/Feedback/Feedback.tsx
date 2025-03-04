@@ -20,7 +20,7 @@ import styles from './Feedback.module.css';
 export const Feedback = () => {
     const dispatch = useDispatch();
     const { user, token } = useSelector((state: RootState) => state.auth);
-    const { feedBackCollection } = useSelector(
+    const { feedBackCollection, loading } = useSelector(
         (state: RootState) => state.feedback
     );
 
@@ -176,6 +176,7 @@ export const Feedback = () => {
                         onCancel={handleCancel}
                         feedback={selectedFeedback}
                         edit={editFeedback}
+                        loading={loading}
                     />
                 </PopUpCard>
             )}

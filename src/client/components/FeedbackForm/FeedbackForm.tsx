@@ -14,6 +14,7 @@ interface FeedbackFormProps {
     feedback?: IFeedback;
     onCancel: () => void;
     edit?: boolean;
+    loading: boolean;
 }
 
 interface FeedbackFormState {
@@ -25,7 +26,8 @@ interface FeedbackFormState {
 export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     feedback,
     onCancel,
-    edit
+    edit,
+    loading
 }) => {
     const { user, token } = useSelector((state: RootState) => state.auth);
 
@@ -51,7 +53,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     };
 
     const handleSave = () => {
-        if (edit && feedback) {
+        if (edit && feedback && !loading) {
             dispatch(
                 updateFeedbackRequest({ id: feedback._id, formData, token })
             );
