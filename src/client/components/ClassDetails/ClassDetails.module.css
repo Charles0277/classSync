@@ -73,5 +73,10 @@
 }
 
 .students {
+    margin-top: 0.25rem;
     white-space: pre-wrap;
+}
+
+.editingStudents {
+    margin-bottom: 15rem;
 }
