@@ -13,10 +13,10 @@ import { fetchCourseUnits } from '../services/courseUnit.services.ts';
 import { fetchRooms } from '../services/room.services.js';
 import {
     createSchedule,
-    deleteScheduleById,
+    deleteScheduleEntryById,
     fetchGlobalSchedule,
     fetchUserSchedule,
-    updateScheduleById
+    updateScheduleEntryById
 } from '../services/schedule.services.js';
 import {
     fetchAllStudents,
@@ -63,22 +63,7 @@ export const getUserSchedule = async (
     }
 };
 
-export const deleteGlobalSchedule = async (
-    req: express.Request,
-    res: express.Response
-) => {
-    try {
-        const { id } = req.params;
-        const deletedGlobalSchedule = await deleteScheduleById(id);
-
-        return res.status(200).send(deletedGlobalSchedule);
-    } catch (error) {
-        console.log(error);
-        return res.sendStatus(400);
-    }
-};
-
-export const updateGlobalSchedule = async (
+export const updateGlobalScheduleEntry = async (
     req: express.Request,
     res: express.Response
 ) => {
@@ -90,7 +75,10 @@ export const updateGlobalSchedule = async (
             return res.status(400).send({ error: 'Missing id or formData.' });
         }
 
-        const updatedGlobalSchedule = await updateScheduleById(id, formData);
+        const updatedGlobalSchedule = await updateScheduleEntryById(
+            id,
+            formData
+        );
 
         const entries =
             updatedGlobalSchedule?.entries instanceof Map
@@ -106,6 +94,21 @@ export const updateGlobalSchedule = async (
         }
 
         return res.status(200).send(updatedEntry);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const deleteGlobalScheduleEntry = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { id } = req.params;
+        await deleteScheduleEntryById(id);
+
+        return res.status(200).send(id);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);

@@ -1,8 +1,9 @@
 import {
+    deleteGlobalScheduleEntryApi,
     generateGlobalScheduleApi,
     getGlobalScheduleApi,
     getUserScheduleApi,
-    updateGlobalScheduleApi
+    updateGlobalScheduleEntryApi
 } from '@/client/api/scheduleApi';
 import {
     IGlobalSchedule,
@@ -12,6 +13,9 @@ import {
 import { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import {
+    deleteGlobalScheduleEntryFailure,
+    deleteGlobalScheduleEntryRequest,
+    deleteGlobalScheduleEntrySuccess,
     generateGlobalScheduleFailure,
     generateGlobalScheduleRequest,
     generateGlobalScheduleSuccess,
@@ -21,9 +25,9 @@ import {
     getUserScheduleFailure,
     getUserScheduleRequest,
     getUserScheduleSuccess,
-    updateGlobalScheduleFailure,
-    updateGlobalScheduleRequest,
-    updateGlobalScheduleSuccess
+    updateGlobalScheduleEntryFailure,
+    updateGlobalScheduleEntryRequest,
+    updateGlobalScheduleEntrySuccess
 } from '../slices/scheduleSlice';
 
 function* getGlobalSchedule(action: any) {
@@ -68,18 +72,32 @@ function* generateGlobalSchedule(action: any) {
     }
 }
 
-function* updateGlobalSchedule(action: any) {
+function* updateGlobalScheduleEntry(action: any) {
     const { token, id, formData } = action.payload;
     try {
-        const response: AxiosResponse<IGlobalSchedule> = yield call(
-            updateGlobalScheduleApi,
+        const response: AxiosResponse<IGlobalScheduleEntry> = yield call(
+            updateGlobalScheduleEntryApi,
             token,
             id,
             formData
         );
-        yield put(updateGlobalScheduleSuccess(response.data));
+        yield put(updateGlobalScheduleEntrySuccess(response.data));
     } catch (error: any) {
-        yield put(updateGlobalScheduleFailure(error.message));
+        yield put(updateGlobalScheduleEntryFailure(error.message));
+    }
+}
+
+function* deleteGlobalScheduleEntry(action: any) {
+    const { token, id } = action.payload;
+    try {
+        const response: AxiosResponse<IGlobalScheduleEntry> = yield call(
+            deleteGlobalScheduleEntryApi,
+            token,
+            id
+        );
+        yield put(deleteGlobalScheduleEntrySuccess(response.data));
+    } catch (error: any) {
+        yield put(deleteGlobalScheduleEntryFailure(error.message));
     }
 }
 
@@ -90,5 +108,12 @@ export default function* scheduleSaga() {
         generateGlobalScheduleRequest.type,
         generateGlobalSchedule
     );
-    yield takeLatest(updateGlobalScheduleRequest.type, updateGlobalSchedule);
+    yield takeLatest(
+        updateGlobalScheduleEntryRequest.type,
+        updateGlobalScheduleEntry
+    );
+    yield takeLatest(
+        deleteGlobalScheduleEntryRequest.type,
+        deleteGlobalScheduleEntry
+    );
 }

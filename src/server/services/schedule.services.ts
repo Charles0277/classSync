@@ -192,7 +192,10 @@ export const createSchedule = (values: Record<string, any>) =>
         .save()
         .then((savedSchedule) => savedSchedule.toObject());
 
-export const updateScheduleById = (id: string, values: Record<string, any>) => {
+export const updateScheduleEntryById = (
+    id: string,
+    values: Record<string, any>
+) => {
     const update = { $set: {} as Record<string, any> };
 
     for (const key in values) {
@@ -253,3 +256,9 @@ export const updateScheduleById = (id: string, values: Record<string, any>) => {
 
 export const deleteScheduleById = (id: string) =>
     GlobalScheduleModel.findByIdAndDelete({ _id: id });
+
+export const deleteScheduleEntryById = (id: string) =>
+    GlobalScheduleModel.findOneAndUpdate(
+        { [`entries.${id}`]: { $exists: true } },
+        { $unset: { [`entries.${id}`]: 1 } }
+    );

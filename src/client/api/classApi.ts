@@ -16,3 +16,9 @@ export const updateClassApi = (token: string, id: string, formData: any) => {
         }
     );
 };
+
+export const deleteClassApi = (token: string, id: string) => {
+    return axios.delete(`http://localhost:3000/delete-class/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+};

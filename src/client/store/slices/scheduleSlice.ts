@@ -77,18 +77,30 @@ const scheduleSlice = createSlice({
             state.generateSemester1Loading = false;
             state.generateSemester2Loading = false;
         },
-        updateGlobalScheduleRequest: (state, action) => {
+        updateGlobalScheduleEntryRequest: (state, action) => {
             state.error = null;
         },
-        updateGlobalScheduleSuccess: (state, action) => {
+        updateGlobalScheduleEntrySuccess: (state, action) => {
             const updatedEntry = action.payload;
             state.popUpEntry = updatedEntry;
-            const updatedGlobalSchedule = state.globalSchedule?.map((entry) =>
+            state.globalSchedule = state.globalSchedule?.map((entry) =>
                 entry._id === updatedEntry._id ? updatedEntry : entry
             );
-            state.globalSchedule = updatedGlobalSchedule;
         },
-        updateGlobalScheduleFailure: (state, action) => {
+        updateGlobalScheduleEntryFailure: (state, action) => {
+            state.error = action.payload;
+        },
+        deleteGlobalScheduleEntryRequest: (state, action) => {
+            state.error = null;
+        },
+        deleteGlobalScheduleEntrySuccess: (state, action) => {
+            const deletedEntryId = action.payload;
+            state.popUpEntry = undefined;
+            state.globalSchedule = state.globalSchedule?.filter(
+                (entry) => entry.classId !== deletedEntryId
+            );
+        },
+        deleteGlobalScheduleEntryFailure: (state, action) => {
             state.error = action.payload;
         }
     },
@@ -127,9 +139,12 @@ export const {
     generateGlobalScheduleFailure,
     openPopUp,
     closePopUp,
-    updateGlobalScheduleRequest,
-    updateGlobalScheduleSuccess,
-    updateGlobalScheduleFailure
+    updateGlobalScheduleEntryRequest,
+    updateGlobalScheduleEntrySuccess,
+    updateGlobalScheduleEntryFailure,
+    deleteGlobalScheduleEntryRequest,
+    deleteGlobalScheduleEntrySuccess,
+    deleteGlobalScheduleEntryFailure
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

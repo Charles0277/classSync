@@ -5,14 +5,15 @@
     padding-right: 1rem;
 }
 
-.editButton {
+.actionButtons {
     display: flex;
     justify-content: end;
     margin-bottom: 0.5rem;
     margin-top: -2.5rem;
+    gap: 0.5rem;
 }
 
-.editButton button {
+.actionButtons button {
     display: flex;
     border: solid 1.5px var(--gray-600);
     padding: 2.5px 10px 2.5px 10px;

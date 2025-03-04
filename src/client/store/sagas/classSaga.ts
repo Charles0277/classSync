@@ -1,8 +1,15 @@
-import { getClassApi, updateClassApi } from '@/client/api/classApi';
+import {
+    deleteClassApi,
+    getClassApi,
+    updateClassApi
+} from '@/client/api/classApi';
 import { IClass } from '@/common/types/IClass';
 import { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import {
+    deleteClassFailure,
+    deleteClassRequest,
+    deleteClassSuccess,
     getClassFailure,
     getClassRequest,
     getClassSuccess,
@@ -40,7 +47,21 @@ function* updateClass(action: any) {
     }
 }
 
+function* deleteClass(action: any) {
+    const { token, id } = action.payload;
+    try {
+        const response: AxiosResponse<IClass> = yield call(
+            deleteClassApi,
+            token,
+            id
+        );
+        yield put(deleteClassSuccess(response.data));
+    } catch (error: any) {
+        yield put(deleteClassFailure(error.message));
+    }
+}
 export default function* classSaga() {
     yield takeLatest(getClassRequest.type, fetchClass);
     yield takeLatest(updateClassRequest.type, updateClass);
+    yield takeLatest(deleteClassRequest.type, deleteClass);
 }

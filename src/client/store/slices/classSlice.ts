@@ -37,6 +37,17 @@ const classSlice = createSlice({
         },
         resetClassEntity: (state) => {
             state.classEntity = undefined;
+        },
+        deleteClassRequest: (state, action) => {
+            state.loading = true;
+        },
+        deleteClassSuccess: (state, action) => {
+            state.loading = false;
+            state.classEntity = undefined;
+        },
+        deleteClassFailure: (state, action) => {
+            state.error = action.payload;
+            state.loading = false;
         }
     }
 });
@@ -48,7 +59,10 @@ export const {
     updateClassRequest,
     updateClassSuccess,
     updateClassFailure,
-    resetClassEntity
+    resetClassEntity,
+    deleteClassRequest,
+    deleteClassSuccess,
+    deleteClassFailure
 } = classSlice.actions;
 
 export default classSlice.reducer;

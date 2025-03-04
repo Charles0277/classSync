@@ -34,7 +34,6 @@ const Schedule: React.FC<ScheduleProps> = ({
         (state: RootState) => state.user
     );
     const { holidays } = useSelector((state: RootState) => state.holiday);
-    const { classEntity } = useSelector((state: RootState) => state.class);
     const dispatch = useDispatch();
 
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);

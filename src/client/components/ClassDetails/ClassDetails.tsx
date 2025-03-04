@@ -1,9 +1,13 @@
 import {
+    deleteClassRequest,
     getClassRequest,
     resetClassEntity,
     updateClassRequest
 } from '@/client/store/slices/classSlice';
-import { updateGlobalScheduleRequest } from '@/client/store/slices/scheduleSlice';
+import {
+    deleteGlobalScheduleEntryRequest,
+    updateGlobalScheduleEntryRequest
+} from '@/client/store/slices/scheduleSlice';
 import {
     fetchAllTeachersRequest,
     fetchUsersRequest
@@ -25,6 +29,7 @@ interface ClassDetailsProps {
 }
 
 export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
+    console.log('🚀 ~ entry:', entry);
     const { classEntity } = useSelector((state: RootState) => state.class);
     const { token, user } = useSelector((state: RootState) => state.auth);
     const { users, students } = useSelector((state: RootState) => state.user);
@@ -129,6 +134,14 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
 
     const handleEdit = () => setIsEditing(true);
 
+    const handleDelete = () => {
+        if (!classEntity?._id) return;
+        dispatch(deleteClassRequest({ token, id: entry.classId }));
+        dispatch(
+            deleteGlobalScheduleEntryRequest({ token, id: entry.classId })
+        );
+    };
+
     const handleSave = () => {
         if (!classEntity?._id) return;
         const changedClassFields: Record<string, any> = {};
@@ -177,7 +190,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
 
         if (Object.keys(changedScheduleFields).length > 0) {
             dispatch(
-                updateGlobalScheduleRequest({
+                updateGlobalScheduleEntryRequest({
                     token,
                     id: entry.classId,
                     formData: changedScheduleFields
@@ -212,13 +225,20 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
     return (
         <div className={styles.classDetails}>
             {isAdmin && !isEditing && (
-                <div className={styles.editButton}>
+                <div className={styles.actionButtons}>
                     <Button
                         type="button"
                         className="classDetails"
                         onClick={handleEdit}
                     >
                         Edit
+                    </Button>
+                    <Button
+                        type="button"
+                        className="classDetails"
+                        onClick={handleDelete}
+                    >
+                        Delete
                     </Button>
                 </div>
             )}

@@ -30,7 +30,7 @@ export const generateGlobalScheduleApi = (token: string, semester: number) => {
     );
 };
 
-export const updateGlobalScheduleApi = (
+export const updateGlobalScheduleEntryApi = (
     token: string,
     id: string,
     formData: any
@@ -38,6 +38,13 @@ export const updateGlobalScheduleApi = (
     return axios.put<IGlobalSchedule>(
         `http://localhost:3000/update-global-schedule/${id}`,
         formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+};
+
+export const deleteGlobalScheduleEntryApi = (token: string, id: string) => {
+    return axios.delete<IGlobalScheduleEntry>(
+        `http://localhost:3000/delete-global-schedule/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
     );
 };

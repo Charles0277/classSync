@@ -1,10 +1,10 @@
 import express from 'express';
 import {
-    deleteGlobalSchedule,
+    deleteGlobalScheduleEntry,
     generateGlobalSchedule,
     getGlobalSchedule,
     getUserSchedule,
-    updateGlobalSchedule
+    updateGlobalScheduleEntry
 } from '../controllers/schedule.js';
 import {
     authenticateToken,
@@ -25,16 +25,16 @@ export default (router: express.Router) => {
         getGlobalSchedule
     );
     router.get('/get-user-schedule/:id', authenticateToken, getUserSchedule);
-    router.delete(
-        '/delete-global-schedule',
-        authenticateToken,
-        checkAdmin,
-        deleteGlobalSchedule
-    );
     router.put(
         '/update-global-schedule/:id',
         authenticateToken,
         checkAdmin,
-        updateGlobalSchedule
+        updateGlobalScheduleEntry
+    );
+    router.delete(
+        '/delete-global-schedule/:id',
+        authenticateToken,
+        checkAdmin,
+        deleteGlobalScheduleEntry
     );
 };
