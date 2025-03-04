@@ -11,12 +11,31 @@
     margin-bottom: 0.5rem;
     margin-top: -2.5rem;
     gap: 0.5rem;
+    align-items: flex-start;
 }
 
 .actionButtons button {
     display: flex;
     border: solid 1.5px var(--gray-600);
-    padding: 2.5px 10px 2.5px 10px;
+    padding: 2.5px 10px;
+}
+
+.confirmDeleteContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.confirmDeleteButtonGroup {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.confirmDeleteButtonGroup button {
+    padding: 2.5px 10px;
+    transition: background-color 0.3s ease;
 }
 
 .classProperty {

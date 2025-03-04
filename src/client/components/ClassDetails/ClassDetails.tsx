@@ -29,7 +29,6 @@ interface ClassDetailsProps {
 }
 
 export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
-    console.log('🚀 ~ entry:', entry);
     const { classEntity } = useSelector((state: RootState) => state.class);
     const { token, user } = useSelector((state: RootState) => state.auth);
     const { users, students } = useSelector((state: RootState) => state.user);
@@ -39,6 +38,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
     const dispatch = useDispatch();
 
     const [isEditing, setIsEditing] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [editedFields, setEditedFields] = useState({
         className: entry.className,
         roomId: (entry as IGlobalScheduleEntry).roomId,
@@ -140,6 +140,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         dispatch(
             deleteGlobalScheduleEntryRequest({ token, id: entry.classId })
         );
+        setShowDeleteConfirm(false);
     };
 
     const handleSave = () => {
@@ -226,20 +227,44 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         <div className={styles.classDetails}>
             {isAdmin && !isEditing && (
                 <div className={styles.actionButtons}>
-                    <Button
-                        type="button"
-                        className="classDetails"
-                        onClick={handleEdit}
-                    >
-                        Edit
-                    </Button>
-                    <Button
-                        type="button"
-                        className="classDetails"
-                        onClick={handleDelete}
-                    >
-                        Delete
-                    </Button>
+                    {!showDeleteConfirm && (
+                        <Button
+                            type="button"
+                            className="classDetails"
+                            onClick={handleEdit}
+                        >
+                            Edit
+                        </Button>
+                    )}
+                    {showDeleteConfirm ? (
+                        <div className={styles.confirmDeleteContainer}>
+                            <span>Confirm delete?</span>
+                            <div className={styles.confirmDeleteButtonGroup}>
+                                <Button
+                                    type="button"
+                                    className="classDetails"
+                                    onClick={handleDelete}
+                                >
+                                    Yes
+                                </Button>
+                                <Button
+                                    type="button"
+                                    className="classDetails"
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                >
+                                    No
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <Button
+                            type="button"
+                            className="classDetails"
+                            onClick={() => setShowDeleteConfirm(true)}
+                        >
+                            Delete
+                        </Button>
+                    )}
                 </div>
             )}
             <div className={styles.classProperty}>
