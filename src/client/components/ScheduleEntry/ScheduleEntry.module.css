@@ -9,6 +9,7 @@
     padding: 4px;
     font-size: 0.9rem;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
 }
 
 .globalScheduleEntry {
@@ -84,6 +85,7 @@
     left: 0px;
     right: 0px;
     bottom: 0px;
+    transition: all 0.2s ease;
 }
 
 .globalScheduleEntry:hover {
