@@ -45,6 +45,7 @@ const Schedule: React.FC<ScheduleProps> = ({
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     const [SelectedRooms, setSelectedRooms] = useState<string[]>([]);
     const [weekOffset, setWeekOffset] = useState(0);
+    const [animationClass, setAnimationClass] = useState('');
 
     useEffect(() => {
         if (!globalSchedule) return;
@@ -172,6 +173,22 @@ const Schedule: React.FC<ScheduleProps> = ({
         dispatch(setIsNewClass(true));
     };
 
+    const handleWeekChange = (offset: number) => {
+        if (offset === 0) {
+            setAnimationClass(styles.fadePop);
+        } else {
+            setAnimationClass(styles.fadeSmooth);
+        }
+        setTimeout(() => {
+            if (offset === 0) {
+                setWeekOffset(0);
+            } else {
+                setWeekOffset((prev) => prev + offset);
+            }
+            setAnimationClass('');
+        }, 200);
+    };
+
     return (
         <>
             {popUpEntry && (
@@ -253,7 +270,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                     </div>
                 )}
                 <div
-                    className={styles.scheduleGrid}
+                    className={`${styles.scheduleGrid} ${animationClass}`}
                     style={{ gap: `${globalSchedule && '5px'}` }}
                 >
                     <div
@@ -321,7 +338,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                 >
                     <div className={styles.weekControls}>
                         <Button
-                            onClick={() => setWeekOffset((prev) => prev - 1)}
+                            onClick={() => handleWeekChange(-1)}
                             style={{
                                 borderTopLeftRadius: '0.25rem',
                                 borderBottomLeftRadius: '0.25rem',
@@ -332,13 +349,13 @@ const Schedule: React.FC<ScheduleProps> = ({
                             ←
                         </Button>
                         <Button
-                            onClick={() => setWeekOffset(0)}
+                            onClick={() => handleWeekChange(0)}
                             style={{ borderRadius: '0' }}
                         >
                             Current Week
                         </Button>
                         <Button
-                            onClick={() => setWeekOffset((prev) => prev + 1)}
+                            onClick={() => handleWeekChange(1)}
                             style={{
                                 borderTopRightRadius: '0.25rem',
                                 borderBottomRightRadius: '0.25rem',

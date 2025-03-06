@@ -36,6 +36,9 @@
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
     background-color: white;
+    transition:
+        opacity 0.3s ease-in-out,
+        transform 0.2s ease-out;
 }
 
 .gridCell {
@@ -122,4 +125,38 @@
 .settings img {
     width: 1.25rem;
     height: 1.25rem;
+}
+
+.slideLeft {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.slideRight {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.fadeSmooth {
+    opacity: 0;
+    transform: scale(0.98);
+}
+
+.fadePop {
+    animation: fadePopAnimation 1s;
+}
+
+@keyframes fadePopAnimation {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    40% {
+        opacity: 0.6;
+        transform: scale(1.03);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
