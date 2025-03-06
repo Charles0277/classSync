@@ -10,6 +10,7 @@
     border-radius: 10px;
     cursor: pointer;
     background-color: transparent;
+    transition: all 0.2s ease;
 }
 
 .btn img {
@@ -24,6 +25,7 @@
     backdrop-filter: brightness(0.9);
     transition-duration: 0.1s;
     transition-timing-function: linear;
+    scale: 1.05;
 }
 
 .getStarted {
