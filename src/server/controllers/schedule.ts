@@ -13,6 +13,7 @@ import { fetchCourseUnits } from '../services/courseUnit.services.ts';
 import { fetchRooms } from '../services/room.services.js';
 import {
     addScheduleEntry,
+    checkForConflicts,
     createSchedule,
     deleteScheduleEntryById,
     fetchGlobalSchedule,
@@ -242,3 +243,17 @@ export async function generateGlobalSchedule(
         return res.status(500).send({ error: 'Failed to generate schedule' });
     }
 }
+
+export const checkScheduleConflict = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const formData = req.body;
+        const conflicts = await checkForConflicts(formData);
+        return res.status(200).send({ conflicts });
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};

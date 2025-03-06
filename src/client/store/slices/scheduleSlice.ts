@@ -17,13 +17,20 @@ interface scheduleState {
     error: string | null;
     popUpEntry?: IUserScheduleEntry | IGlobalScheduleEntry;
     isNewClass?: boolean;
+    conflicts?: {
+        instructorConflicts: IGlobalScheduleEntry[];
+        roomConflicts: IGlobalScheduleEntry[];
+        studentConflicts: IGlobalScheduleEntry[];
+    };
+    checkingConflicts: boolean;
 }
 
 const initialState: scheduleState = {
     loading: false,
     hasLoaded: false,
     error: null,
-    isNewClass: false
+    isNewClass: false,
+    checkingConflicts: false
 };
 
 const scheduleSlice = createSlice({
@@ -119,6 +126,19 @@ const scheduleSlice = createSlice({
         },
         addGlobalScheduleEntryFailure: (state, action) => {
             state.error = action.payload;
+        },
+        checkForConflictsRequest: (state, action) => {
+            state.error = null;
+            state.checkingConflicts = true;
+        },
+        checkForConflictsSuccess: (state, action) => {
+            const conflicts = action.payload;
+            state.conflicts = conflicts.conflicts;
+            state.checkingConflicts = false;
+        },
+        checkForConflictsFailure: (state, action) => {
+            state.error = action.payload;
+            state.checkingConflicts = false;
         }
     },
     extraReducers: (builder) => {
@@ -168,7 +188,10 @@ export const {
     setIsNewClass,
     addGlobalScheduleEntryRequest,
     addGlobalScheduleEntrySuccess,
-    addGlobalScheduleEntryFailure
+    addGlobalScheduleEntryFailure,
+    checkForConflictsRequest,
+    checkForConflictsSuccess,
+    checkForConflictsFailure
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

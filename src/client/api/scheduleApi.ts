@@ -56,3 +56,11 @@ export const addGlobalScheduleEntryApi = (token: string, formData: any) => {
         { headers: { Authorization: `Bearer ${token}` } }
     );
 };
+
+export const checkForConflictsApi = (token: string, formData: any) => {
+    return axios.post<IGlobalScheduleEntry[]>(
+        `http://localhost:3000/check-for-conflicts`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+};

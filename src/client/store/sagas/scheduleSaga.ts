@@ -1,5 +1,6 @@
 import {
     addGlobalScheduleEntryApi,
+    checkForConflictsApi,
     deleteGlobalScheduleEntryApi,
     generateGlobalScheduleApi,
     getGlobalScheduleApi,
@@ -17,6 +18,9 @@ import {
     addGlobalScheduleEntryFailure,
     addGlobalScheduleEntryRequest,
     addGlobalScheduleEntrySuccess,
+    checkForConflictsFailure,
+    checkForConflictsRequest,
+    checkForConflictsSuccess,
     deleteGlobalScheduleEntryFailure,
     deleteGlobalScheduleEntryRequest,
     deleteGlobalScheduleEntrySuccess,
@@ -119,6 +123,20 @@ function* addGlobalScheduleEntry(action: any) {
     }
 }
 
+function* checkForConflicts(action: any) {
+    const { token, formData } = action.payload;
+    try {
+        const response: AxiosResponse<IGlobalScheduleEntry[]> = yield call(
+            checkForConflictsApi,
+            token,
+            formData
+        );
+        yield put(checkForConflictsSuccess(response.data));
+    } catch (error: any) {
+        yield put(checkForConflictsFailure(error.message));
+    }
+}
+
 export default function* scheduleSaga() {
     yield takeLatest(getGlobalScheduleRequest.type, getGlobalSchedule);
     yield takeLatest(getUserScheduleRequest.type, getUserSchedule);
@@ -138,4 +156,5 @@ export default function* scheduleSaga() {
         addGlobalScheduleEntryRequest.type,
         addGlobalScheduleEntry
     );
+    yield takeLatest(checkForConflictsRequest.type, checkForConflicts);
 }

@@ -9,6 +9,7 @@ import {
 import { fetchAllCourseUnitsRequest } from '@/client/store/slices/courseUnitSlice';
 import {
     addGlobalScheduleEntryRequest,
+    checkForConflictsRequest,
     closePopUp,
     deleteGlobalScheduleEntryRequest,
     setIsNewClass,
@@ -48,6 +49,9 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
     const { rooms } = useSelector((state: RootState) => state.room);
     const { teachers } = useSelector((state: RootState) => state.user);
     const { courseUnits } = useSelector((state: RootState) => state.courseUnit);
+    const { conflicts, checkingConflicts, globalSchedule } = useSelector(
+        (state: RootState) => state.schedule
+    );
 
     const dispatch = useDispatch();
 
@@ -70,6 +74,8 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
             ? null
             : (entry as IGlobalScheduleEntry).studentIds
     });
+    const [showConflictConfirm, setShowConflictConfirm] = useState(false);
+    const [pendingSave, setPendingSave] = useState(false);
 
     const isAdmin = user?.role === 'admin';
 
@@ -140,6 +146,24 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
         }
     }, [dispatch, token, createdClassId]);
 
+    useEffect(() => {
+        if (checkingConflicts) {
+            return;
+        }
+        if (
+            pendingSave &&
+            conflicts &&
+            (conflicts.instructorConflicts.length > 0 ||
+                conflicts.roomConflicts.length > 0 ||
+                conflicts.studentConflicts.length > 0)
+        ) {
+            setShowConflictConfirm(true);
+            setPendingSave(false);
+        } else if (pendingSave) {
+            proceedWithSave();
+        }
+    }, [conflicts, pendingSave, checkingConflicts]);
+
     const teacherOptions = teachers
         ? teachers.map((teacher) => ({
               value: teacher._id,
@@ -207,47 +231,65 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
 
     const handleSave = () => {
         if (!classEntity?._id) return;
+
+        const changedScheduleFields: Record<string, any> = {};
+
+        if (editedFields.hour !== entry.hour) {
+            changedScheduleFields.hour = editedFields.hour;
+        }
+        if (editedFields.day !== (entry as IGlobalScheduleEntry).day) {
+            changedScheduleFields.day = editedFields.day;
+        }
+
+        dispatch(
+            checkForConflictsRequest({
+                token,
+                formData: { ...entry, ...changedScheduleFields }
+            })
+        );
+
+        setPendingSave(true);
+    };
+
+    const proceedWithSave = () => {
+        if (!classEntity?._id) return;
         const changedClassFields: Record<string, any> = {};
         const changedScheduleFields: Record<string, any> = {};
 
-        if (isAdmin) {
-            if (editedFields.className !== entry.className) {
-                changedClassFields.name = editedFields.className;
-            }
-            if (
-                editedFields.instructorId !==
-                (entry as IGlobalScheduleEntry).instructorId
-            ) {
-                changedClassFields.instructor = editedFields.instructorId;
-                changedScheduleFields.instructorId = editedFields.instructorId;
-            }
-            if (editedFields.classType !== entry.classType) {
-                changedClassFields.classTypes = editedFields.classType;
-            }
-            if (
-                editedFields.roomId !== (entry as IGlobalScheduleEntry).roomId
-            ) {
-                changedScheduleFields.roomId = editedFields.roomId;
-            }
-            if (editedFields.hour !== entry.hour) {
-                changedScheduleFields.hour = editedFields.hour;
-            }
-            if (editedFields.day !== (entry as IGlobalScheduleEntry).day) {
-                changedScheduleFields.day = editedFields.day;
-            }
+        if (editedFields.className !== entry.className) {
+            changedClassFields.name = editedFields.className;
+        }
+        if (
+            editedFields.instructorId !==
+            (entry as IGlobalScheduleEntry).instructorId
+        ) {
+            changedClassFields.instructor = editedFields.instructorId;
+            changedScheduleFields.instructorId = editedFields.instructorId;
+        }
+        if (editedFields.classType !== entry.classType) {
+            changedClassFields.classTypes = editedFields.classType;
+        }
+        if (editedFields.roomId !== (entry as IGlobalScheduleEntry).roomId) {
+            changedScheduleFields.roomId = editedFields.roomId;
+        }
+        if (editedFields.hour !== entry.hour) {
+            changedScheduleFields.hour = editedFields.hour;
+        }
+        if (editedFields.day !== (entry as IGlobalScheduleEntry).day) {
+            changedScheduleFields.day = editedFields.day;
+        }
 
-            const sortedEditedStudentIds = [...editedFields.studentIds!]
-                .sort()
-                .toString();
-            const sortedEntryStudentIds = [
-                ...(entry as IGlobalScheduleEntry).studentIds
-            ]
-                .sort()
-                .toString();
-            if (sortedEditedStudentIds !== sortedEntryStudentIds) {
-                changedScheduleFields.studentIds = editedFields.studentIds;
-                changedClassFields.students = editedFields.studentIds;
-            }
+        const sortedEditedStudentIds = [...editedFields.studentIds!]
+            .sort()
+            .toString();
+        const sortedEntryStudentIds = [
+            ...(entry as IGlobalScheduleEntry).studentIds
+        ]
+            .sort()
+            .toString();
+        if (sortedEditedStudentIds !== sortedEntryStudentIds) {
+            changedScheduleFields.studentIds = editedFields.studentIds;
+            changedClassFields.students = editedFields.studentIds;
         }
 
         if (editedFields.description !== classEntity.description) {
@@ -312,84 +354,331 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
     };
 
     return (
-        <div className={styles.classDetails}>
-            {isAdmin && !isEditing && !isNewClass && (
-                <div className={styles.actionButtons}>
-                    {!showDeleteConfirm && (
-                        <Button
-                            type="button"
-                            className="classDetails"
-                            onClick={handleEdit}
-                        >
-                            Edit
-                        </Button>
-                    )}
-                    {showDeleteConfirm ? (
-                        <div className={styles.confirmDeleteContainer}>
-                            <span>Confirm delete?</span>
-                            <div className={styles.confirmDeleteButtonGroup}>
-                                <Button
-                                    type="button"
-                                    className="classDetails"
-                                    onClick={handleDelete}
-                                >
-                                    Yes
-                                </Button>
-                                <Button
-                                    type="button"
-                                    className="classDetails"
-                                    onClick={() => setShowDeleteConfirm(false)}
-                                >
-                                    No
-                                </Button>
-                            </div>
-                        </div>
-                    ) : (
-                        <Button
-                            type="button"
-                            className="classDetails"
-                            onClick={() => setShowDeleteConfirm(true)}
-                        >
-                            Delete
-                        </Button>
-                    )}
+        <>
+            {showConflictConfirm && (
+                <div className={styles.conflictPopup}>
+                    <p>
+                        There are scheduling conflicts with the following
+                        classes:
+                        {conflicts &&
+                            conflicts.instructorConflicts.length > 0 && (
+                                <>
+                                    <strong>Instructor Conflicts:</strong>
+                                    <>
+                                        {conflicts.instructorConflicts.map(
+                                            (conflict) => (
+                                                <li
+                                                    key={getIdString(
+                                                        conflict._id
+                                                    )}
+                                                >
+                                                    {
+                                                        globalSchedule?.find(
+                                                            (entry) =>
+                                                                entry._id ===
+                                                                conflict._id
+                                                        )?.className
+                                                    }
+                                                </li>
+                                            )
+                                        )}
+                                    </>
+                                </>
+                            )}
+                        {conflicts && conflicts.roomConflicts.length > 0 && (
+                            <>
+                                <strong>Room Conflicts:</strong>
+                                <>
+                                    {conflicts.roomConflicts.map((conflict) => (
+                                        <li key={getIdString(conflict._id)}>
+                                            {
+                                                globalSchedule?.find(
+                                                    (entry) =>
+                                                        entry._id ===
+                                                        conflict._id
+                                                )?.className
+                                            }
+                                        </li>
+                                    ))}
+                                </>
+                            </>
+                        )}
+                        {conflicts && conflicts.studentConflicts.length > 0 && (
+                            <>
+                                <strong>Student Conflicts:</strong>
+                                <>
+                                    {conflicts.studentConflicts.map(
+                                        (conflict) => (
+                                            <li key={getIdString(conflict._id)}>
+                                                {
+                                                    globalSchedule?.find(
+                                                        (entry) =>
+                                                            entry._id ===
+                                                            conflict._id
+                                                    )?.className
+                                                }
+                                            </li>
+                                        )
+                                    )}
+                                </>
+                            </>
+                        )}
+                        Do you want to proceed?
+                    </p>
+
+                    <Button
+                        onClick={() => {
+                            setShowConflictConfirm(false);
+                            proceedWithSave();
+                        }}
+                    >
+                        Proceed
+                    </Button>
+                    <Button onClick={() => setShowConflictConfirm(false)}>
+                        Cancel
+                    </Button>
                 </div>
             )}
-            <div className={styles.classProperty}>
-                <span className={styles.title}>Title:</span>
-                {(isEditing || isNewClass) && isAdmin ? (
-                    <input
-                        className={styles.descriptionInput}
-                        type="text"
-                        value={editedFields.className}
-                        onChange={(e) =>
-                            setEditedFields({
-                                ...editedFields,
-                                className: e.target.value
-                            })
-                        }
-                    />
-                ) : (
-                    <span>{entry.className}</span>
+            <div className={styles.classDetails}>
+                {isAdmin && !isEditing && !isNewClass && (
+                    <div className={styles.actionButtons}>
+                        {!showDeleteConfirm && (
+                            <Button
+                                type="button"
+                                className="classDetails"
+                                onClick={handleEdit}
+                            >
+                                Edit
+                            </Button>
+                        )}
+                        {showDeleteConfirm ? (
+                            <div className={styles.confirmDeleteContainer}>
+                                <span>Confirm delete?</span>
+                                <div
+                                    className={styles.confirmDeleteButtonGroup}
+                                >
+                                    <Button
+                                        type="button"
+                                        className="classDetails"
+                                        onClick={handleDelete}
+                                    >
+                                        Yes
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        className="classDetails"
+                                        onClick={() =>
+                                            setShowDeleteConfirm(false)
+                                        }
+                                    >
+                                        No
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <Button
+                                type="button"
+                                className="classDetails"
+                                onClick={() => setShowDeleteConfirm(true)}
+                            >
+                                Delete
+                            </Button>
+                        )}
+                    </div>
                 )}
-            </div>
-            {isNewClass && (
                 <div className={styles.classProperty}>
-                    <span className={styles.title}>Course Unit:</span>
-                    {isEditing && isAdmin ? (
+                    <span className={styles.title}>Title:</span>
+                    {(isEditing || isNewClass) && isAdmin ? (
+                        <input
+                            className={styles.descriptionInput}
+                            type="text"
+                            value={editedFields.className}
+                            onChange={(e) =>
+                                setEditedFields({
+                                    ...editedFields,
+                                    className: e.target.value
+                                })
+                            }
+                        />
+                    ) : (
+                        <span>{entry.className}</span>
+                    )}
+                </div>
+                {isNewClass && (
+                    <div className={styles.classProperty}>
+                        <span className={styles.title}>Course Unit:</span>
+                        {isEditing && isAdmin ? (
+                            <Select
+                                options={courseUnitOptions}
+                                onChange={(selectedCourseUnit) => {
+                                    if (selectedCourseUnit) {
+                                        setEditedFields({
+                                            ...editedFields,
+                                            courseUnitId: getIdString(
+                                                selectedCourseUnit.value
+                                            )
+                                        });
+                                    }
+                                }}
+                                placeholder="Select a Course Unit"
+                                styles={{
+                                    container: (base) => ({
+                                        ...base,
+                                        minWidth: '17rem',
+                                        padding: '0.5rem',
+                                        marginRight: '-0.5rem',
+                                        marginLeft: '-0.5rem'
+                                    })
+                                }}
+                            />
+                        ) : (
+                            <span>
+                                {
+                                    courseUnits.find(
+                                        (courseUnit) =>
+                                            courseUnit._id ===
+                                            classEntity?.courseUnit
+                                    )?.name
+                                }
+                            </span>
+                        )}
+                    </div>
+                )}
+                <div className={styles.classProperty}>
+                    <span className={styles.title}>Room:</span>
+                    {(isEditing || isNewClass) && isAdmin ? (
                         <Select
-                            options={courseUnitOptions}
-                            onChange={(selectedCourseUnit) => {
-                                if (selectedCourseUnit) {
+                            options={roomOptions}
+                            defaultValue={
+                                entry.roomName
+                                    ? {
+                                          value: (entry as IGlobalScheduleEntry)
+                                              .roomId,
+                                          label: entry.roomName
+                                      }
+                                    : null
+                            }
+                            onChange={(selectedRoom) => {
+                                if (selectedRoom) {
                                     setEditedFields({
                                         ...editedFields,
-                                        courseUnitId: getIdString(
-                                            selectedCourseUnit.value
-                                        )
+                                        roomId: selectedRoom.value
                                     });
                                 }
                             }}
-                            placeholder="Select a Course Unit"
+                            placeholder="Select a Room"
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    minWidth: '17rem',
+                                    padding: '0.5rem',
+                                    marginRight: '-0.5rem',
+                                    marginLeft: '-0.5rem'
+                                })
+                            }}
+                        />
+                    ) : (
+                        <span>{entry.roomName}</span>
+                    )}
+                </div>
+                <div className={styles.classProperty}>
+                    <span className={styles.title}>Class Type:</span>{' '}
+                    {(isEditing || isNewClass) && isAdmin ? (
+                        <Select
+                            options={classTypesOptions}
+                            defaultValue={
+                                entry.classType.length
+                                    ? {
+                                          value: entry.classType,
+                                          label: convertRoomTypeToClassType(
+                                              entry.classType
+                                          )
+                                      }
+                                    : null
+                            }
+                            onChange={(selectedClassType) => {
+                                if (selectedClassType) {
+                                    setEditedFields({
+                                        ...editedFields,
+                                        classType: selectedClassType.value
+                                    });
+                                }
+                            }}
+                            placeholder="Select a Class Type"
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    minWidth: '17rem',
+                                    padding: '0.5rem',
+                                    marginRight: '-0.5rem',
+                                    marginLeft: '-0.5rem'
+                                })
+                            }}
+                        />
+                    ) : (
+                        <span>
+                            {convertRoomTypeToClassType(entry.classType)}
+                        </span>
+                    )}
+                </div>
+                <div className={styles.classProperty}>
+                    <span className={styles.title}>Time:</span>{' '}
+                    {(isEditing || isNewClass) && isAdmin ? (
+                        <Select
+                            options={timeOptions}
+                            defaultValue={
+                                !isNewClass
+                                    ? {
+                                          value: entry.hour,
+                                          label: `${entry.hour}:00 - ${entry.hour + 1}:00`
+                                      }
+                                    : null
+                            }
+                            onChange={(selectedTime) => {
+                                if (selectedTime) {
+                                    setEditedFields({
+                                        ...editedFields,
+                                        hour: selectedTime.value
+                                    });
+                                }
+                            }}
+                            placeholder="Select a Time"
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    minWidth: '17rem',
+                                    padding: '0.5rem',
+                                    marginRight: '-0.5rem',
+                                    marginLeft: '-0.5rem'
+                                })
+                            }}
+                        />
+                    ) : (
+                        <span>{`${entry.hour}:00 - ${entry.hour + 1}:00`}</span>
+                    )}
+                </div>
+                <div className={styles.classProperty}>
+                    <span className={styles.title}>Day:</span>{' '}
+                    {(isEditing || isNewClass) && isAdmin ? (
+                        <Select
+                            options={dayOptions}
+                            defaultValue={
+                                !isNewClass
+                                    ? {
+                                          value: entry.day,
+                                          label: dayOptions[entry.day].label
+                                      }
+                                    : null
+                            }
+                            onChange={(selectedDay) => {
+                                if (selectedDay) {
+                                    setEditedFields({
+                                        ...editedFields,
+                                        day: selectedDay.value
+                                    });
+                                }
+                            }}
+                            placeholder="Select a Day"
                             styles={{
                                 container: (base) => ({
                                     ...base,
@@ -403,310 +692,164 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     ) : (
                         <span>
                             {
-                                courseUnits.find(
-                                    (courseUnit) =>
-                                        courseUnit._id ===
-                                        classEntity?.courseUnit
-                                )?.name
+                                dayOptions[(entry as IGlobalScheduleEntry).day]
+                                    .label
                             }
                         </span>
                     )}
                 </div>
-            )}
-            <div className={styles.classProperty}>
-                <span className={styles.title}>Room:</span>
-                {(isEditing || isNewClass) && isAdmin ? (
-                    <Select
-                        options={roomOptions}
-                        defaultValue={
-                            entry.roomName
-                                ? {
-                                      value: (entry as IGlobalScheduleEntry)
-                                          .roomId,
-                                      label: entry.roomName
-                                  }
-                                : null
-                        }
-                        onChange={(selectedRoom) => {
-                            if (selectedRoom) {
-                                setEditedFields({
-                                    ...editedFields,
-                                    roomId: selectedRoom.value
-                                });
-                            }
-                        }}
-                        placeholder="Select a Room"
-                        styles={{
-                            container: (base) => ({
-                                ...base,
-                                minWidth: '17rem',
-                                padding: '0.5rem',
-                                marginRight: '-0.5rem',
-                                marginLeft: '-0.5rem'
-                            })
-                        }}
-                    />
-                ) : (
-                    <span>{entry.roomName}</span>
-                )}
-            </div>
-            <div className={styles.classProperty}>
-                <span className={styles.title}>Class Type:</span>{' '}
-                {(isEditing || isNewClass) && isAdmin ? (
-                    <Select
-                        options={classTypesOptions}
-                        defaultValue={
-                            entry.classType.length
-                                ? {
-                                      value: entry.classType,
-                                      label: convertRoomTypeToClassType(
-                                          entry.classType
-                                      )
-                                  }
-                                : null
-                        }
-                        onChange={(selectedClassType) => {
-                            if (selectedClassType) {
-                                setEditedFields({
-                                    ...editedFields,
-                                    classType: selectedClassType.value
-                                });
-                            }
-                        }}
-                        placeholder="Select a Class Type"
-                        styles={{
-                            container: (base) => ({
-                                ...base,
-                                minWidth: '17rem',
-                                padding: '0.5rem',
-                                marginRight: '-0.5rem',
-                                marginLeft: '-0.5rem'
-                            })
-                        }}
-                    />
-                ) : (
-                    <span>{convertRoomTypeToClassType(entry.classType)}</span>
-                )}
-            </div>
-            <div className={styles.classProperty}>
-                <span className={styles.title}>Time:</span>{' '}
-                {(isEditing || isNewClass) && isAdmin ? (
-                    <Select
-                        options={timeOptions}
-                        defaultValue={
-                            !isNewClass
-                                ? {
-                                      value: entry.hour,
-                                      label: `${entry.hour}:00 - ${entry.hour + 1}:00`
-                                  }
-                                : null
-                        }
-                        onChange={(selectedTime) => {
-                            if (selectedTime) {
-                                setEditedFields({
-                                    ...editedFields,
-                                    hour: selectedTime.value
-                                });
-                            }
-                        }}
-                        placeholder="Select a Time"
-                        styles={{
-                            container: (base) => ({
-                                ...base,
-                                minWidth: '17rem',
-                                padding: '0.5rem',
-                                marginRight: '-0.5rem',
-                                marginLeft: '-0.5rem'
-                            })
-                        }}
-                    />
-                ) : (
-                    <span>{`${entry.hour}:00 - ${entry.hour + 1}:00`}</span>
-                )}
-            </div>
-            <div className={styles.classProperty}>
-                <span className={styles.title}>Day:</span>{' '}
-                {(isEditing || isNewClass) && isAdmin ? (
-                    <Select
-                        options={dayOptions}
-                        defaultValue={
-                            !isNewClass
-                                ? {
-                                      value: entry.day,
-                                      label: dayOptions[entry.day].label
-                                  }
-                                : null
-                        }
-                        onChange={(selectedDay) => {
-                            if (selectedDay) {
-                                setEditedFields({
-                                    ...editedFields,
-                                    day: selectedDay.value
-                                });
-                            }
-                        }}
-                        placeholder="Select a Day"
-                        styles={{
-                            container: (base) => ({
-                                ...base,
-                                minWidth: '17rem',
-                                padding: '0.5rem',
-                                marginRight: '-0.5rem',
-                                marginLeft: '-0.5rem'
-                            })
-                        }}
-                    />
-                ) : (
-                    <span>
-                        {dayOptions[(entry as IGlobalScheduleEntry).day].label}
-                    </span>
-                )}
-            </div>
-            <div className={styles.classProperty}>
-                <span className={styles.title}>Teacher:</span>{' '}
-                {(isEditing || isNewClass) && isAdmin ? (
-                    <Select
-                        options={teacherOptions}
-                        defaultValue={
-                            entry.instructorName
-                                ? {
-                                      value: (entry as IGlobalScheduleEntry)
-                                          .instructorId,
-                                      label: entry.instructorName
-                                  }
-                                : null
-                        }
-                        onChange={(selectedTeacher) => {
-                            if (selectedTeacher) {
-                                setEditedFields({
-                                    ...editedFields,
-                                    instructorId: selectedTeacher.value
-                                });
-                            }
-                        }}
-                        placeholder="Select a Teacher"
-                        styles={{
-                            container: (base) => ({
-                                ...base,
-                                minWidth: '17rem',
-                                padding: '0.5rem',
-                                marginRight: '-0.5rem',
-                                marginLeft: '-0.5rem'
-                            })
-                        }}
-                    />
-                ) : (
-                    <span>{entry.instructorName}</span>
-                )}
-            </div>
-            <div className={styles.classProperty}>
-                <div className={styles.descriptionActions}>
-                    <span className={styles.title}>Description:</span>
-                    {user?.role === 'teacher' && !isEditing && !isNewClass && (
-                        <Button
-                            type="button"
-                            className="classDetails"
-                            onClick={handleEdit}
-                        >
-                            Edit
-                        </Button>
-                    )}
-                </div>
-                {isEditing ? (
-                    <div className={styles.descriptionEdit}>
-                        <textarea
-                            className={styles.descriptionInput}
-                            value={editedFields.description}
-                            onChange={(e) =>
-                                setEditedFields({
-                                    ...editedFields,
-                                    description: e.target.value
-                                })
-                            }
-                        />
-                        <div className={styles.descriptionEditButtons}>
-                            <Button
-                                type="button"
-                                className="classDetailsCancel"
-                                onClick={
-                                    isNewClass
-                                        ? handleCancelAddClass
-                                        : handleCancel
-                                }
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                type="button"
-                                className="classDetailsSave"
-                                onClick={isNewClass ? handleCreate : handleSave}
-                            >
-                                Save
-                            </Button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className={styles.description}>
-                        {editedFields.description}
-                    </div>
-                )}
-            </div>
-            {user?.role !== 'student' && (
-                <div
-                    className={`${styles.classProperty} ${isEditing && isAdmin ? styles.editingStudents : ''}`}
-                >
-                    <span className={styles.title}>Enrolled Students:</span>{' '}
-                    {isEditing && isAdmin ? (
+                <div className={styles.classProperty}>
+                    <span className={styles.title}>Teacher:</span>{' '}
+                    {(isEditing || isNewClass) && isAdmin ? (
                         <Select
-                            options={studentOptions}
-                            isMulti={true}
+                            options={teacherOptions}
                             defaultValue={
-                                entry.studentIds
-                                    ? students
-                                          .filter((student) =>
-                                              (
-                                                  entry as IGlobalScheduleEntry
-                                              ).studentIds.includes(
-                                                  getIdString(student._id)
-                                              )
-                                          )
-                                          .map((student) => ({
-                                              value: getIdString(student._id),
-                                              label: `${student.firstName} ${student.lastName}`
-                                          }))
+                                entry.instructorName
+                                    ? {
+                                          value: (entry as IGlobalScheduleEntry)
+                                              .instructorId,
+                                          label: entry.instructorName
+                                      }
                                     : null
                             }
-                            onChange={(selectedStudents) => {
-                                setEditedFields({
-                                    ...editedFields,
-                                    studentIds: selectedStudents
-                                        ? selectedStudents.map(
-                                              (student) => student.value
-                                          )
-                                        : []
-                                });
+                            onChange={(selectedTeacher) => {
+                                if (selectedTeacher) {
+                                    setEditedFields({
+                                        ...editedFields,
+                                        instructorId: selectedTeacher.value
+                                    });
+                                }
                             }}
-                            placeholder="Select Student(s)"
+                            placeholder="Select a Teacher"
                             styles={{
                                 container: (base) => ({
                                     ...base,
+                                    minWidth: '17rem',
                                     padding: '0.5rem',
                                     marginRight: '-0.5rem',
                                     marginLeft: '-0.5rem'
                                 })
                             }}
-                            maxMenuHeight={220}
                         />
                     ) : (
-                        <div className={styles.students}>
-                            {users.map(
-                                (user) =>
-                                    `${user.firstName} ${user.lastName} \n`
+                        <span>{entry.instructorName}</span>
+                    )}
+                </div>
+                <div className={styles.classProperty}>
+                    <div className={styles.descriptionActions}>
+                        <span className={styles.title}>Description:</span>
+                        {user?.role === 'teacher' &&
+                            !isEditing &&
+                            !isNewClass && (
+                                <Button
+                                    type="button"
+                                    className="classDetails"
+                                    onClick={handleEdit}
+                                >
+                                    Edit
+                                </Button>
                             )}
+                    </div>
+                    {isEditing ? (
+                        <div className={styles.descriptionEdit}>
+                            <textarea
+                                className={styles.descriptionInput}
+                                value={editedFields.description}
+                                onChange={(e) =>
+                                    setEditedFields({
+                                        ...editedFields,
+                                        description: e.target.value
+                                    })
+                                }
+                            />
+                            <div className={styles.descriptionEditButtons}>
+                                <Button
+                                    type="button"
+                                    className="classDetailsCancel"
+                                    onClick={
+                                        isNewClass
+                                            ? handleCancelAddClass
+                                            : handleCancel
+                                    }
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="button"
+                                    className="classDetailsSave"
+                                    onClick={
+                                        isNewClass ? handleCreate : handleSave
+                                    }
+                                >
+                                    Save
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.description}>
+                            {editedFields.description}
                         </div>
                     )}
                 </div>
-            )}
-        </div>
+                {user?.role !== 'student' && (
+                    <div
+                        className={`${styles.classProperty} ${isEditing && isAdmin ? styles.editingStudents : ''}`}
+                    >
+                        <span className={styles.title}>Enrolled Students:</span>{' '}
+                        {isEditing && isAdmin ? (
+                            <Select
+                                options={studentOptions}
+                                isMulti={true}
+                                defaultValue={
+                                    entry.studentIds
+                                        ? students
+                                              .filter((student) =>
+                                                  (
+                                                      entry as IGlobalScheduleEntry
+                                                  ).studentIds.includes(
+                                                      getIdString(student._id)
+                                                  )
+                                              )
+                                              .map((student) => ({
+                                                  value: getIdString(
+                                                      student._id
+                                                  ),
+                                                  label: `${student.firstName} ${student.lastName}`
+                                              }))
+                                        : null
+                                }
+                                onChange={(selectedStudents) => {
+                                    setEditedFields({
+                                        ...editedFields,
+                                        studentIds: selectedStudents
+                                            ? selectedStudents.map(
+                                                  (student) => student.value
+                                              )
+                                            : []
+                                    });
+                                }}
+                                placeholder="Select Student(s)"
+                                styles={{
+                                    container: (base) => ({
+                                        ...base,
+                                        padding: '0.5rem',
+                                        marginRight: '-0.5rem',
+                                        marginLeft: '-0.5rem'
+                                    })
+                                }}
+                                maxMenuHeight={220}
+                            />
+                        ) : (
+                            <div className={styles.students}>
+                                {users.map(
+                                    (user) =>
+                                        `${user.firstName} ${user.lastName} \n`
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </>
     );
 };

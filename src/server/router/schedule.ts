@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     addGlobalScheduleEntry,
+    checkScheduleConflict,
     deleteGlobalScheduleEntry,
     generateGlobalSchedule,
     getGlobalSchedule,
@@ -43,5 +44,11 @@ export default (router: express.Router) => {
         authenticateToken,
         checkAdmin,
         addGlobalScheduleEntry
+    );
+    router.post(
+        '/check-for-conflicts',
+        authenticateToken,
+        checkAdmin,
+        checkScheduleConflict
     );
 };

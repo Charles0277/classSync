@@ -338,3 +338,31 @@ export const addScheduleEntry = (values: Record<string, any>) => {
             return entry;
         });
 };
+
+export const checkForConflicts = async (newEntry: IGlobalScheduleEntry) => {
+    const existingEntries = await GlobalScheduleModel.aggregate([
+        { $match: { _id: 'GLOBAL_SCHEDULE' } },
+        { $project: { entriesArray: { $objectToArray: '$entries' } } },
+        { $unwind: '$entriesArray' },
+        { $replaceRoot: { newRoot: '$entriesArray.v' } },
+        {
+            $match: {
+                day: newEntry.day,
+                hour: newEntry.hour,
+                classId: { $ne: new mongoose.Types.ObjectId(newEntry.classId) }
+            }
+        }
+    ]);
+
+    return {
+        instructorConflicts: existingEntries.filter((e) =>
+            e.instructorId.equals(newEntry.instructorId)
+        ),
+        roomConflicts: existingEntries.filter((e) =>
+            e.roomId.equals(newEntry.roomId)
+        ),
+        studentConflicts: existingEntries.filter((e) =>
+            e.studentIds.some((id: string) => newEntry.studentIds.includes(id))
+        )
+    };
+};
