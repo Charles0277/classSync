@@ -68,7 +68,7 @@ const Home = () => {
             {userSchedule ? (
                 <Schedule userSchedule={userSchedule} />
             ) : user?.role === 'admin' ? (
-                globalSchedule ? (
+                globalSchedule?.length ? (
                     <Schedule globalSchedule={globalSchedule} />
                 ) : (
                     <GenerateSchedule />

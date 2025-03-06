@@ -101,6 +101,9 @@ const userSlice = createSlice({
         deleteUserFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        resetStudents: (state) => {
+            state.students = [];
         }
     },
     extraReducers(builder) {
@@ -128,7 +131,8 @@ export const {
     updateUserFailure,
     deleteUserRequest,
     deleteUserSuccess,
-    deleteUserFailure
+    deleteUserFailure,
+    resetStudents
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -6,11 +6,11 @@ export interface IGlobalScheduleEntry {
     classType: string[];
     day: number;
     hour: number;
-    instructorId: string;
+    instructorId: Types.ObjectId;
     instructorName: string;
-    roomId: string;
+    roomId: Types.ObjectId;
     roomName: string;
-    classId: string;
+    classId: Types.ObjectId;
     studentIds: string[];
     type: string;
 }

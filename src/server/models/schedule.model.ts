@@ -15,6 +15,7 @@ const globalScheduleEntrySchema = new Schema<IGlobalScheduleEntry>({
 
 const globalScheduleSchema = new Schema<IGlobalSchedule>(
     {
+        _id: { type: String, required: true, default: 'GLOBAL_SCHEDULE' },
         entries: {
             type: Map,
             of: globalScheduleEntrySchema,

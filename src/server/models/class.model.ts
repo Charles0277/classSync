@@ -31,8 +31,7 @@ const classSchema = new Schema<IClass>(
         semester: {
             type: Number,
             min: 0,
-            max: 2,
-            required: true
+            max: 2
         },
         description: {
             type: String

@@ -3,26 +3,25 @@ import mongoose from 'mongoose';
 import { GlobalScheduleModel } from '../models/schedule.model.js';
 
 interface InstructorPopulated {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     firstName: string;
     lastName: string;
 }
 
 interface ClassPopulated {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     name: string;
     classTypes: string;
 }
 
 interface RoomPopulated {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     name: string;
 }
 
 export const fetchGlobalSchedule = async () => {
     const globalSchedule = await GlobalScheduleModel.aggregate([
-        { $sort: { createdAt: -1 } },
-        { $limit: 1 },
+        { $match: { _id: 'GLOBAL_SCHEDULE' } },
         { $match: { entries: { $exists: true } } },
         { $project: { entriesArray: { $objectToArray: '$entries' } } },
         { $unwind: '$entriesArray' },
@@ -108,8 +107,7 @@ export const fetchUserSchedule = async (id: string, role: string) => {
     const isTeacher = role === 'teacher';
 
     const userSchedule = await GlobalScheduleModel.aggregate([
-        { $sort: { createdAt: -1 } },
-        { $limit: 1 },
+        { $match: { _id: 'GLOBAL_SCHEDULE' } },
         { $match: { entries: { $exists: true } } },
         { $project: { entriesArray: { $objectToArray: '$entries' } } },
         { $unwind: '$entriesArray' },
@@ -188,9 +186,15 @@ export const fetchUserSchedule = async (id: string, role: string) => {
 };
 
 export const createSchedule = (values: Record<string, any>) =>
-    new GlobalScheduleModel(values)
-        .save()
-        .then((savedSchedule) => savedSchedule.toObject());
+    GlobalScheduleModel.findOneAndReplace(
+        { _id: 'GLOBAL_SCHEDULE' },
+        { ...values, _id: 'GLOBAL_SCHEDULE' },
+        {
+            upsert: true,
+            new: true,
+            runValidators: true
+        }
+    ).then((result) => result.toObject());
 
 export const updateScheduleEntryById = (
     id: string,
@@ -205,7 +209,11 @@ export const updateScheduleEntryById = (
     return GlobalScheduleModel.findOneAndUpdate(
         { [`entries.${id}`]: { $exists: true } },
         update,
-        { new: true, runValidators: true }
+        {
+            new: true,
+            runValidators: true,
+            projection: { _id: 0, [`entries.${id}`]: 1 }
+        }
     )
         .populate({
             path: `entries.${id}.instructorId`,
@@ -222,35 +230,35 @@ export const updateScheduleEntryById = (
         .lean() // Convert to plain JavaScript object
         .exec()
         .then((doc) => {
-            if (doc && doc.entries[id]) {
-                const entry = doc.entries[id] as IGlobalScheduleEntry;
+            if (!doc) return null;
 
-                // 1. Flatten nested IDs while extracting derived fields
-                if (entry.instructorId) {
-                    const instructor =
-                        entry.instructorId as unknown as InstructorPopulated;
-                    entry.instructorName = `${instructor.firstName} ${instructor.lastName}`;
-                    entry.instructorId = instructor._id.toString();
-                }
+            const entry = doc.entries[id] as IGlobalScheduleEntry | undefined;
+            if (!entry) return null;
 
-                if (entry.roomId) {
-                    const room = entry.roomId as unknown as RoomPopulated;
-                    entry.roomName = room.name;
-                    entry.roomId = room._id.toString();
-                }
-
-                if (entry.classId) {
-                    const classData =
-                        entry.classId as unknown as ClassPopulated;
-                    entry.className = classData.name;
-                    entry.classType =
-                        classData.classTypes as unknown as string[];
-                    entry.classId = classData._id.toString();
-                }
-
-                entry.type = 'global';
+            // Flatten nested IDs and add derived fields
+            if (entry.instructorId) {
+                const instructor =
+                    entry.instructorId as unknown as InstructorPopulated;
+                entry.instructorName = `${instructor.firstName} ${instructor.lastName}`;
+                entry.instructorId = instructor._id;
             }
-            return doc;
+
+            if (entry.roomId) {
+                const room = entry.roomId as unknown as RoomPopulated;
+                entry.roomName = room.name;
+                entry.roomId = room._id;
+            }
+
+            if (entry.classId) {
+                const classData = entry.classId as unknown as ClassPopulated;
+                entry.className = classData.name;
+                entry.classType = classData.classTypes as unknown as string[];
+                entry.classId = classData._id;
+            }
+
+            entry.type = 'global';
+
+            return entry;
         });
 };
 
@@ -262,3 +270,71 @@ export const deleteScheduleEntryById = (id: string) =>
         { [`entries.${id}`]: { $exists: true } },
         { $unset: { [`entries.${id}`]: 1 } }
     );
+
+export const addScheduleEntry = (values: Record<string, any>) => {
+    const classId = values.classId;
+    if (!classId) {
+        return Promise.reject(new Error('classId is required'));
+    }
+
+    return GlobalScheduleModel.findOneAndUpdate(
+        {
+            _id: 'GLOBAL_SCHEDULE',
+            [`entries.${classId}`]: { $exists: false }
+        },
+        { $set: { [`entries.${classId}`]: values } },
+        {
+            new: true,
+            runValidators: true,
+            upsert: true,
+            projection: { _id: 0, [`entries.${classId}`]: 1 }
+        }
+    )
+        .populate({
+            path: `entries.${classId}.instructorId`,
+            select: 'firstName lastName'
+        })
+        .populate({
+            path: `entries.${classId}.roomId`,
+            select: 'name'
+        })
+        .populate({
+            path: `entries.${classId}.classId`,
+            select: 'name classTypes'
+        })
+        .lean()
+        .exec()
+        .then((doc) => {
+            if (!doc) return null;
+
+            const entry = doc.entries[classId] as
+                | IGlobalScheduleEntry
+                | undefined;
+            if (!entry) return null;
+
+            // Convert populated documents to flattened fields
+            if (entry.instructorId) {
+                const instructor =
+                    entry.instructorId as unknown as InstructorPopulated;
+                entry.instructorName = `${instructor.firstName} ${instructor.lastName}`;
+                entry.instructorId = instructor._id;
+            }
+
+            if (entry.roomId) {
+                const room = entry.roomId as unknown as RoomPopulated;
+                entry.roomName = room.name;
+                entry.roomId = room._id;
+            }
+
+            if (entry.classId) {
+                const classData = entry.classId as unknown as ClassPopulated;
+                entry.className = classData.name;
+                entry.classType = classData.classTypes as unknown as string[];
+                entry.classId = classData._id;
+            }
+
+            entry.type = 'global';
+
+            return entry;
+        });
+};

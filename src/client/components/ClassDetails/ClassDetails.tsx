@@ -1,16 +1,23 @@
 import {
+    createClassRequest,
     deleteClassRequest,
     getClassRequest,
     resetClassEntity,
+    resetCreatedClassId,
     updateClassRequest
 } from '@/client/store/slices/classSlice';
+import { fetchAllCourseUnitsRequest } from '@/client/store/slices/courseUnitSlice';
 import {
+    addGlobalScheduleEntryRequest,
+    closePopUp,
     deleteGlobalScheduleEntryRequest,
+    setIsNewClass,
     updateGlobalScheduleEntryRequest
 } from '@/client/store/slices/scheduleSlice';
 import {
     fetchAllTeachersRequest,
-    fetchUsersRequest
+    fetchUsersRequest,
+    resetStudents
 } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import {
@@ -26,42 +33,55 @@ import styles from './ClassDetails.module.css';
 
 interface ClassDetailsProps {
     entry: IUserScheduleEntry | IGlobalScheduleEntry;
+    isNewClass?: boolean;
 }
 
-export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
-    const { classEntity } = useSelector((state: RootState) => state.class);
+export const ClassDetails: React.FC<ClassDetailsProps> = ({
+    entry,
+    isNewClass = false
+}) => {
+    const { classEntity, createdClassId } = useSelector(
+        (state: RootState) => state.class
+    );
     const { token, user } = useSelector((state: RootState) => state.auth);
     const { users, students } = useSelector((state: RootState) => state.user);
     const { rooms } = useSelector((state: RootState) => state.room);
     const { teachers } = useSelector((state: RootState) => state.user);
+    const { courseUnits } = useSelector((state: RootState) => state.courseUnit);
 
     const dispatch = useDispatch();
 
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(isNewClass);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [editedFields, setEditedFields] = useState({
-        className: entry.className,
-        roomId: (entry as IGlobalScheduleEntry).roomId,
-        classType: entry.classType,
-        hour: entry.hour,
-        instructorId: (entry as IGlobalScheduleEntry).instructorId,
-        description: classEntity?.description || 'No description provided.',
-        studentIds: (entry as IGlobalScheduleEntry).studentIds
+        className: isNewClass ? '' : entry.className,
+        courseUnitId: '',
+        roomId: isNewClass ? '' : (entry as IGlobalScheduleEntry).roomId,
+        classType: isNewClass ? null : entry.classType,
+        hour: isNewClass ? 9 : entry.hour,
+        day: isNewClass ? 0 : (entry as IGlobalScheduleEntry).day,
+        instructorId: isNewClass
+            ? ''
+            : (entry as IGlobalScheduleEntry).instructorId,
+        description: isNewClass
+            ? ''
+            : classEntity?.description || 'No description provided.',
+        studentIds: isNewClass
+            ? null
+            : (entry as IGlobalScheduleEntry).studentIds
     });
 
     const isAdmin = user?.role === 'admin';
 
     useEffect(() => {
-        if (token && getIdString(classEntity?._id) !== entry.classId) {
+        if (
+            !isNewClass &&
+            token &&
+            getIdString(classEntity?._id) !== entry.classId
+        ) {
             dispatch(getClassRequest({ token, id: entry.classId }));
         }
-    }, [
-        dispatch,
-        token,
-        entry.classId,
-        classEntity?._id,
-        classEntity?.students
-    ]);
+    }, [isNewClass, dispatch, token, entry.classId, classEntity?._id]);
 
     useEffect(() => {
         if (classEntity?.students?.length) {
@@ -75,6 +95,12 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
     }, [dispatch, token, JSON.stringify(classEntity?.students)]);
 
     useEffect(() => {
+        if (isNewClass && courseUnits.length === 0) {
+            dispatch(fetchAllCourseUnitsRequest());
+        }
+    }, [dispatch, token, isNewClass, courseUnits, isAdmin]);
+
+    useEffect(() => {
         setEditedFields((fields) => ({
             ...fields,
             description: classEntity?.description || 'No description provided.'
@@ -84,6 +110,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
     useEffect(() => {
         return () => {
             dispatch(resetClassEntity());
+            dispatch(resetStudents());
         };
     }, [dispatch]);
 
@@ -93,9 +120,29 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         }
     }, [dispatch, token, teachers, isAdmin]);
 
+    useEffect(() => {
+        if (createdClassId) {
+            dispatch(
+                addGlobalScheduleEntryRequest({
+                    token,
+                    formData: {
+                        classId: createdClassId,
+                        roomId: editedFields.roomId,
+                        day: editedFields.day,
+                        hour: editedFields.hour,
+                        instructorId: editedFields.instructorId,
+                        studentIds: editedFields.studentIds
+                    }
+                })
+            );
+
+            dispatch(resetCreatedClassId());
+        }
+    }, [dispatch, token, createdClassId]);
+
     const teacherOptions = teachers
         ? teachers.map((teacher) => ({
-              value: getIdString(teacher._id),
+              value: teacher._id,
               label: `${teacher.firstName} ${teacher.lastName}`
           }))
         : [];
@@ -109,8 +156,15 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
 
     const roomOptions = rooms
         ? rooms.map((room) => ({
-              value: getIdString(room._id),
+              value: room._id,
               label: room.name
+          }))
+        : [];
+
+    const courseUnitOptions = courseUnits
+        ? courseUnits.map((courseUnit) => ({
+              value: courseUnit._id,
+              label: courseUnit.name
           }))
         : [];
 
@@ -120,6 +174,14 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
         { value: ['workshop'], label: 'Workshop' },
         { value: ['seminar'], label: 'Seminar' },
         { value: ['office'], label: 'Meeting' }
+    ];
+
+    const dayOptions = [
+        { value: 0, label: 'Monday' },
+        { value: 1, label: 'Tuesday' },
+        { value: 2, label: 'Wednesday' },
+        { value: 3, label: 'Thursday' },
+        { value: 4, label: 'Friday' }
     ];
 
     const timeOptions = Array.from({ length: 10 }, (_, index) => {
@@ -170,8 +232,11 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
             if (editedFields.hour !== entry.hour) {
                 changedScheduleFields.hour = editedFields.hour;
             }
+            if (editedFields.day !== (entry as IGlobalScheduleEntry).day) {
+                changedScheduleFields.day = editedFields.day;
+            }
 
-            const sortedEditedStudentIds = [...editedFields.studentIds]
+            const sortedEditedStudentIds = [...editedFields.studentIds!]
                 .sort()
                 .toString();
             const sortedEntryStudentIds = [
@@ -213,19 +278,42 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
     const handleCancel = () => {
         setEditedFields({
             className: entry.className,
-            roomId: entry.roomName,
+            courseUnitId: '',
+            roomId: (entry as IGlobalScheduleEntry).roomId,
             classType: entry.classType,
             hour: entry.hour,
-            instructorId: entry.instructorName,
+            day: (entry as IGlobalScheduleEntry).day,
+            instructorId: (entry as IGlobalScheduleEntry).instructorId,
             description: classEntity?.description || 'No description provided.',
             studentIds: (entry as IGlobalScheduleEntry).studentIds
         });
         setIsEditing(false);
     };
 
+    const handleCreate = () => {
+        dispatch(
+            createClassRequest({
+                token,
+                formData: {
+                    name: editedFields.className,
+                    courseUnit: editedFields.courseUnitId,
+                    instructor: editedFields.instructorId,
+                    classTypes: editedFields.classType,
+                    description: editedFields.description,
+                    students: editedFields.studentIds
+                }
+            })
+        );
+    };
+
+    const handleCancelAddClass = () => {
+        dispatch(closePopUp());
+        dispatch(setIsNewClass(false));
+    };
+
     return (
         <div className={styles.classDetails}>
-            {isAdmin && !isEditing && (
+            {isAdmin && !isEditing && !isNewClass && (
                 <div className={styles.actionButtons}>
                     {!showDeleteConfirm && (
                         <Button
@@ -269,7 +357,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
             )}
             <div className={styles.classProperty}>
                 <span className={styles.title}>Title:</span>
-                {isEditing && isAdmin ? (
+                {(isEditing || isNewClass) && isAdmin ? (
                     <input
                         className={styles.descriptionInput}
                         type="text"
@@ -285,15 +373,60 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                     <span>{entry.className}</span>
                 )}
             </div>
+            {isNewClass && (
+                <div className={styles.classProperty}>
+                    <span className={styles.title}>Course Unit:</span>
+                    {isEditing && isAdmin ? (
+                        <Select
+                            options={courseUnitOptions}
+                            onChange={(selectedCourseUnit) => {
+                                if (selectedCourseUnit) {
+                                    setEditedFields({
+                                        ...editedFields,
+                                        courseUnitId: getIdString(
+                                            selectedCourseUnit.value
+                                        )
+                                    });
+                                }
+                            }}
+                            placeholder="Select a Course Unit"
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    minWidth: '17rem',
+                                    padding: '0.5rem',
+                                    marginRight: '-0.5rem',
+                                    marginLeft: '-0.5rem'
+                                })
+                            }}
+                        />
+                    ) : (
+                        <span>
+                            {
+                                courseUnits.find(
+                                    (courseUnit) =>
+                                        courseUnit._id ===
+                                        classEntity?.courseUnit
+                                )?.name
+                            }
+                        </span>
+                    )}
+                </div>
+            )}
             <div className={styles.classProperty}>
                 <span className={styles.title}>Room:</span>
-                {isEditing && isAdmin ? (
+                {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={roomOptions}
-                        defaultValue={{
-                            value: (entry as IGlobalScheduleEntry).roomId,
-                            label: entry.roomName
-                        }}
+                        defaultValue={
+                            entry.roomName
+                                ? {
+                                      value: (entry as IGlobalScheduleEntry)
+                                          .roomId,
+                                      label: entry.roomName
+                                  }
+                                : null
+                        }
                         onChange={(selectedRoom) => {
                             if (selectedRoom) {
                                 setEditedFields({
@@ -302,7 +435,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                                 });
                             }
                         }}
-                        placeholder="Select Room"
+                        placeholder="Select a Room"
                         styles={{
                             container: (base) => ({
                                 ...base,
@@ -319,13 +452,19 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
             </div>
             <div className={styles.classProperty}>
                 <span className={styles.title}>Class Type:</span>{' '}
-                {isEditing && isAdmin ? (
+                {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={classTypesOptions}
-                        defaultValue={{
-                            value: entry.classType,
-                            label: convertRoomTypeToClassType(entry.classType)
-                        }}
+                        defaultValue={
+                            entry.classType.length
+                                ? {
+                                      value: entry.classType,
+                                      label: convertRoomTypeToClassType(
+                                          entry.classType
+                                      )
+                                  }
+                                : null
+                        }
                         onChange={(selectedClassType) => {
                             if (selectedClassType) {
                                 setEditedFields({
@@ -334,7 +473,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                                 });
                             }
                         }}
-                        placeholder="Select Class Type"
+                        placeholder="Select a Class Type"
                         styles={{
                             container: (base) => ({
                                 ...base,
@@ -351,13 +490,17 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
             </div>
             <div className={styles.classProperty}>
                 <span className={styles.title}>Time:</span>{' '}
-                {isEditing && isAdmin ? (
+                {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={timeOptions}
-                        defaultValue={{
-                            value: entry.hour,
-                            label: `${entry.hour}:00 - ${entry.hour + 1}:00`
-                        }}
+                        defaultValue={
+                            !isNewClass
+                                ? {
+                                      value: entry.hour,
+                                      label: `${entry.hour}:00 - ${entry.hour + 1}:00`
+                                  }
+                                : null
+                        }
                         onChange={(selectedTime) => {
                             if (selectedTime) {
                                 setEditedFields({
@@ -366,7 +509,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                                 });
                             }
                         }}
-                        placeholder="Select Time"
+                        placeholder="Select a Time"
                         styles={{
                             container: (base) => ({
                                 ...base,
@@ -382,14 +525,57 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                 )}
             </div>
             <div className={styles.classProperty}>
+                <span className={styles.title}>Day:</span>{' '}
+                {(isEditing || isNewClass) && isAdmin ? (
+                    <Select
+                        options={dayOptions}
+                        defaultValue={
+                            !isNewClass
+                                ? {
+                                      value: entry.day,
+                                      label: dayOptions[entry.day].label
+                                  }
+                                : null
+                        }
+                        onChange={(selectedDay) => {
+                            if (selectedDay) {
+                                setEditedFields({
+                                    ...editedFields,
+                                    day: selectedDay.value
+                                });
+                            }
+                        }}
+                        placeholder="Select a Day"
+                        styles={{
+                            container: (base) => ({
+                                ...base,
+                                minWidth: '17rem',
+                                padding: '0.5rem',
+                                marginRight: '-0.5rem',
+                                marginLeft: '-0.5rem'
+                            })
+                        }}
+                    />
+                ) : (
+                    <span>
+                        {dayOptions[(entry as IGlobalScheduleEntry).day].label}
+                    </span>
+                )}
+            </div>
+            <div className={styles.classProperty}>
                 <span className={styles.title}>Teacher:</span>{' '}
-                {isEditing && isAdmin ? (
+                {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={teacherOptions}
-                        defaultValue={{
-                            value: (entry as IGlobalScheduleEntry).instructorId,
-                            label: entry.instructorName
-                        }}
+                        defaultValue={
+                            entry.instructorName
+                                ? {
+                                      value: (entry as IGlobalScheduleEntry)
+                                          .instructorId,
+                                      label: entry.instructorName
+                                  }
+                                : null
+                        }
                         onChange={(selectedTeacher) => {
                             if (selectedTeacher) {
                                 setEditedFields({
@@ -398,7 +584,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                                 });
                             }
                         }}
-                        placeholder="Select Teacher"
+                        placeholder="Select a Teacher"
                         styles={{
                             container: (base) => ({
                                 ...base,
@@ -416,7 +602,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
             <div className={styles.classProperty}>
                 <div className={styles.descriptionActions}>
                     <span className={styles.title}>Description:</span>
-                    {user?.role === 'teacher' && !isEditing && (
+                    {user?.role === 'teacher' && !isEditing && !isNewClass && (
                         <Button
                             type="button"
                             className="classDetails"
@@ -442,14 +628,18 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                             <Button
                                 type="button"
                                 className="classDetailsCancel"
-                                onClick={handleCancel}
+                                onClick={
+                                    isNewClass
+                                        ? handleCancelAddClass
+                                        : handleCancel
+                                }
                             >
                                 Cancel
                             </Button>
                             <Button
                                 type="button"
                                 className="classDetailsSave"
-                                onClick={handleSave}
+                                onClick={isNewClass ? handleCreate : handleSave}
                             >
                                 Save
                             </Button>
@@ -470,16 +660,22 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                         <Select
                             options={studentOptions}
                             isMulti={true}
-                            defaultValue={students
-                                .filter((student) =>
-                                    editedFields.studentIds.includes(
-                                        getIdString(student._id)
-                                    )
-                                )
-                                .map((student) => ({
-                                    value: getIdString(student._id),
-                                    label: `${student.firstName} ${student.lastName}`
-                                }))}
+                            defaultValue={
+                                entry.studentIds
+                                    ? students
+                                          .filter((student) =>
+                                              (
+                                                  entry as IGlobalScheduleEntry
+                                              ).studentIds.includes(
+                                                  getIdString(student._id)
+                                              )
+                                          )
+                                          .map((student) => ({
+                                              value: getIdString(student._id),
+                                              label: `${student.firstName} ${student.lastName}`
+                                          }))
+                                    : null
+                            }
                             onChange={(selectedStudents) => {
                                 setEditedFields({
                                     ...editedFields,
@@ -490,7 +686,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({ entry }) => {
                                         : []
                                 });
                             }}
-                            placeholder="Select Students"
+                            placeholder="Select Student(s)"
                             styles={{
                                 container: (base) => ({
                                     ...base,

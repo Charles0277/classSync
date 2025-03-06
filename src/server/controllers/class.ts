@@ -125,26 +125,19 @@ export const createNewClass = async (
     res: express.Response
 ) => {
     try {
-        const { name, courseUnit, instructor, classTypes, students, semester } =
-            req.body;
+        const {
+            name,
+            courseUnit,
+            instructor,
+            classTypes,
+            students,
+            description
+        } = req.body;
 
-        if (
-            !name ||
-            !courseUnit ||
-            !instructor ||
-            !classTypes ||
-            !students ||
-            !semester.toString()
-        ) {
+        if (!name || !courseUnit || !instructor || !classTypes || !students) {
             return res.status(400).send({
-                error: 'Please provide a name, courseUnit, instructor, class type, semester, and at least 1 student'
+                error: 'Please provide a name, courseUnit, instructor, class type, and at least 1 student'
             });
-        }
-
-        const existingClass = await fetchClassByName(name);
-
-        if (existingClass) {
-            return res.status(400).send({ error: 'Class already exists' });
         }
 
         const newClass = await createClass({
@@ -153,7 +146,7 @@ export const createNewClass = async (
             instructor,
             classTypes,
             students,
-            semester
+            description
         });
 
         return res.status(201).send(newClass);

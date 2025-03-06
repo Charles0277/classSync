@@ -85,6 +85,7 @@
     font-size: 18px;
     padding: 5px 7.5px 5px 7.5px;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    border: 1.5px solid var(--gray-600);
 }
 
 .description {

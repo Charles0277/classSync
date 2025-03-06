@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+    addGlobalScheduleEntry,
     deleteGlobalScheduleEntry,
     generateGlobalSchedule,
     getGlobalSchedule,
@@ -36,5 +37,11 @@ export default (router: express.Router) => {
         authenticateToken,
         checkAdmin,
         deleteGlobalScheduleEntry
+    );
+    router.put(
+        '/add-global-schedule-entry',
+        authenticateToken,
+        checkAdmin,
+        addGlobalScheduleEntry
     );
 };

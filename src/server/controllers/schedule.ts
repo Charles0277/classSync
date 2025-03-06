@@ -12,6 +12,7 @@ import { deleteAllClasses, fetchClasses } from '../services/class.services.js';
 import { fetchCourseUnits } from '../services/courseUnit.services.ts';
 import { fetchRooms } from '../services/room.services.js';
 import {
+    addScheduleEntry,
     createSchedule,
     deleteScheduleEntryById,
     fetchGlobalSchedule,
@@ -75,17 +76,7 @@ export const updateGlobalScheduleEntry = async (
             return res.status(400).send({ error: 'Missing id or formData.' });
         }
 
-        const updatedGlobalSchedule = await updateScheduleEntryById(
-            id,
-            formData
-        );
-
-        const entries =
-            updatedGlobalSchedule?.entries instanceof Map
-                ? Object.fromEntries(updatedGlobalSchedule.entries)
-                : updatedGlobalSchedule?.entries;
-
-        const updatedEntry = entries?.[id];
+        const updatedEntry = await updateScheduleEntryById(id, formData);
 
         if (!updatedEntry) {
             return res
@@ -109,6 +100,29 @@ export const deleteGlobalScheduleEntry = async (
         await deleteScheduleEntryById(id);
 
         return res.status(200).send(id);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const addGlobalScheduleEntry = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const formData = req.body;
+
+        if (!formData) {
+            return res.status(400).send({ error: 'Missing formData.' });
+        }
+
+        if (!formData.classId) {
+            return res.status(400).send({ error: 'Missing classId.' });
+        }
+
+        const newEntry = await addScheduleEntry(formData);
+        return res.status(200).send(newEntry);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);

@@ -22,3 +22,9 @@ export const deleteClassApi = (token: string, id: string) => {
         headers: { Authorization: `Bearer ${token}` }
     });
 };
+
+export const createClassApi = (token: string, formData: any) => {
+    return axios.post(`http://localhost:3000/create-class`, formData, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+};

@@ -15,13 +15,15 @@ interface scheduleState {
     generateSemester1Loading?: boolean;
     generateSemester2Loading?: boolean;
     error: string | null;
-    popUpEntry?: IUserScheduleEntry;
+    popUpEntry?: IUserScheduleEntry | IGlobalScheduleEntry;
+    isNewClass?: boolean;
 }
 
 const initialState: scheduleState = {
     loading: false,
     hasLoaded: false,
-    error: null
+    error: null,
+    isNewClass: false
 };
 
 const scheduleSlice = createSlice({
@@ -59,6 +61,9 @@ const scheduleSlice = createSlice({
         },
         closePopUp: (state) => {
             state.popUpEntry = undefined;
+        },
+        setIsNewClass: (state, action) => {
+            state.isNewClass = action.payload;
         },
         generateGlobalScheduleRequest: (state, action) => {
             if (action.payload.semester === 1) {
@@ -102,6 +107,18 @@ const scheduleSlice = createSlice({
         },
         deleteGlobalScheduleEntryFailure: (state, action) => {
             state.error = action.payload;
+        },
+        addGlobalScheduleEntryRequest: (state, action) => {
+            state.error = null;
+        },
+        addGlobalScheduleEntrySuccess: (state, action) => {
+            const newEntry = action.payload;
+            state.globalSchedule = [...(state.globalSchedule || []), newEntry];
+            state.popUpEntry = newEntry;
+            state.isNewClass = false;
+        },
+        addGlobalScheduleEntryFailure: (state, action) => {
+            state.error = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -110,7 +127,8 @@ const scheduleSlice = createSlice({
             if (state.globalSchedule) {
                 const updatedGlobalSchedule = state.globalSchedule.map(
                     (entry) =>
-                        entry.classId === getIdString(updatedClass._id)
+                        getIdString(entry.classId) ===
+                        getIdString(updatedClass._id)
                             ? {
                                   ...entry,
                                   className: updatedClass.name,
@@ -120,7 +138,9 @@ const scheduleSlice = createSlice({
                 );
                 state.globalSchedule = updatedGlobalSchedule;
                 state.popUpEntry = updatedGlobalSchedule.find(
-                    (entry) => entry.classId === getIdString(updatedClass._id)
+                    (entry) =>
+                        getIdString(entry.classId) ===
+                        getIdString(updatedClass._id)
                 );
             }
         });
@@ -144,7 +164,11 @@ export const {
     updateGlobalScheduleEntryFailure,
     deleteGlobalScheduleEntryRequest,
     deleteGlobalScheduleEntrySuccess,
-    deleteGlobalScheduleEntryFailure
+    deleteGlobalScheduleEntryFailure,
+    setIsNewClass,
+    addGlobalScheduleEntryRequest,
+    addGlobalScheduleEntrySuccess,
+    addGlobalScheduleEntryFailure
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

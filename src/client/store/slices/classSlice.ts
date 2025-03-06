@@ -1,10 +1,12 @@
 import { IClass } from '@/common/types/IClass.js';
+import { getIdString } from '@/common/utils';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface classState {
     classEntity?: IClass;
     error?: string | null;
     loading: boolean;
+    createdClassId?: string;
 }
 
 const initialState: classState = { loading: false };
@@ -48,6 +50,22 @@ const classSlice = createSlice({
         deleteClassFailure: (state, action) => {
             state.error = action.payload;
             state.loading = false;
+        },
+        createClassRequest: (state, action) => {
+            state.loading = true;
+        },
+        createClassSuccess: (state, action) => {
+            const newClass = action.payload;
+            state.classEntity = newClass;
+            state.createdClassId = getIdString(newClass._id);
+            state.loading = false;
+        },
+        createClassFailure: (state, action) => {
+            state.error = action.payload;
+            state.loading = false;
+        },
+        resetCreatedClassId: (state) => {
+            state.createdClassId = undefined;
         }
     }
 });
@@ -62,7 +80,11 @@ export const {
     resetClassEntity,
     deleteClassRequest,
     deleteClassSuccess,
-    deleteClassFailure
+    deleteClassFailure,
+    createClassRequest,
+    createClassSuccess,
+    createClassFailure,
+    resetCreatedClassId
 } = classSlice.actions;
 
 export default classSlice.reducer;

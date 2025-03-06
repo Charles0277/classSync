@@ -1,4 +1,5 @@
 import {
+    addGlobalScheduleEntryApi,
     deleteGlobalScheduleEntryApi,
     generateGlobalScheduleApi,
     getGlobalScheduleApi,
@@ -13,6 +14,9 @@ import {
 import { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import {
+    addGlobalScheduleEntryFailure,
+    addGlobalScheduleEntryRequest,
+    addGlobalScheduleEntrySuccess,
     deleteGlobalScheduleEntryFailure,
     deleteGlobalScheduleEntryRequest,
     deleteGlobalScheduleEntrySuccess,
@@ -101,6 +105,20 @@ function* deleteGlobalScheduleEntry(action: any) {
     }
 }
 
+function* addGlobalScheduleEntry(action: any) {
+    const { token, formData } = action.payload;
+    try {
+        const response: AxiosResponse<IGlobalScheduleEntry> = yield call(
+            addGlobalScheduleEntryApi,
+            token,
+            formData
+        );
+        yield put(addGlobalScheduleEntrySuccess(response.data));
+    } catch (error: any) {
+        yield put(addGlobalScheduleEntryFailure(error.message));
+    }
+}
+
 export default function* scheduleSaga() {
     yield takeLatest(getGlobalScheduleRequest.type, getGlobalSchedule);
     yield takeLatest(getUserScheduleRequest.type, getUserSchedule);
@@ -115,5 +133,9 @@ export default function* scheduleSaga() {
     yield takeLatest(
         deleteGlobalScheduleEntryRequest.type,
         deleteGlobalScheduleEntry
+    );
+    yield takeLatest(
+        addGlobalScheduleEntryRequest.type,
+        addGlobalScheduleEntry
     );
 }

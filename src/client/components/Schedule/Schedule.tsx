@@ -1,6 +1,10 @@
 import { getAllHolidaysRequest } from '@/client/store/slices/holidaySlice';
 import { fetchAllRoomsRequest } from '@/client/store/slices/roomSlice';
-import { closePopUp, openPopUp } from '@/client/store/slices/scheduleSlice';
+import {
+    closePopUp,
+    openPopUp,
+    setIsNewClass
+} from '@/client/store/slices/scheduleSlice';
 import { fetchAllStudentsRequest } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import {
@@ -8,7 +12,7 @@ import {
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import settingsIcon from '../../assets/settingsIcon.svg';
@@ -28,7 +32,9 @@ const Schedule: React.FC<ScheduleProps> = ({
     globalSchedule
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { popUpEntry } = useSelector((state: RootState) => state.schedule);
+    const { popUpEntry, isNewClass } = useSelector(
+        (state: RootState) => state.schedule
+    );
     const { rooms, loading } = useSelector((state: RootState) => state.room);
     const { students, studentsLoading } = useSelector(
         (state: RootState) => state.user
@@ -119,7 +125,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                   (entry) =>
                       'roomId' in entry &&
                       entry.studentIds &&
-                      SelectedRooms.includes(entry.roomId as string) &&
+                      SelectedRooms.includes(getIdString(entry.roomId)) &&
                       entry.studentIds.some((studentId) =>
                           selectedStudents.includes(studentId)
                       )
@@ -128,7 +134,7 @@ const Schedule: React.FC<ScheduleProps> = ({
               ? schedule.filter(
                     (entry) =>
                         'roomId' in entry &&
-                        SelectedRooms.includes(entry.roomId as string)
+                        SelectedRooms.includes(getIdString(entry.roomId))
                 )
               : selectedStudents.length > 0
                 ? schedule.filter(
@@ -150,17 +156,40 @@ const Schedule: React.FC<ScheduleProps> = ({
         scheduleMap[key].push(entry);
     });
 
+    const handleAddClass = () => {
+        dispatch(
+            openPopUp({
+                className: '',
+                roomName: '',
+                classType: [],
+                hour: 9,
+                instructorName: '',
+                day: 0,
+                classId: '',
+                studentIds: []
+            })
+        );
+        dispatch(setIsNewClass(true));
+    };
+
     return (
         <>
             {popUpEntry && (
                 <PopUpCard
                     title="Class Details"
-                    onCancel={() => dispatch(closePopUp())}
+                    onCancel={() => {
+                        dispatch(closePopUp());
+                        dispatch(setIsNewClass(false));
+                    }}
                     className={`schedulePopUp ${convertRoomTypeToClassType(
                         popUpEntry.classType
                     )}`}
                 >
-                    <ClassDetails key={popUpEntry.classId} entry={popUpEntry} />
+                    <ClassDetails
+                        key={getIdString(popUpEntry.classId)}
+                        entry={popUpEntry}
+                        isNewClass={isNewClass}
+                    />
                 </PopUpCard>
             )}
             <div
@@ -322,7 +351,9 @@ const Schedule: React.FC<ScheduleProps> = ({
                     </div>
                     {globalSchedule && (
                         <div className={styles.editClasses}>
-                            <Button>Edit Classes</Button>
+                            <Button onClick={handleAddClass}>
+                                Add a Class
+                            </Button>
                         </div>
                     )}
                     <div className={styles.settings}>
