@@ -1,4 +1,5 @@
 import { IGlobalScheduleEntry } from '@/common/types/ISchedule.ts';
+import { getIdString } from '@/common/utils.ts';
 import mongoose from 'mongoose';
 import { GlobalScheduleModel } from '../models/schedule.model.js';
 
@@ -340,19 +341,22 @@ export const addScheduleEntry = (values: Record<string, any>) => {
 };
 
 export const checkForConflicts = async (newEntry: IGlobalScheduleEntry) => {
-    const existingEntries = await GlobalScheduleModel.aggregate([
-        { $match: { _id: 'GLOBAL_SCHEDULE' } },
-        { $project: { entriesArray: { $objectToArray: '$entries' } } },
-        { $unwind: '$entriesArray' },
-        { $replaceRoot: { newRoot: '$entriesArray.v' } },
-        {
-            $match: {
-                day: newEntry.day,
-                hour: newEntry.hour,
-                classId: { $ne: new mongoose.Types.ObjectId(newEntry.classId) }
+    const existingEntries: IGlobalScheduleEntry[] =
+        await GlobalScheduleModel.aggregate([
+            { $match: { _id: 'GLOBAL_SCHEDULE' } },
+            { $project: { entriesArray: { $objectToArray: '$entries' } } },
+            { $unwind: '$entriesArray' },
+            { $replaceRoot: { newRoot: '$entriesArray.v' } },
+            {
+                $match: {
+                    day: newEntry.day,
+                    hour: newEntry.hour,
+                    classId: {
+                        $ne: new mongoose.Types.ObjectId(newEntry.classId)
+                    }
+                }
             }
-        }
-    ]);
+        ]);
 
     return {
         instructorConflicts: existingEntries.filter((e) =>
@@ -362,7 +366,9 @@ export const checkForConflicts = async (newEntry: IGlobalScheduleEntry) => {
             e.roomId.equals(newEntry.roomId)
         ),
         studentConflicts: existingEntries.filter((e) =>
-            e.studentIds.some((id: string) => newEntry.studentIds.includes(id))
+            e.studentIds.some((id) =>
+                newEntry.studentIds.includes(getIdString(id))
+            )
         )
     };
 };
