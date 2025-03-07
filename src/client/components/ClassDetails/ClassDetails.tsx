@@ -241,6 +241,27 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
             changedScheduleFields.day = editedFields.day;
         }
 
+        if (
+            editedFields.instructorId !==
+            (entry as IGlobalScheduleEntry).instructorId
+        ) {
+            changedScheduleFields.instructorId = editedFields.instructorId;
+        }
+        if (editedFields.roomId !== (entry as IGlobalScheduleEntry).roomId) {
+            changedScheduleFields.roomId = editedFields.roomId;
+        }
+        const sortedEditedStudentIds = [...editedFields.studentIds!]
+            .sort()
+            .toString();
+        const sortedEntryStudentIds = [
+            ...(entry as IGlobalScheduleEntry).studentIds
+        ]
+            .sort()
+            .toString();
+        if (sortedEditedStudentIds !== sortedEntryStudentIds) {
+            changedScheduleFields.studentIds = editedFields.studentIds;
+        }
+
         dispatch(
             checkForConflictsRequest({
                 token,
@@ -317,7 +338,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
         setIsEditing(false);
     };
 
-    const handleCancel = () => {
+    const resetEditedFields = () => {
         setEditedFields({
             className: entry.className,
             courseUnitId: '',
@@ -329,7 +350,15 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
             description: classEntity?.description || 'No description provided.',
             studentIds: (entry as IGlobalScheduleEntry).studentIds
         });
-        setIsEditing(false);
+    };
+
+    const handleCancel = (cancelOverride?: boolean) => {
+        resetEditedFields();
+        if (cancelOverride) {
+            setShowConflictConfirm(false);
+        } else {
+            setIsEditing(false);
+        }
     };
 
     const handleCreate = () => {
@@ -435,7 +464,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                         <Button
                             type="button"
                             className="classDetailsCancel"
-                            onClick={() => setShowConflictConfirm(false)}
+                            onClick={() => handleCancel(true)}
                         >
                             Cancel
                         </Button>
@@ -775,7 +804,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                                 onClick={
                                     isNewClass
                                         ? handleCancelAddClass
-                                        : handleCancel
+                                        : () => handleCancel()
                                 }
                             >
                                 Cancel
