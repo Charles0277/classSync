@@ -282,6 +282,17 @@ const Schedule: React.FC<ScheduleProps> = ({
                             className={`${styles.gridCell} ${styles.dayHeader}`}
                         >
                             {day.name} ({formatScheduleDate(day.date)})
+                            <div className={styles.holidayLabelContainer}>
+                                {holidayDates.some(
+                                    (holiday) =>
+                                        day.date >= holiday.from &&
+                                        day.date <= holiday.to
+                                ) && (
+                                    <div className={styles.holidayLabel}>
+                                        Holiday
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     ))}
                     {hours.map((hour) => (
