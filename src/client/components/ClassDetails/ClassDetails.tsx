@@ -353,10 +353,10 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
     };
 
     const handleCancel = (cancelOverride?: boolean) => {
-        resetEditedFields();
         if (cancelOverride) {
             setShowConflictConfirm(false);
         } else {
+            resetEditedFields();
             setIsEditing(false);
         }
     };
@@ -591,15 +591,9 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                 {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={roomOptions}
-                        defaultValue={
-                            entry.roomName
-                                ? {
-                                      value: (entry as IGlobalScheduleEntry)
-                                          .roomId,
-                                      label: entry.roomName
-                                  }
-                                : null
-                        }
+                        value={roomOptions.find(
+                            (option) => option.value === editedFields.roomId
+                        )}
                         onChange={(selectedRoom) => {
                             if (selectedRoom) {
                                 setEditedFields({
@@ -628,16 +622,11 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                 {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={classTypesOptions}
-                        defaultValue={
-                            entry.classType.length
-                                ? {
-                                      value: entry.classType,
-                                      label: convertRoomTypeToClassType(
-                                          entry.classType
-                                      )
-                                  }
-                                : null
-                        }
+                        value={classTypesOptions.find(
+                            (option) =>
+                                JSON.stringify(option.value) ===
+                                JSON.stringify(editedFields.classType)
+                        )}
                         onChange={(selectedClassType) => {
                             if (selectedClassType) {
                                 setEditedFields({
@@ -666,14 +655,9 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                 {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={timeOptions}
-                        defaultValue={
-                            !isNewClass
-                                ? {
-                                      value: entry.hour,
-                                      label: `${entry.hour}:00 - ${entry.hour + 1}:00`
-                                  }
-                                : null
-                        }
+                        value={timeOptions.find(
+                            (option) => option.value === editedFields.hour
+                        )}
                         onChange={(selectedTime) => {
                             if (selectedTime) {
                                 setEditedFields({
@@ -702,14 +686,9 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                 {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={dayOptions}
-                        defaultValue={
-                            !isNewClass
-                                ? {
-                                      value: entry.day,
-                                      label: dayOptions[entry.day].label
-                                  }
-                                : null
-                        }
+                        value={dayOptions.find(
+                            (option) => option.value === editedFields.day
+                        )}
                         onChange={(selectedDay) => {
                             if (selectedDay) {
                                 setEditedFields({
@@ -740,15 +719,10 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                 {(isEditing || isNewClass) && isAdmin ? (
                     <Select
                         options={teacherOptions}
-                        defaultValue={
-                            entry.instructorName
-                                ? {
-                                      value: (entry as IGlobalScheduleEntry)
-                                          .instructorId,
-                                      label: entry.instructorName
-                                  }
-                                : null
-                        }
+                        value={teacherOptions.find(
+                            (option) =>
+                                option.value === editedFields.instructorId
+                        )}
                         onChange={(selectedTeacher) => {
                             if (selectedTeacher) {
                                 setEditedFields({
@@ -831,32 +805,17 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     <span className={styles.title}>Enrolled Students:</span>{' '}
                     {isEditing && isAdmin ? (
                         <Select
+                            isMulti
                             options={studentOptions}
-                            isMulti={true}
-                            defaultValue={
-                                entry.studentIds
-                                    ? students
-                                          .filter((student) =>
-                                              (
-                                                  entry as IGlobalScheduleEntry
-                                              ).studentIds.includes(
-                                                  getIdString(student._id)
-                                              )
-                                          )
-                                          .map((student) => ({
-                                              value: getIdString(student._id),
-                                              label: `${student.firstName} ${student.lastName}`
-                                          }))
-                                    : null
-                            }
+                            value={studentOptions.filter((option) =>
+                                editedFields.studentIds?.includes(option.value)
+                            )}
                             onChange={(selectedStudents) => {
                                 setEditedFields({
                                     ...editedFields,
-                                    studentIds: selectedStudents
-                                        ? selectedStudents.map(
-                                              (student) => student.value
-                                          )
-                                        : []
+                                    studentIds: selectedStudents.map(
+                                        (student) => student.value
+                                    )
                                 });
                             }}
                             placeholder="Select Student(s)"
