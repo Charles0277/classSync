@@ -26,7 +26,7 @@ import {
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import Button from '../Button/Button';
@@ -78,6 +78,58 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
     const [pendingSave, setPendingSave] = useState(false);
 
     const isAdmin = user?.role === 'admin';
+
+    const hasChanges = useMemo(() => {
+        if (isNewClass) {
+            return (
+                editedFields.className.trim() !== '' &&
+                editedFields.courseUnitId !== '' &&
+                editedFields.roomId !== '' &&
+                editedFields.classType !== null &&
+                editedFields.instructorId !== '' &&
+                editedFields.studentIds !== null &&
+                editedFields.studentIds.length > 0
+            );
+        } else {
+            const originalEntry = entry as IGlobalScheduleEntry;
+            const originalDescription =
+                classEntity?.description || 'No description provided.';
+            const originalStudentIds = originalEntry.studentIds;
+
+            const classNameChanged =
+                editedFields.className !== originalEntry.className;
+            const roomIdChanged = editedFields.roomId !== originalEntry.roomId;
+            const classTypeChanged =
+                JSON.stringify(editedFields.classType) !==
+                JSON.stringify(originalEntry.classType);
+            const hourChanged = editedFields.hour !== originalEntry.hour;
+            const dayChanged = editedFields.day !== originalEntry.day;
+            const instructorIdChanged =
+                editedFields.instructorId !== originalEntry.instructorId;
+            const descriptionChanged =
+                editedFields.description !== originalDescription;
+
+            const sortedEditedStudentIds = [...(editedFields.studentIds || [])]
+                .sort()
+                .toString();
+            const sortedOriginalStudentIds = [...(originalStudentIds || [])]
+                .sort()
+                .toString();
+            const studentIdsChanged =
+                sortedEditedStudentIds !== sortedOriginalStudentIds;
+
+            return (
+                classNameChanged ||
+                roomIdChanged ||
+                classTypeChanged ||
+                hourChanged ||
+                dayChanged ||
+                instructorIdChanged ||
+                descriptionChanged ||
+                studentIdsChanged
+            );
+        }
+    }, [editedFields, entry, isNewClass]);
 
     useEffect(() => {
         if (
@@ -396,7 +448,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     {conflicts && conflicts.instructorConflicts.length > 0 && (
                         <div className={styles.conflictCategory}>
                             <div className={styles.conflictCategoryTitle}>
-                                Instructor Conflicts
+                                Instructor Conflicts With:
                             </div>
                             {conflicts.instructorConflicts.map((conflict) => (
                                 <div
@@ -417,7 +469,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     {conflicts && conflicts.roomConflicts.length > 0 && (
                         <div className={styles.conflictCategory}>
                             <div className={styles.conflictCategoryTitle}>
-                                Room Conflicts
+                                Room Conflicts With:
                             </div>
                             {conflicts.roomConflicts.map((conflict) => (
                                 <div
@@ -438,7 +490,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     {conflicts && conflicts.studentConflicts.length > 0 && (
                         <div className={styles.conflictCategory}>
                             <div className={styles.conflictCategoryTitle}>
-                                Student Conflicts
+                                Student Conflicts With:
                             </div>
                             {conflicts.studentConflicts.map((conflict) => (
                                 <div
@@ -787,6 +839,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                                 type="button"
                                 className="classDetailsSave"
                                 onClick={isNewClass ? handleCreate : handleSave}
+                                disabled={!hasChanges}
                             >
                                 Save
                             </Button>
