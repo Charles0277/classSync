@@ -841,7 +841,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                                 onClick={isNewClass ? handleCreate : handleSave}
                                 disabled={!hasChanges}
                             >
-                                Save
+                                {isNewClass ? 'Add' : 'Save'}
                             </Button>
                         </div>
                     </div>

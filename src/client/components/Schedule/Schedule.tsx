@@ -193,7 +193,7 @@ const Schedule: React.FC<ScheduleProps> = ({
         <>
             {popUpEntry && (
                 <PopUpCard
-                    title="Class Details"
+                    title={isNewClass ? 'Add a Class' : 'Class Details'}
                     onCancel={() => {
                         dispatch(closePopUp());
                         dispatch(setIsNewClass(false));
