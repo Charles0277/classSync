@@ -211,10 +211,12 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
         ) {
             setShowConflictConfirm(true);
             setPendingSave(false);
-        } else if (pendingSave) {
-            proceedWithSave();
+        } else if (pendingSave && !isNewClass) {
+            handleSave();
+        } else if (pendingSave && isNewClass) {
+            handleCreate();
         }
-    }, [conflicts, pendingSave, checkingConflicts]);
+    }, [conflicts, pendingSave, checkingConflicts, isNewClass]);
 
     const teacherOptions = teachers
         ? teachers.map((teacher) => ({
@@ -281,9 +283,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
         setShowDeleteConfirm(false);
     };
 
-    const handleSave = () => {
-        if (!classEntity?._id) return;
-
+    const handleConflictCheck = () => {
         const changedScheduleFields: Record<string, any> = {};
 
         if (editedFields.hour !== entry.hour) {
@@ -324,7 +324,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
         setPendingSave(true);
     };
 
-    const proceedWithSave = () => {
+    const handleSave = () => {
         if (!classEntity?._id) return;
         const changedClassFields: Record<string, any> = {};
         const changedScheduleFields: Record<string, any> = {};
@@ -448,7 +448,9 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     {conflicts && conflicts.instructorConflicts.length > 0 && (
                         <div className={styles.conflictCategory}>
                             <div className={styles.conflictCategoryTitle}>
-                                Instructor Conflicts With:
+                                {conflicts.instructorConflicts.length > 1
+                                    ? 'Instructor Conflicts with Classes:'
+                                    : 'Instructor Conflict with Class:'}
                             </div>
                             {conflicts.instructorConflicts.map((conflict) => (
                                 <div
@@ -469,7 +471,9 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     {conflicts && conflicts.roomConflicts.length > 0 && (
                         <div className={styles.conflictCategory}>
                             <div className={styles.conflictCategoryTitle}>
-                                Room Conflicts With:
+                                {conflicts.roomConflicts.length > 1
+                                    ? 'Room Conflicts with Classes:'
+                                    : 'Room Conflict with Class:'}
                             </div>
                             {conflicts.roomConflicts.map((conflict) => (
                                 <div
@@ -490,7 +494,9 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     {conflicts && conflicts.studentConflicts.length > 0 && (
                         <div className={styles.conflictCategory}>
                             <div className={styles.conflictCategoryTitle}>
-                                Student Conflicts With:
+                                {conflicts.studentConflicts.length > 1
+                                    ? 'Student Conflicts with Classes:'
+                                    : 'Student Conflict with Class:'}
                             </div>
                             {conflicts.studentConflicts.map((conflict) => (
                                 <div
@@ -525,7 +531,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                             className="classDetailsSave"
                             onClick={() => {
                                 setShowConflictConfirm(false);
-                                proceedWithSave();
+                                isNewClass ? handleCreate() : handleSave();
                             }}
                         >
                             Proceed
@@ -604,6 +610,11 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                     {isEditing && isAdmin ? (
                         <Select
                             options={courseUnitOptions}
+                            value={courseUnitOptions.find(
+                                (option) =>
+                                    getIdString(option.value) ===
+                                    editedFields.courseUnitId
+                            )}
                             onChange={(selectedCourseUnit) => {
                                 if (selectedCourseUnit) {
                                     setEditedFields({
@@ -838,7 +849,7 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
                             <Button
                                 type="button"
                                 className="classDetailsSave"
-                                onClick={isNewClass ? handleCreate : handleSave}
+                                onClick={handleConflictCheck}
                                 disabled={!hasChanges}
                             >
                                 {isNewClass ? 'Add' : 'Save'}

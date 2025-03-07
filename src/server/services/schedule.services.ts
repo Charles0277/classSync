@@ -351,9 +351,11 @@ export const checkForConflicts = async (newEntry: IGlobalScheduleEntry) => {
                 $match: {
                     day: newEntry.day,
                     hour: newEntry.hour,
-                    classId: {
-                        $ne: new mongoose.Types.ObjectId(newEntry.classId)
-                    }
+                    ...(newEntry.classId && {
+                        classId: {
+                            $ne: new mongoose.Types.ObjectId(newEntry.classId)
+                        }
+                    })
                 }
             }
         ]);
