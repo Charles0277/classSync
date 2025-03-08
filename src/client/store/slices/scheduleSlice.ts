@@ -174,10 +174,7 @@ const scheduleSlice = createSlice({
                               }
                             : entry
                 );
-                if (
-                    updatedClass.name !== state.popUpEntry?.className ||
-                    updatedClass.classTypes !== state.popUpEntry?.classType
-                ) {
+                if (updatedClass.name !== state.popUpEntry?.className) {
                     state.isScheduleEntryUpdated = true;
                 }
                 state.globalSchedule = updatedGlobalSchedule;
