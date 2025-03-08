@@ -1,13 +1,15 @@
+import { resetUserUpdated } from '@/client/store/slices/userSlice';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import classSyncLogo from '../../assets/classSyncLogo.svg';
 import feedbackIcon from '../../assets/feedbackIcon.svg';
 import homeIcon from '../../assets/homeIcon.svg';
 import profileIcon from '../../assets/profileIcon.svg';
 import settingsIcon from '../../assets/settingsIcon.svg';
-import { logOut } from '../../store/slices/authSlice';
 import { RESET_STATE } from '../../store/rootReducer';
+import { logOut } from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
 import Button from '../Button/Button';
 import AddEditUserCard from '../ManageUsers/AddEditUserCard/AddEditUserCard';
@@ -15,6 +17,9 @@ import styles from './Sidebar.module.css';
 
 const Sidebar: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
+    const { isUserUpdated, error } = useSelector(
+        (state: RootState) => state.user
+    );
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
@@ -52,6 +57,16 @@ const Sidebar: React.FC = () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [isPopupVisible]);
+
+    useEffect(() => {
+        if (isUserUpdated) {
+            toast.success('Profile successfully updated! 🎉');
+            dispatch(resetUserUpdated());
+        }
+        if (error) {
+            toast.error(`Profile update failed: ${error}`);
+        }
+    }, [error, isUserUpdated, dispatch]);
 
     const handleProfileClick = () => {
         setIsPopupVisible((prev) => !prev);

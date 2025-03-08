@@ -1,6 +1,7 @@
 import { LogInForm } from '@/client/components/Forms/LogInForm/LogInForm';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import Button from '../../components/Button/Button';
 import SignUpForm from '../../components/Forms/SignupForm/SignUpForm';
 import {
@@ -46,11 +47,29 @@ const BUTTONS: ButtonConfig[] = [
 ] as const;
 
 const RightColumn: React.FC = () => {
-    const [formData, setFormData] = useState<SignUpFormData>(INITIAL_FORM_DATA);
+    const {
+        user,
+        token,
+        isAuthenticated,
+        loggingIn,
+        signingUp,
+        mode,
+        createdUser,
+        error
+    } = useSelector((state: RootState) => state.auth);
+
     const dispatch = useDispatch();
 
-    const { user, token, isAuthenticated, loggingIn, signingUp, mode } =
-        useSelector((state: RootState) => state.auth);
+    const [formData, setFormData] = useState<SignUpFormData>(INITIAL_FORM_DATA);
+
+    useEffect(() => {
+        if (createdUser) {
+            toast.success('Signup successful! Welcome aboard 🎉');
+        }
+        if (error) {
+            toast.error(`Signup failed: ${error}`);
+        }
+    }, [createdUser, error]);
 
     useEffect(() => {
         if (user && token && isAuthenticated) {

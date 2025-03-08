@@ -10,6 +10,8 @@ interface UserState {
     students: IUser[];
     teachers: IUser[];
     studentsLoading?: boolean;
+    isUserUpdated: boolean;
+    isUserDeleted: boolean;
 }
 
 const initialState: UserState = {
@@ -17,7 +19,9 @@ const initialState: UserState = {
     students: [],
     teachers: [],
     loading: false,
-    error: null
+    error: null,
+    isUserUpdated: false,
+    isUserDeleted: false
 };
 
 const userSlice = createSlice({
@@ -82,6 +86,7 @@ const userSlice = createSlice({
                 user._id === updatedUser._id ? updatedUser : user
             );
             state.loading = false;
+            state.isUserUpdated = true;
         },
         updateUserFailure: (state, action) => {
             state.loading = false;
@@ -97,6 +102,7 @@ const userSlice = createSlice({
             state.users = state.users.filter(
                 (user) => user._id !== deletedUserId
             );
+            state.isUserDeleted = true;
         },
         deleteUserFailure: (state, action) => {
             state.loading = false;
@@ -104,6 +110,12 @@ const userSlice = createSlice({
         },
         resetStudents: (state) => {
             state.students = [];
+        },
+        resetUserUpdated: (state) => {
+            state.isUserUpdated = false;
+        },
+        resetUserDeleted: (state) => {
+            state.isUserDeleted = false;
         }
     },
     extraReducers(builder) {
@@ -132,7 +144,9 @@ export const {
     deleteUserRequest,
     deleteUserSuccess,
     deleteUserFailure,
-    resetStudents
+    resetStudents,
+    resetUserUpdated,
+    resetUserDeleted
 } = userSlice.actions;
 
 export default userSlice.reducer;
