@@ -6,9 +6,18 @@ interface feedbackState {
     feedBackCollection: IFeedback[];
     error?: string | null;
     loading: boolean;
+    isFeedbackSubmitted: boolean;
+    isFeedbackUpdated: boolean;
+    isFeedbackDeleted: boolean;
 }
 
-const initialState: feedbackState = { loading: false, feedBackCollection: [] };
+const initialState: feedbackState = {
+    loading: false,
+    feedBackCollection: [],
+    isFeedbackSubmitted: false,
+    isFeedbackUpdated: false,
+    isFeedbackDeleted: false
+};
 
 const feedbackSlice = createSlice({
     name: 'feedback',
@@ -48,6 +57,7 @@ const feedbackSlice = createSlice({
                         : feedback
             );
             state.loading = false;
+            state.isFeedbackUpdated = true;
         },
         updateFeedbackFailure: (state, action) => {
             state.error = action.payload;
@@ -65,6 +75,7 @@ const feedbackSlice = createSlice({
                 ...state.feedBackCollection
             ];
             state.loading = false;
+            state.isFeedbackSubmitted = true;
         },
         createFeedbackFailure: (state, action) => {
             state.loading = false;
@@ -81,10 +92,20 @@ const feedbackSlice = createSlice({
                 (feedback) => feedback._id !== deletedFeedbackId
             );
             state.loading = false;
+            state.isFeedbackDeleted = true;
         },
         deleteFeedbackFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        resetFeedbackSubmitted: (state) => {
+            state.isFeedbackSubmitted = false;
+        },
+        resetFeedbackUpdated: (state) => {
+            state.isFeedbackUpdated = false;
+        },
+        resetFeedbackDeleted: (state) => {
+            state.isFeedbackDeleted = false;
         }
     }
 });
@@ -104,7 +125,10 @@ export const {
     createFeedbackFailure,
     deleteFeedbackRequest,
     deleteFeedbackSuccess,
-    deleteFeedbackFailure
+    deleteFeedbackFailure,
+    resetFeedbackSubmitted,
+    resetFeedbackUpdated,
+    resetFeedbackDeleted
 } = feedbackSlice.actions;
 
 export default feedbackSlice.reducer;

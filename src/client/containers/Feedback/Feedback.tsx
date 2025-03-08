@@ -5,13 +5,17 @@ import { PopUpCard } from '@/client/components/ManageConfigCard/PopUpCard';
 import {
     deleteFeedbackRequest,
     getAllFeedbackRequest,
-    getUserFeedbackRequest
+    getUserFeedbackRequest,
+    resetFeedbackDeleted,
+    resetFeedbackSubmitted,
+    resetFeedbackUpdated
 } from '@/client/store/slices/feedbackSlice';
 import { RootState } from '@/client/store/store';
 import { IFeedback } from '@/common/types/IFeedback';
 import { capitaliseFirstLetter, getIdString } from '@/common/utils';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import addIcon from '../../assets/addIcon.svg';
 import editIcon from '../../assets/editIcon.svg';
 import trashIcon from '../../assets/trashIcon.svg';
@@ -20,9 +24,14 @@ import styles from './Feedback.module.css';
 export const Feedback = () => {
     const dispatch = useDispatch();
     const { user, token } = useSelector((state: RootState) => state.auth);
-    const { feedBackCollection, loading } = useSelector(
-        (state: RootState) => state.feedback
-    );
+    const {
+        feedBackCollection,
+        loading,
+        error,
+        isFeedbackSubmitted,
+        isFeedbackUpdated,
+        isFeedbackDeleted
+    } = useSelector((state: RootState) => state.feedback);
 
     const [openPopUp, setOpenPopUp] = useState(false);
     const [editFeedback, setEditFeedback] = useState(false);
@@ -45,6 +54,32 @@ export const Feedback = () => {
             ? 'Edit Feedback'
             : 'View Feedback'
         : 'Submit Feedback';
+
+    useEffect(() => {
+        if (isFeedbackSubmitted) {
+            toast.success('Feedback submitted successfully! 🎉');
+            dispatch(resetFeedbackSubmitted());
+        }
+        if (isFeedbackUpdated) {
+            toast.success('Feedback updated successfully! 🎉');
+            dispatch(resetFeedbackUpdated());
+        }
+        if (isFeedbackDeleted) {
+            toast.success('Feedback deleted successfully! 🎉');
+            dispatch(resetFeedbackDeleted());
+        }
+        if (error) {
+            toast.error(
+                `Feedback ${editFeedback ? 'update' : 'submission'} failed: ${error}`
+            );
+        }
+    }, [
+        isFeedbackSubmitted,
+        isFeedbackUpdated,
+        isFeedbackDeleted,
+        error,
+        editFeedback
+    ]);
 
     useEffect(() => {
         if (token && feedBackCollection?.length === 0) {
