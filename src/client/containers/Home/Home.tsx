@@ -65,7 +65,7 @@ const Home = () => {
 
     return (
         <PageContainer>
-            {userSchedule ? (
+            {userSchedule?.length ? (
                 <Schedule userSchedule={userSchedule} />
             ) : user?.role === 'admin' ? (
                 globalSchedule?.length ? (
