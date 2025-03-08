@@ -1,10 +1,13 @@
+import { resetCreatedUser } from '@/client/store/slices/authSlice.js';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import { IUser } from '../../../common/types/IUser';
 import addIcon from '../../assets/addIcon.svg';
 import {
     deleteUserRequest,
-    fetchAllUsersRequest
+    fetchAllUsersRequest,
+    resetUserDeleted
 } from '../../store/slices/userSlice';
 import { RootState } from '../../store/store.js';
 import Button from '../Button/Button';
@@ -17,7 +20,12 @@ interface ManageUsersProps {
 
 const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { allUsers, loading } = useSelector((state: RootState) => state.user);
+    const { allUsers, loading, isUserDeleted, error } = useSelector(
+        (state: RootState) => state.user
+    );
+    const { createdUser, error: createdUserError } = useSelector(
+        (state: RootState) => state.auth
+    );
 
     const [filter, setFilter] = useState<'all' | 'student' | 'teacher'>('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -29,6 +37,26 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
             dispatch(fetchAllUsersRequest({ token }));
         }
     }, [token, allUsers, dispatch]);
+
+    useEffect(() => {
+        if (isUserDeleted) {
+            toast.success('User deleted successfully! 🎉');
+            dispatch(resetUserDeleted());
+        }
+        if (error) {
+            toast.error(`User deletion failed: ${error}`);
+        }
+    }, [isUserDeleted, error]);
+
+    useEffect(() => {
+        if (createdUser) {
+            toast.success('User created successfully! 🎉');
+            dispatch(resetCreatedUser());
+        }
+        if (createdUserError) {
+            toast.error(`User creation failed: ${createdUserError}`);
+        }
+    }, [createdUser, createdUserError]);
 
     const handleFilterChange = (newFilter: 'all' | 'student' | 'teacher') => {
         setFilter(newFilter);

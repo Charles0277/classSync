@@ -76,6 +76,9 @@ const authSlice = createSlice({
         },
         setMode: (state, action) => {
             state.mode = action.payload;
+        },
+        resetCreatedUser: (state) => {
+            state.createdUser = undefined;
         }
     },
     extraReducers(builder) {
@@ -99,7 +102,8 @@ export const {
     checkAuthenticationRequest,
     checkAuthenticationSuccess,
     checkAuthenticationFailure,
-    setMode
+    setMode,
+    resetCreatedUser
 } = authSlice.actions;
 
 export default authSlice.reducer;
