@@ -4,6 +4,7 @@ import { signUpSuccess } from './authSlice';
 
 interface UserState {
     users: IUser[];
+    allUsers: IUser[];
     user?: IUser;
     loading: boolean;
     error: string | null;
@@ -16,6 +17,7 @@ interface UserState {
 
 const initialState: UserState = {
     users: [],
+    allUsers: [],
     students: [],
     teachers: [],
     loading: false,
@@ -34,7 +36,7 @@ const userSlice = createSlice({
         },
         fetchAllUsersSuccess: (state, action) => {
             state.loading = false;
-            state.users = action.payload;
+            state.allUsers = action.payload;
         },
         fetchAllUsersFailure: (state, action) => {
             state.loading = false;
@@ -82,7 +84,7 @@ const userSlice = createSlice({
         },
         updateUserSuccess: (state, action) => {
             const updatedUser = action.payload;
-            state.users = state.users.map((user) =>
+            state.allUsers = state.allUsers.map((user) =>
                 user._id === updatedUser._id ? updatedUser : user
             );
             state.loading = false;
@@ -99,7 +101,7 @@ const userSlice = createSlice({
         deleteUserSuccess: (state, action) => {
             state.loading = false;
             const deletedUserId = action.payload._id;
-            state.users = state.users.filter(
+            state.allUsers = state.allUsers.filter(
                 (user) => user._id !== deletedUserId
             );
             state.isUserDeleted = true;
@@ -120,7 +122,7 @@ const userSlice = createSlice({
     },
     extraReducers(builder) {
         builder.addCase(signUpSuccess, (state, action) => {
-            state.users.push(action.payload);
+            state.allUsers.push(action.payload);
         });
     }
 });

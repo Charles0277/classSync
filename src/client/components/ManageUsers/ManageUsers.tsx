@@ -17,7 +17,7 @@ interface ManageUsersProps {
 
 const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { users, loading } = useSelector((state: RootState) => state.user);
+    const { allUsers, loading } = useSelector((state: RootState) => state.user);
 
     const [filter, setFilter] = useState<'all' | 'student' | 'teacher'>('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -25,10 +25,10 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (token && (!users || users.length === 0)) {
+        if (token && allUsers.length === 0) {
             dispatch(fetchAllUsersRequest({ token }));
         }
-    }, [token, users, dispatch]);
+    }, [token, allUsers, dispatch]);
 
     const handleFilterChange = (newFilter: 'all' | 'student' | 'teacher') => {
         setFilter(newFilter);
@@ -45,7 +45,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
         }
     };
 
-    const filteredUsers = users?.filter((user) => {
+    const filteredUsers = allUsers?.filter((user) => {
         const matchesFilter = filter === 'all' || user.role === filter;
         const matchesSearch =
             user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,7 +99,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
                         <div
                             key={user.email}
                             className={`${styles.userContainer} ${
-                                index === users.length - 1
+                                index === allUsers.length - 1
                                     ? styles.lastUser
                                     : ''
                             }`}
