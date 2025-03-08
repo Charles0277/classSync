@@ -213,8 +213,10 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
             setPendingSave(false);
         } else if (pendingSave && !isNewClass) {
             handleSave();
+            setPendingSave(false);
         } else if (pendingSave && isNewClass) {
             handleCreate();
+            setPendingSave(false);
         }
     }, [conflicts, pendingSave, checkingConflicts, isNewClass]);
 
@@ -314,12 +316,14 @@ export const ClassDetails: React.FC<ClassDetailsProps> = ({
             changedScheduleFields.studentIds = editedFields.studentIds;
         }
 
-        dispatch(
-            checkForConflictsRequest({
-                token,
-                formData: { ...entry, ...changedScheduleFields }
-            })
-        );
+        if (Object.keys(changedScheduleFields).length > 0) {
+            dispatch(
+                checkForConflictsRequest({
+                    token,
+                    formData: { ...entry, ...changedScheduleFields }
+                })
+            );
+        }
 
         setPendingSave(true);
     };

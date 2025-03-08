@@ -23,6 +23,9 @@ interface scheduleState {
         studentConflicts: IGlobalScheduleEntry[];
     };
     checkingConflicts: boolean;
+    isScheduleEntryUpdated: boolean;
+    isScheduleEntryDeleted: boolean;
+    isScheduleEntryAdded: boolean;
 }
 
 const initialState: scheduleState = {
@@ -30,7 +33,10 @@ const initialState: scheduleState = {
     hasLoaded: false,
     error: null,
     isNewClass: false,
-    checkingConflicts: false
+    checkingConflicts: false,
+    isScheduleEntryUpdated: false,
+    isScheduleEntryDeleted: false,
+    isScheduleEntryAdded: false
 };
 
 const scheduleSlice = createSlice({
@@ -98,6 +104,7 @@ const scheduleSlice = createSlice({
             state.globalSchedule = state.globalSchedule?.map((entry) =>
                 entry._id === updatedEntry._id ? updatedEntry : entry
             );
+            state.isScheduleEntryUpdated = true;
         },
         updateGlobalScheduleEntryFailure: (state, action) => {
             state.error = action.payload;
@@ -111,6 +118,7 @@ const scheduleSlice = createSlice({
             state.globalSchedule = state.globalSchedule?.filter(
                 (entry) => entry.classId !== deletedEntryId
             );
+            state.isScheduleEntryDeleted = true;
         },
         deleteGlobalScheduleEntryFailure: (state, action) => {
             state.error = action.payload;
@@ -123,6 +131,7 @@ const scheduleSlice = createSlice({
             state.globalSchedule = [...(state.globalSchedule || []), newEntry];
             state.popUpEntry = newEntry;
             state.isNewClass = false;
+            state.isScheduleEntryAdded = true;
         },
         addGlobalScheduleEntryFailure: (state, action) => {
             state.error = action.payload;
@@ -139,6 +148,15 @@ const scheduleSlice = createSlice({
         checkForConflictsFailure: (state, action) => {
             state.error = action.payload;
             state.checkingConflicts = false;
+        },
+        resetScheduleEntryUpdated: (state) => {
+            state.isScheduleEntryUpdated = false;
+        },
+        resetScheduleEntryDeleted: (state) => {
+            state.isScheduleEntryDeleted = false;
+        },
+        resetScheduleEntryAdded: (state) => {
+            state.isScheduleEntryAdded = false;
         }
     },
     extraReducers: (builder) => {
@@ -156,6 +174,12 @@ const scheduleSlice = createSlice({
                               }
                             : entry
                 );
+                if (
+                    updatedClass.name !== state.popUpEntry?.className ||
+                    updatedClass.classTypes !== state.popUpEntry?.classType
+                ) {
+                    state.isScheduleEntryUpdated = true;
+                }
                 state.globalSchedule = updatedGlobalSchedule;
                 state.popUpEntry = updatedGlobalSchedule.find(
                     (entry) =>
@@ -191,7 +215,10 @@ export const {
     addGlobalScheduleEntryFailure,
     checkForConflictsRequest,
     checkForConflictsSuccess,
-    checkForConflictsFailure
+    checkForConflictsFailure,
+    resetScheduleEntryUpdated,
+    resetScheduleEntryDeleted,
+    resetScheduleEntryAdded
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

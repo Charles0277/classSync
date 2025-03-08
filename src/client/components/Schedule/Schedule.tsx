@@ -3,6 +3,9 @@ import { fetchAllRoomsRequest } from '@/client/store/slices/roomSlice';
 import {
     closePopUp,
     openPopUp,
+    resetScheduleEntryAdded,
+    resetScheduleEntryDeleted,
+    resetScheduleEntryUpdated,
     setIsNewClass
 } from '@/client/store/slices/scheduleSlice';
 import { fetchAllStudentsRequest } from '@/client/store/slices/userSlice';
@@ -21,6 +24,7 @@ import { ClassDetails } from '../ClassDetails/ClassDetails';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
 import { ScheduleEntry } from '../ScheduleEntry/ScheduleEntry';
 import styles from './Schedule.module.css';
+import { toast } from 'sonner';
 
 type ScheduleProps = {
     userSchedule?: IUserScheduleEntry[];
@@ -32,9 +36,14 @@ const Schedule: React.FC<ScheduleProps> = ({
     globalSchedule
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { popUpEntry, isNewClass } = useSelector(
-        (state: RootState) => state.schedule
-    );
+    const {
+        popUpEntry,
+        isNewClass,
+        isScheduleEntryUpdated,
+        isScheduleEntryDeleted,
+        isScheduleEntryAdded,
+        error
+    } = useSelector((state: RootState) => state.schedule);
     const { rooms, loading } = useSelector((state: RootState) => state.room);
     const { students, studentsLoading } = useSelector(
         (state: RootState) => state.user
@@ -56,6 +65,31 @@ const Schedule: React.FC<ScheduleProps> = ({
             dispatch(fetchAllRoomsRequest({ token }));
         }
     }, [globalSchedule, token, dispatch, students, rooms]);
+
+    useEffect(() => {
+        if (isScheduleEntryAdded) {
+            toast.success('Class added successfully! 🎉');
+            dispatch(resetScheduleEntryAdded());
+        }
+        if (isScheduleEntryUpdated) {
+            toast.success('Class updated successfully! 🎉');
+            dispatch(resetScheduleEntryUpdated());
+        }
+        if (isScheduleEntryDeleted) {
+            toast.success('Class deleted successfully! 🎉');
+            dispatch(resetScheduleEntryDeleted());
+        }
+        if (error) {
+            toast.error(
+                `Class ${isScheduleEntryAdded ? 'submission' : isScheduleEntryUpdated ? 'update' : 'deletion'} failed: ${error}`
+            );
+        }
+    }, [
+        isScheduleEntryAdded,
+        isScheduleEntryUpdated,
+        isScheduleEntryDeleted,
+        error
+    ]);
 
     useEffect(() => {
         if (holidays.length === 0) {
