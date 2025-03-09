@@ -387,7 +387,37 @@ export const fetchFriendsSchedule = async (friendIds: string[]) => {
         { $unwind: '$entriesArray' },
         { $replaceRoot: { newRoot: '$entriesArray.v' } },
         { $match: { studentIds: { $in: friendIdsArray } } },
+        { $addFields: { friendIdsArray: friendIdsArray } },
 
+        {
+            $lookup: {
+                from: 'users',
+                let: {
+                    studentIds: '$studentIds',
+                    friendIdsArray: '$friendIdsArray'
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $in: ['$_id', '$$studentIds'] },
+                                    { $in: ['$_id', '$$friendIdsArray'] }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            fullName: {
+                                $concat: ['$firstName', ' ', '$lastName']
+                            }
+                        }
+                    }
+                ],
+                as: 'friend'
+            }
+        },
         {
             $lookup: {
                 from: 'classes',
@@ -415,7 +445,8 @@ export const fetchFriendsSchedule = async (friendIds: string[]) => {
             $addFields: {
                 className: { $arrayElemAt: ['$class.name', 0] },
                 classType: { $arrayElemAt: ['$class.classTypes', 0] },
-                roomName: { $arrayElemAt: ['$room.name', 0] }
+                roomName: { $arrayElemAt: ['$room.name', 0] },
+                friendName: { $arrayElemAt: ['$friend.fullName', 0] }
             }
         },
 
@@ -426,7 +457,8 @@ export const fetchFriendsSchedule = async (friendIds: string[]) => {
                 classType: 1,
                 day: 1,
                 hour: 1,
-                roomName: 1
+                roomName: 1,
+                friendName: 1
             }
         }
     ]);
