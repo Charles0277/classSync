@@ -118,6 +118,17 @@ const userSlice = createSlice({
         },
         resetUserDeleted: (state) => {
             state.isUserDeleted = false;
+        },
+        addFriendRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        addFriendSuccess: (state, action) => {
+            state.loading = false;
+        },
+        addFriendFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     },
     extraReducers(builder) {
@@ -148,7 +159,10 @@ export const {
     deleteUserFailure,
     resetStudents,
     resetUserUpdated,
-    resetUserDeleted
+    resetUserDeleted,
+    addFriendRequest,
+    addFriendSuccess,
+    addFriendFailure
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IUser } from '../../../common/types/IUser';
-import { updateUserSuccess } from './userSlice';
+import { addFriendSuccess, updateUserSuccess } from './userSlice';
 
 interface AuthState {
     user?: IUser;
@@ -87,7 +87,10 @@ const authSlice = createSlice({
             if (state.user?._id === updatedUser._id) {
                 state.user = updatedUser;
             }
-        });
+        }),
+            builder.addCase(addFriendSuccess, (state, action) => {
+                state.user?.friends?.push(action.payload);
+            });
     }
 });
 

@@ -1,7 +1,8 @@
 import { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { IUser } from '../../../common/types/IUser';
+import { IFriend, IUser } from '../../../common/types/IUser';
 import {
+    addFriendApi,
     deleteUserApi,
     getAllStudentsApi,
     getAllTeachersApi,
@@ -10,6 +11,9 @@ import {
     updateUserApi
 } from '../../api/userApi';
 import {
+    addFriendFailure,
+    addFriendRequest,
+    addFriendSuccess,
     deleteUserFailure,
     deleteUserRequest,
     deleteUserSuccess,
@@ -120,6 +124,21 @@ function* handleDeleteUser(action: any) {
     }
 }
 
+function* handleAddFriend(action: any) {
+    const { email, token } = action.payload;
+
+    try {
+        const response: AxiosResponse<IFriend> = yield call(
+            addFriendApi,
+            email,
+            token
+        );
+        yield put(addFriendSuccess(response.data));
+    } catch (error: any) {
+        yield put(addFriendFailure(error.message));
+    }
+}
+
 export default function* userSaga() {
     yield takeLatest(fetchAllUsersRequest.type, handleFetchAllUsers);
     yield takeLatest(fetchUsersRequest.type, handleFetchUsers);
@@ -127,4 +146,5 @@ export default function* userSaga() {
     yield takeLatest(fetchAllStudentsRequest.type, handleFetchAllStudents);
     yield takeLatest(updateUserRequest.type, handleUpdateUser);
     yield takeLatest(deleteUserRequest.type, handleDeleteUser);
+    yield takeLatest(addFriendRequest.type, handleAddFriend);
 }

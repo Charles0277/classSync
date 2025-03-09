@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+    addFriend,
     deleteUser,
     getAllStudents,
     getAllTeachers,
@@ -32,4 +33,5 @@ export default (router: express.Router) => {
         deleteUser
     );
     router.put('/update-user/:id', authenticateToken, updateUser);
+    router.post('/add-friend/:email', authenticateToken, addFriend);
 };

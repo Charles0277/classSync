@@ -3,12 +3,15 @@ import {
     MANCHESTER_EMAIL_REGEX
 } from '@/common/validation.js';
 import express from 'express';
+import { Types } from 'mongoose';
 import {
+    addFriendToUser,
     deleteUserById,
     fetchAllStudents,
     fetchAllTeachers,
     fetchAllUsers,
     fetchUserByEmail,
+    fetchUserById,
     fetchUsers,
     updateUserById
 } from '../services/user.services.js';
@@ -148,6 +151,55 @@ export const updateUser = async (
 
         return res.status(201).send(updatedUser);
     } catch (error) {
+        return res.sendStatus(400);
+    }
+};
+
+export const addFriend = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { email } = req.params;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send('Missing userId or Role in the request.');
+        }
+
+        const existingUser = await fetchUserByEmail(email);
+        if (!existingUser) {
+            return res.status(409).json({
+                error: 'This user does not exist.'
+            });
+        }
+        if (existingUser.role !== role) {
+            return res
+                .status(403)
+                .send('You are not authorized to add this user as a friend.');
+        }
+
+        const currentUser = await fetchUserById(userId);
+
+        const isAlreadyFriend = (
+            currentUser?.friends as Types.ObjectId[]
+        )?.some((friendId) => friendId.equals(existingUser._id));
+        if (isAlreadyFriend) {
+            return res.status(409).json({ error: 'User is already a friend.' });
+        }
+
+        await addFriendToUser(userId, existingUser._id);
+
+        return res.status(200).send({
+            _id: existingUser._id,
+            firstName: existingUser.firstName,
+            lastName: existingUser.lastName
+        });
+    } catch (error) {
+        console.log(error);
         return res.sendStatus(400);
     }
 };

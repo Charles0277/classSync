@@ -1,0 +1,40 @@
+.title {
+    font-size: 3rem;
+    font-weight: 600;
+    padding-top: 1rem;
+    color: var(--darkBlue-color);
+    text-align: center;
+}
+
+.manageFriendsContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    width: 90%;
+    height: 100%;
+    padding: 2rem 0;
+}
+
+.friendList {
+    width: 40%;
+    height: 90%;
+    border-radius: 12px;
+    background-color: var(--white-color);
+    border: 1px solid var(--darkBlue-color);
+}
+
+.addFriends {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    height: 90%;
+    border-radius: 12px;
+    gap: 1rem;
+}
+
+.addFriendButton {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}

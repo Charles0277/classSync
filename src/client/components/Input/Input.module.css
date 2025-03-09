@@ -40,6 +40,7 @@
     border-width: 2px;
     background-color: transparent;
     outline: none;
+    box-sizing: border-box;
 }
 
 .rightSideControl {

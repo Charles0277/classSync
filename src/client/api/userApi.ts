@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IUser } from '../../common/types/IUser.js';
+import { IFriend, IUser } from '../../common/types/IUser.js';
 
 export const getAllUsersApi = (token: string) => {
     return axios.get<IUser[]>(`http://localhost:3000/all-users`, {
@@ -44,4 +44,14 @@ export const deleteUserApi = (id: string, token: string) => {
     return axios.delete<IUser>(`http://localhost:3000/delete-user/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
     });
+};
+
+export const addFriendApi = (email: string, token: string) => {
+    return axios.post<IFriend>(
+        `http://localhost:3000/add-friend/${email}`,
+        {},
+        {
+            headers: { Authorization: `Bearer ${token}` }
+        }
+    );
 };

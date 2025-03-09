@@ -87,6 +87,9 @@ const UserSchema: Schema<IUser> = new Schema(
         course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
         courseUnits: [
             { type: mongoose.Schema.Types.ObjectId, ref: 'CourseUnit' }
+        ],
+        friends: [
+            { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true }
         ]
     },
     { timestamps: true }

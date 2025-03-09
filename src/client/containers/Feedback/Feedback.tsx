@@ -116,7 +116,7 @@ export const Feedback = () => {
     });
 
     return (
-        <PageContainer className="feedbackPage">
+        <PageContainer className="genericPageLayout">
             <div className={styles.title}>Feedback</div>
             <div className={styles.filter}>
                 Filter:

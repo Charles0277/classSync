@@ -8,6 +8,7 @@ import feedbackIcon from '../../assets/feedbackIcon.svg';
 import homeIcon from '../../assets/homeIcon.svg';
 import profileIcon from '../../assets/profileIcon.svg';
 import settingsIcon from '../../assets/settingsIcon.svg';
+import addFriendIcon from '../../assets/addFriendIcon.svg';
 import { RESET_STATE } from '../../store/rootReducer';
 import { logOut } from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
@@ -114,6 +115,17 @@ const Sidebar: React.FC = () => {
                         onClick={() => navigate('/')}
                     >
                         <img src={homeIcon} alt="Home" />
+                    </Button>
+                    <Button
+                        type="button"
+                        className={
+                            location.pathname === '/manage-friends'
+                                ? 'sidebar activeSidebar'
+                                : 'sidebar'
+                        }
+                        onClick={() => navigate('/manage-friends')}
+                    >
+                        <img src={addFriendIcon} alt="Add Friend" />
                     </Button>
                     <Button
                         type="button"

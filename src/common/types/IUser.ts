@@ -1,5 +1,11 @@
 import { Document, Types } from 'mongoose';
 
+export interface IFriend {
+    _id: Types.ObjectId;
+    firstName: string;
+    lastName: string;
+}
+
 export interface IUser extends Document {
     _id: Types.ObjectId;
     firstName: string;
@@ -11,4 +17,5 @@ export interface IUser extends Document {
     course: Types.ObjectId;
     courseUnits: Types.ObjectId[];
     schedule?: Types.ObjectId[];
+    friends?: Types.ObjectId[] | IFriend[];
 }

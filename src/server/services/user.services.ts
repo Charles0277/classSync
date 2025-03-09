@@ -1,6 +1,9 @@
+import { Types } from 'mongoose';
 import { UserModel } from '../models/user.models.js';
 
 export const fetchAllUsers = () => UserModel.find();
+
+export const fetchUserById = (id: string) => UserModel.findById(id);
 
 export const fetchUsers = (userIds: string[]) => {
     return UserModel.find({ _id: { $in: userIds } });
@@ -14,6 +17,7 @@ export const fetchUserByEmail = (email: string) =>
     UserModel.findOne({ email })
         .populate('course')
         .populate('courseUnits')
+        .populate('friends', '_id firstName lastName')
         .exec();
 
 export const createUser = (values: Record<string, any>) =>
@@ -29,3 +33,6 @@ export const deleteUserByEmail = (email: string) =>
 
 export const updateUserByEmail = (email: string, values: Record<string, any>) =>
     UserModel.findOneAndUpdate({ email }, values, { new: true });
+
+export const addFriendToUser = (id: string, friendId: Types.ObjectId) =>
+    UserModel.findByIdAndUpdate(id, { $addToSet: { friends: friendId } });
