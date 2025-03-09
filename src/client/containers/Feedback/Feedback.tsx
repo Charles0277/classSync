@@ -57,20 +57,20 @@ export const Feedback = () => {
 
     useEffect(() => {
         if (isFeedbackSubmitted) {
-            toast.success('Feedback submitted successfully! 🎉');
+            toast.success('Feedback submitted successfully! 🆕');
             dispatch(resetFeedbackSubmitted());
         }
         if (isFeedbackUpdated) {
-            toast.success('Feedback updated successfully! 🎉');
+            toast.success('Feedback updated successfully! ✏️');
             dispatch(resetFeedbackUpdated());
         }
         if (isFeedbackDeleted) {
-            toast.success('Feedback deleted successfully! 🎉');
+            toast.success('Feedback deleted successfully! 🗑️');
             dispatch(resetFeedbackDeleted());
         }
         if (error) {
             toast.error(
-                `Feedback ${editFeedback ? 'update' : 'submission'} failed: ${error}`
+                `Feedback ${editFeedback ? 'update' : 'submission'} failed: ${error} ⚠️`
             );
         }
     }, [

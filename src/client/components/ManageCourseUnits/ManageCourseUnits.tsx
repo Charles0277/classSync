@@ -49,20 +49,20 @@ const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
 
     useEffect(() => {
         if (isCourseUnitAdded) {
-            toast.success('Course unit added successfully! 🎉');
+            toast.success('Course unit added successfully! 🆕');
             dispatch(resetCourseUnitAdded());
         }
         if (isCourseUnitUpdated) {
-            toast.success('Course unit updated successfully! 🎉');
+            toast.success('Course unit updated successfully! ✏️');
             dispatch(resetCourseUnitUpdated());
         }
         if (isCourseUnitDeleted) {
-            toast.success('Course unit deleted successfully! 🎉');
+            toast.success('Course unit deleted successfully! 🗑️');
             dispatch(resetCourseUnitDeleted());
         }
         if (error) {
             toast.error(
-                `Course unit ${isCourseUnitAdded ? 'submission' : isCourseUnitUpdated ? 'update' : 'deletion'} failed: ${error}`
+                `Course unit ${isCourseUnitAdded ? 'submission' : isCourseUnitUpdated ? 'update' : 'deletion'} failed: ${error} ⚠️`
             );
         }
     }, [isCourseUnitAdded, isCourseUnitUpdated, isCourseUnitDeleted, error]);

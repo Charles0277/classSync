@@ -60,11 +60,11 @@ const Sidebar: React.FC = () => {
 
     useEffect(() => {
         if (isUserUpdated) {
-            toast.success('Profile successfully updated! 🎉');
+            toast.success('Profile successfully updated! 🆕');
             dispatch(resetUserUpdated());
         }
         if (error) {
-            toast.error(`Profile update failed: ${error}`);
+            toast.error(`Profile update failed: ${error} ⚠️`);
         }
     }, [error, isUserUpdated, dispatch]);
 

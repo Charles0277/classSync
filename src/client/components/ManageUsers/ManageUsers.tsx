@@ -40,7 +40,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
 
     useEffect(() => {
         if (isUserDeleted) {
-            toast.success('User deleted successfully! 🎉');
+            toast.success('User deleted successfully! 🗑️');
             dispatch(resetUserDeleted());
         }
         if (error) {
@@ -50,11 +50,11 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onEditUser, onAddUser }) => {
 
     useEffect(() => {
         if (createdUser) {
-            toast.success('User created successfully! 🎉');
+            toast.success('User created successfully! 🆕');
             dispatch(resetCreatedUser());
         }
         if (createdUserError) {
-            toast.error(`User creation failed: ${createdUserError}`);
+            toast.error(`User creation failed: ${createdUserError} ⚠️`);
         }
     }, [createdUser, createdUserError]);
 

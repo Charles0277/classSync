@@ -43,20 +43,20 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
 
     useEffect(() => {
         if (isRoomAdded) {
-            toast.success('Room added successfully! 🎉');
+            toast.success('Room added successfully! 🆕');
             dispatch(resetRoomAdded());
         }
         if (isRoomUpdated) {
-            toast.success('Room updated successfully! 🎉');
+            toast.success('Room updated successfully! ✏️');
             dispatch(resetRoomUpdated());
         }
         if (isRoomDeleted) {
-            toast.success('Room deleted successfully! 🎉');
+            toast.success('Room deleted successfully! 🗑️');
             dispatch(resetRoomDeleted());
         }
         if (error) {
             toast.error(
-                `Room ${isRoomAdded ? 'submission' : isRoomUpdated ? 'update' : 'deletion'} failed: ${error}`
+                `Room ${isRoomAdded ? 'submission' : isRoomUpdated ? 'update' : 'deletion'} failed: ${error} ⚠️`
             );
         }
     }, [isRoomAdded, isRoomUpdated, isRoomDeleted, error]);

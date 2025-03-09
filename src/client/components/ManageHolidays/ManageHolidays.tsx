@@ -44,20 +44,20 @@ export const ManageHolidays: React.FC<ManageHolidaysProps> = ({
 
     useEffect(() => {
         if (isHolidayAdded) {
-            toast.success('Holiday added successfully! 🎉');
+            toast.success('Holiday added successfully! 🆕');
             dispatch(resetHolidayAdded());
         }
         if (isHolidayUpdated) {
-            toast.success('Holiday updated successfully! 🎉');
+            toast.success('Holiday updated successfully! ✏️');
             dispatch(resetHolidayUpdated());
         }
         if (isHolidayDeleted) {
-            toast.success('Holiday deleted successfully! 🎉');
+            toast.success('Holiday deleted successfully! 🗑️');
             dispatch(resetHolidayDeleted());
         }
         if (error) {
             toast.error(
-                `Holiday ${isHolidayAdded ? 'submission' : isHolidayUpdated ? 'update' : 'deletion'} failed: ${error}`
+                `Holiday ${isHolidayAdded ? 'submission' : isHolidayUpdated ? 'update' : 'deletion'} failed: ${error} ⚠️`
             );
         }
     }, [isHolidayAdded, isHolidayUpdated, isHolidayDeleted, error]);

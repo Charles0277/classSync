@@ -68,20 +68,20 @@ const Schedule: React.FC<ScheduleProps> = ({
 
     useEffect(() => {
         if (isScheduleEntryAdded) {
-            toast.success('Class added successfully! 🎉');
+            toast.success('Class added successfully! 🆕');
             dispatch(resetScheduleEntryAdded());
         }
         if (isScheduleEntryUpdated) {
-            toast.success('Class updated successfully! 🎉');
+            toast.success('Class updated successfully! ✏️');
             dispatch(resetScheduleEntryUpdated());
         }
         if (isScheduleEntryDeleted) {
-            toast.success('Class deleted successfully! 🎉');
+            toast.success('Class deleted successfully! 🗑️');
             dispatch(resetScheduleEntryDeleted());
         }
         if (error) {
             toast.error(
-                `Class ${isScheduleEntryAdded ? 'submission' : isScheduleEntryUpdated ? 'update' : 'deletion'} failed: ${error}`
+                `Class ${isScheduleEntryAdded ? 'submission' : isScheduleEntryUpdated ? 'update' : 'deletion'} failed: ${error} ⚠️`
             );
         }
     }, [

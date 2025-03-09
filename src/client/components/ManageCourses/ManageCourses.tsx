@@ -44,20 +44,20 @@ const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
 
     useEffect(() => {
         if (isCourseAdded) {
-            toast.success('Course added successfully! 🎉');
+            toast.success('Course added successfully! 🆕');
             dispatch(resetCourseAdded());
         }
         if (isCourseUpdated) {
-            toast.success('Course updated successfully! 🎉');
+            toast.success('Course updated successfully! ✏️');
             dispatch(resetCourseUpdated());
         }
         if (isCourseDeleted) {
-            toast.success('Course deleted successfully! 🎉');
+            toast.success('Course deleted successfully! 🗑️');
             dispatch(resetCourseDeleted());
         }
         if (error) {
             toast.error(
-                `Course ${isCourseAdded ? 'submission' : isCourseUpdated ? 'update' : 'deletion'} failed: ${error}`
+                `Course ${isCourseAdded ? 'submission' : isCourseUpdated ? 'update' : 'deletion'} failed: ${error} ⚠️`
             );
         }
     }, [isCourseAdded, isCourseUpdated, isCourseDeleted, error]);
