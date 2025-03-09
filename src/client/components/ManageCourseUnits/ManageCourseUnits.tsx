@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import { ICourseUnit } from '../../../common/types/ICourseUnit';
 import { findFirstDigit } from '../../../common/utils';
 import addIcon from '../../assets/addIcon.svg';
 import {
     deleteCourseUnitRequest,
-    fetchAllCourseUnitsRequest
+    fetchAllCourseUnitsRequest,
+    resetCourseUnitAdded,
+    resetCourseUnitDeleted,
+    resetCourseUnitUpdated
 } from '../../store/slices/courseUnitSlice';
 import { RootState } from '../../store/store.js';
 import Button from '../Button/Button';
@@ -19,9 +23,14 @@ const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
     onAddEditCourseUnit
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { courseUnits, loading } = useSelector(
-        (state: RootState) => state.courseUnit
-    );
+    const {
+        courseUnits,
+        loading,
+        isCourseUnitAdded,
+        isCourseUnitDeleted,
+        isCourseUnitUpdated,
+        error
+    } = useSelector((state: RootState) => state.courseUnit);
 
     const [filter, setFilter] = useState<
         'all' | 'Year 1' | 'Year 2' | 'Year 3' | 'Year 4' | 'Year 5' | 'Year 7'
@@ -37,6 +46,26 @@ const ManageCourseUnits: React.FC<ManageCourseUnitsProps> = ({
             dispatch(fetchAllCourseUnitsRequest());
         }
     }, [token]);
+
+    useEffect(() => {
+        if (isCourseUnitAdded) {
+            toast.success('Course unit added successfully! 🎉');
+            dispatch(resetCourseUnitAdded());
+        }
+        if (isCourseUnitUpdated) {
+            toast.success('Course unit updated successfully! 🎉');
+            dispatch(resetCourseUnitUpdated());
+        }
+        if (isCourseUnitDeleted) {
+            toast.success('Course unit deleted successfully! 🎉');
+            dispatch(resetCourseUnitDeleted());
+        }
+        if (error) {
+            toast.error(
+                `Course unit ${isCourseUnitAdded ? 'submission' : isCourseUnitUpdated ? 'update' : 'deletion'} failed: ${error}`
+            );
+        }
+    }, [isCourseUnitAdded, isCourseUnitUpdated, isCourseUnitDeleted, error]);
 
     const handleFilterChange = (
         newFilter:

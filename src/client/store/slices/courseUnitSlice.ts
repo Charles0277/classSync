@@ -6,12 +6,18 @@ interface courseUnitState {
     courseUnits: ICourseUnit[];
     loading: boolean;
     error: string | null;
+    isCourseUnitAdded: boolean;
+    isCourseUnitDeleted: boolean;
+    isCourseUnitUpdated: boolean;
 }
 
 const initialState: courseUnitState = {
     courseUnits: [],
     loading: false,
-    error: null
+    error: null,
+    isCourseUnitAdded: false,
+    isCourseUnitDeleted: false,
+    isCourseUnitUpdated: false
 };
 
 const courseUnitSlice = createSlice({
@@ -40,6 +46,7 @@ const courseUnitSlice = createSlice({
                 (courseUnit) => courseUnit._id !== deletedCourseUnitId
             );
             state.loading = false;
+            state.isCourseUnitDeleted = true;
         },
         deleteCourseUnitFailure: (state, action) => {
             state.loading = false;
@@ -57,6 +64,7 @@ const courseUnitSlice = createSlice({
                     : courseUnit
             );
             state.loading = false;
+            state.isCourseUnitUpdated = true;
         },
         updateCourseUnitFailure: (state, action) => {
             state.loading = false;
@@ -70,10 +78,20 @@ const courseUnitSlice = createSlice({
             const newCourse = action.payload;
             state.courseUnits = [...state.courseUnits, newCourse];
             state.loading = false;
+            state.isCourseUnitAdded = true;
         },
         createCourseUnitFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        resetCourseUnitAdded: (state) => {
+            state.isCourseUnitAdded = false;
+        },
+        resetCourseUnitDeleted: (state) => {
+            state.isCourseUnitDeleted = false;
+        },
+        resetCourseUnitUpdated: (state) => {
+            state.isCourseUnitUpdated = false;
         }
     }
 });
@@ -90,7 +108,10 @@ export const {
     updateCourseUnitFailure,
     createCourseUnitRequest,
     createCourseUnitSuccess,
-    createCourseUnitFailure
+    createCourseUnitFailure,
+    resetCourseUnitAdded,
+    resetCourseUnitDeleted,
+    resetCourseUnitUpdated
 } = courseUnitSlice.actions;
 
 export default courseUnitSlice.reducer;
