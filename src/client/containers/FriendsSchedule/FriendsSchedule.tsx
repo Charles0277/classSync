@@ -2,7 +2,9 @@ import PageContainer from '@/client/components/Common/PageContainer/PageContaine
 import Schedule from '@/client/components/Schedule/Schedule';
 import { getFriendsScheduleRequest } from '@/client/store/slices/scheduleSlice';
 import { RootState } from '@/client/store/store';
-import { useEffect } from 'react';
+import { IFriendsScheduleEntry } from '@/common/types/ISchedule';
+import { IFriend } from '@/common/types/IUser';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './FriendsSchedule.module.css';
 
@@ -14,8 +16,24 @@ export const FriendsSchedule = () => {
 
     const dispatch = useDispatch();
 
+    const isAnyFriendMissingSchedule = useMemo(() => {
+        return user?.friends?.some(
+            (friend) =>
+                !friendsSchedule?.some(
+                    (entry) =>
+                        `${(friend as IFriend).firstName} ${
+                            (friend as IFriend).lastName
+                        }` === (entry as IFriendsScheduleEntry).friendName
+                )
+        );
+    }, [friendsSchedule, user?.friends]);
+
     useEffect(() => {
-        if (user?.friends && token && !friendsSchedule?.length) {
+        if (
+            user?.friends &&
+            token &&
+            (!friendsSchedule?.length || isAnyFriendMissingSchedule)
+        ) {
             dispatch(
                 getFriendsScheduleRequest({
                     token,
@@ -23,7 +41,13 @@ export const FriendsSchedule = () => {
                 })
             );
         }
-    }, [dispatch, user?.friends, token, friendsSchedule]);
+    }, [
+        dispatch,
+        user?.friends,
+        token,
+        friendsSchedule,
+        isAnyFriendMissingSchedule
+    ]);
 
     return (
         <PageContainer className="friendsScheduleContainer">
