@@ -6,6 +6,7 @@ import {
 import { getIdString } from '@/common/utils';
 import { createSlice } from '@reduxjs/toolkit';
 import { updateClassSuccess } from './classSlice';
+import { removeFriendSuccess } from './userSlice';
 
 interface scheduleState {
     globalSchedule?: IGlobalScheduleEntry[];
@@ -190,31 +191,41 @@ const scheduleSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(updateClassSuccess, (state, action) => {
-            const updatedClass = action.payload as IClass;
-            if (state.globalSchedule) {
-                const updatedGlobalSchedule = state.globalSchedule.map(
-                    (entry) =>
-                        getIdString(entry.classId) ===
-                        getIdString(updatedClass._id)
-                            ? {
-                                  ...entry,
-                                  className: updatedClass.name,
-                                  classType: updatedClass.classTypes
-                              }
-                            : entry
-                );
-                if (updatedClass.name !== state.popUpEntry?.className) {
-                    state.isScheduleEntryUpdated = true;
+        builder
+            .addCase(updateClassSuccess, (state, action) => {
+                const updatedClass = action.payload as IClass;
+                if (state.globalSchedule) {
+                    const updatedGlobalSchedule = state.globalSchedule.map(
+                        (entry) =>
+                            getIdString(entry.classId) ===
+                            getIdString(updatedClass._id)
+                                ? {
+                                      ...entry,
+                                      className: updatedClass.name,
+                                      classType: updatedClass.classTypes
+                                  }
+                                : entry
+                    );
+                    if (updatedClass.name !== state.popUpEntry?.className) {
+                        state.isScheduleEntryUpdated = true;
+                    }
+                    state.globalSchedule = updatedGlobalSchedule;
+                    state.popUpEntry = updatedGlobalSchedule.find(
+                        (entry) =>
+                            getIdString(entry.classId) ===
+                            getIdString(updatedClass._id)
+                    );
                 }
-                state.globalSchedule = updatedGlobalSchedule;
-                state.popUpEntry = updatedGlobalSchedule.find(
+            })
+            .addCase(removeFriendSuccess, (state, action) => {
+                const removedFriendFullName =
+                    action.payload.firstName + ' ' + action.payload.lastName;
+                state.friendsSchedule = state.friendsSchedule?.filter(
                     (entry) =>
-                        getIdString(entry.classId) ===
-                        getIdString(updatedClass._id)
+                        'friendName' in entry &&
+                        entry.friendName !== removedFriendFullName
                 );
-            }
-        });
+            });
     }
 });
 
