@@ -6,12 +6,18 @@ interface courseState {
     courses: ICourse[];
     loading: boolean;
     error: string | null;
+    isCourseAdded: boolean;
+    isCourseDeleted: boolean;
+    isCourseUpdated: boolean;
 }
 
 const initialState: courseState = {
     courses: [],
     loading: false,
-    error: null
+    error: null,
+    isCourseAdded: false,
+    isCourseDeleted: false,
+    isCourseUpdated: false
 };
 
 const courseSlice = createSlice({
@@ -40,6 +46,7 @@ const courseSlice = createSlice({
                 (course) => course._id !== deletedCourseId
             );
             state.loading = false;
+            state.isCourseDeleted = true;
         },
         deleteCourseFailure: (state, action) => {
             state.loading = false;
@@ -55,6 +62,7 @@ const courseSlice = createSlice({
                 course._id === updatedCourse._id ? updatedCourse : course
             );
             state.loading = false;
+            state.isCourseUpdated = true;
         },
         updateCourseFailure: (state, action) => {
             state.loading = false;
@@ -68,10 +76,20 @@ const courseSlice = createSlice({
             const newCourse = action.payload;
             state.courses = [...state.courses, newCourse];
             state.loading = false;
+            state.isCourseAdded = true;
         },
         createCourseFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        resetCourseAdded: (state) => {
+            state.isCourseAdded = false;
+        },
+        resetCourseDeleted: (state) => {
+            state.isCourseDeleted = false;
+        },
+        resetCourseUpdated: (state) => {
+            state.isCourseUpdated = false;
         }
     }
 });
@@ -88,7 +106,10 @@ export const {
     updateCourseFailure,
     createCourseRequest,
     createCourseSuccess,
-    createCourseFailure
+    createCourseFailure,
+    resetCourseAdded,
+    resetCourseDeleted,
+    resetCourseUpdated
 } = courseSlice.actions;
 
 export default courseSlice.reducer;

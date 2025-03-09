@@ -1,12 +1,17 @@
+import { getIdString } from '@/common/utils';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import { ICourse } from '../../../common/types/ICourse';
 import addIcon from '../../assets/addIcon.svg';
 import editIcon from '../../assets/editIcon.svg';
 import trashIcon from '../../assets/trashIcon.svg';
 import {
     deleteCourseRequest,
-    fetchAllCoursesRequest
+    fetchAllCoursesRequest,
+    resetCourseAdded,
+    resetCourseDeleted,
+    resetCourseUpdated
 } from '../../store/slices/courseSlice';
 import { RootState } from '../../store/store';
 import Button from '../Button/Button';
@@ -19,9 +24,14 @@ interface ManageCoursesProps {
 const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
     const dispatch = useDispatch();
     const { token } = useSelector((state: RootState) => state.auth);
-    const { courses, loading } = useSelector(
-        (state: RootState) => state.course
-    );
+    const {
+        courses,
+        loading,
+        isCourseAdded,
+        isCourseDeleted,
+        isCourseUpdated,
+        error
+    } = useSelector((state: RootState) => state.course);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [courseToDelete, setCourseToDelete] = useState<ICourse | null>(null);
@@ -31,6 +41,26 @@ const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
             dispatch(fetchAllCoursesRequest());
         }
     }, [dispatch, token]);
+
+    useEffect(() => {
+        if (isCourseAdded) {
+            toast.success('Course added successfully! 🎉');
+            dispatch(resetCourseAdded());
+        }
+        if (isCourseUpdated) {
+            toast.success('Course updated successfully! 🎉');
+            dispatch(resetCourseUpdated());
+        }
+        if (isCourseDeleted) {
+            toast.success('Course deleted successfully! 🎉');
+            dispatch(resetCourseDeleted());
+        }
+        if (error) {
+            toast.error(
+                `Course ${isCourseAdded ? 'submission' : isCourseUpdated ? 'update' : 'deletion'} failed: ${error}`
+            );
+        }
+    }, [isCourseAdded, isCourseUpdated, isCourseDeleted, error]);
 
     const filteredCourses = useMemo(
         () =>
@@ -72,7 +102,7 @@ const ManageCourses: React.FC<ManageCoursesProps> = ({ onAddEditCourse }) => {
                 {filteredCourses.length > 0 ? (
                     filteredCourses.map((course, index) => (
                         <div
-                            key={course._id as string}
+                            key={getIdString(course._id)}
                             className={`${styles.courseContainer} ${
                                 index === filteredCourses.length - 1
                                     ? styles.lastCourse
