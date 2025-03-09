@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import { IRoom } from '../../../common/types/IRoom';
 import addIcon from '../../assets/addIcon.svg';
 import {
     deleteRoomRequest,
-    fetchAllRoomsRequest
+    fetchAllRoomsRequest,
+    resetRoomAdded,
+    resetRoomDeleted,
+    resetRoomUpdated
 } from '../../store/slices/roomSlice';
 import { RootState } from '../../store/store.js';
 import Button from '../Button/Button';
@@ -16,7 +20,8 @@ interface ManageRoomsProps {
 
 const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { rooms, loading } = useSelector((state: RootState) => state.room);
+    const { rooms, loading, isRoomAdded, isRoomDeleted, isRoomUpdated, error } =
+        useSelector((state: RootState) => state.room);
 
     const [filter, setFilter] = useState<
         | 'all'
@@ -35,6 +40,26 @@ const ManageRooms: React.FC<ManageRoomsProps> = ({ onAddEditRoom }) => {
             dispatch(fetchAllRoomsRequest({ token }));
         }
     }, [token]);
+
+    useEffect(() => {
+        if (isRoomAdded) {
+            toast.success('Room added successfully! 🎉');
+            dispatch(resetRoomAdded());
+        }
+        if (isRoomUpdated) {
+            toast.success('Room updated successfully! 🎉');
+            dispatch(resetRoomUpdated());
+        }
+        if (isRoomDeleted) {
+            toast.success('Room deleted successfully! 🎉');
+            dispatch(resetRoomDeleted());
+        }
+        if (error) {
+            toast.error(
+                `Room ${isRoomAdded ? 'submission' : isRoomUpdated ? 'update' : 'deletion'} failed: ${error}`
+            );
+        }
+    }, [isRoomAdded, isRoomUpdated, isRoomDeleted, error]);
 
     const handleFilterChange = (
         newFilter:

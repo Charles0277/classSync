@@ -6,12 +6,18 @@ interface roomState {
     rooms: IRoom[];
     loading: boolean;
     error: string | null;
+    isRoomAdded: boolean;
+    isRoomDeleted: boolean;
+    isRoomUpdated: boolean;
 }
 
 const initialState: roomState = {
     rooms: [],
     loading: false,
-    error: null
+    error: null,
+    isRoomAdded: false,
+    isRoomDeleted: false,
+    isRoomUpdated: false
 };
 
 const roomSlice = createSlice({
@@ -41,6 +47,7 @@ const roomSlice = createSlice({
                 (room) => room._id !== deletedRoomId
             );
             state.loading = false;
+            state.isRoomDeleted = true;
         },
         deleteRoomFailure: (state, action) => {
             state.loading = false;
@@ -56,6 +63,7 @@ const roomSlice = createSlice({
                 room._id === updatedRoom._id ? updatedRoom : room
             );
             state.loading = false;
+            state.isRoomUpdated = true;
         },
         updateRoomFailure: (state, action) => {
             state.loading = false;
@@ -70,10 +78,20 @@ const roomSlice = createSlice({
             state.room = newRoom;
             state.rooms = [...state.rooms, newRoom];
             state.loading = false;
+            state.isRoomAdded = true;
         },
         createRoomFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        resetRoomAdded: (state) => {
+            state.isRoomAdded = false;
+        },
+        resetRoomDeleted: (state) => {
+            state.isRoomDeleted = false;
+        },
+        resetRoomUpdated: (state) => {
+            state.isRoomUpdated = false;
         }
     }
 });
@@ -90,7 +108,10 @@ export const {
     updateRoomFailure,
     createRoomRequest,
     createRoomSuccess,
-    createRoomFailure
+    createRoomFailure,
+    resetRoomAdded,
+    resetRoomDeleted,
+    resetRoomUpdated
 } = roomSlice.actions;
 
 export default roomSlice.reducer;
