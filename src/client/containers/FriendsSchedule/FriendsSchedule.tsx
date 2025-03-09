@@ -15,7 +15,7 @@ export const FriendsSchedule = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (user?.friends && token) {
+        if (user?.friends && token && !friendsSchedule?.length) {
             dispatch(
                 getFriendsScheduleRequest({
                     token,
@@ -23,7 +23,7 @@ export const FriendsSchedule = () => {
                 })
             );
         }
-    }, [dispatch, user?.friends, token]);
+    }, [dispatch, user?.friends, token, friendsSchedule]);
 
     return (
         <PageContainer className="friendsScheduleContainer">
