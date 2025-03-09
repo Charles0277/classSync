@@ -1,6 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IUser } from '../../../common/types/IUser';
-import { addFriendSuccess, updateUserSuccess } from './userSlice';
+import { IFriend, IUser } from '../../../common/types/IUser';
+import {
+    addFriendSuccess,
+    removeFriendSuccess,
+    updateUserSuccess
+} from './userSlice';
 
 interface AuthState {
     user?: IUser;
@@ -82,14 +86,22 @@ const authSlice = createSlice({
         }
     },
     extraReducers(builder) {
-        builder.addCase(updateUserSuccess, (state, action) => {
-            const updatedUser = action.payload;
-            if (state.user?._id === updatedUser._id) {
-                state.user = updatedUser;
-            }
-        }),
-            builder.addCase(addFriendSuccess, (state, action) => {
+        builder
+            .addCase(updateUserSuccess, (state, action) => {
+                const updatedUser = action.payload;
+                if (state.user?._id === updatedUser._id) {
+                    state.user = updatedUser;
+                }
+            })
+            .addCase(addFriendSuccess, (state, action) => {
                 state.user?.friends?.push(action.payload);
+            })
+            .addCase(removeFriendSuccess, (state, action) => {
+                if (state.user?.friends) {
+                    state.user.friends = (
+                        state.user.friends as IFriend[]
+                    ).filter((friend) => friend._id !== action.payload._id);
+                }
             });
     }
 });

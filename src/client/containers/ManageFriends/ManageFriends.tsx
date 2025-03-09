@@ -1,11 +1,16 @@
+import Button from '@/client/components/Button/Button';
 import PageContainer from '@/client/components/Common/PageContainer/PageContainer';
+import { FriendList } from '@/client/components/FriendList/FriendList';
+import Input from '@/client/components/Input/Input';
+import {
+    addFriendRequest,
+    removeFriendRequest
+} from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
-import { useEffect, useState } from 'react';
+import { IFriend } from '@/common/types/IUser';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './ManageFriends.module.css';
-import Input from '@/client/components/Input/Input';
-import Button from '@/client/components/Button/Button';
-import { addFriendRequest } from '@/client/store/slices/userSlice';
 
 export const ManageFriends = () => {
     const { user, token } = useSelector((state: RootState) => state.auth);
@@ -21,7 +26,14 @@ export const ManageFriends = () => {
         <PageContainer className="genericPageLayout">
             <div className={styles.title}>Manage Friends</div>
             <div className={styles.manageFriendsContainer}>
-                <div className={styles.friendList}>Friends list</div>
+                <div className={styles.friendList}>
+                    <FriendList
+                        friends={user?.friends as IFriend[]}
+                        onRemoveFriend={(friendId) => {
+                            dispatch(removeFriendRequest({ friendId, token }));
+                        }}
+                    />
+                </div>
                 <div className={styles.addFriends}>
                     <label htmlFor="email">Email:</label>
                     <Input

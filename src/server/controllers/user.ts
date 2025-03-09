@@ -13,6 +13,7 @@ import {
     fetchUserByEmail,
     fetchUserById,
     fetchUsers,
+    removeFriendFromUser,
     updateUserById
 } from '../services/user.services.js';
 
@@ -197,6 +198,49 @@ export const addFriend = async (
             _id: existingUser._id,
             firstName: existingUser.firstName,
             lastName: existingUser.lastName
+        });
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const removeFriend = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { friendId } = req.params;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send('Missing userId or Role in the request.');
+        }
+
+        const currentUser = await fetchUserById(userId);
+        const friend = await fetchUserById(friendId);
+
+        if (!currentUser || !friend) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        const isFriend = (currentUser?.friends as Types.ObjectId[])?.some(
+            (friendId) => friendId.equals(friend._id)
+        );
+
+        if (!isFriend) {
+            return res.status(404).json({ error: 'User is not a friend.' });
+        }
+
+        await removeFriendFromUser(userId, friend._id);
+
+        return res.status(200).send({
+            _id: friend._id,
+            firstName: friend.firstName,
+            lastName: friend.lastName
         });
     } catch (error) {
         console.log(error);

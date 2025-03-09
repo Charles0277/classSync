@@ -8,6 +8,7 @@ import {
     getAllTeachersApi,
     getAllUsersApi,
     getUsersApi,
+    removeFriendApi,
     updateUserApi
 } from '../../api/userApi';
 import {
@@ -29,6 +30,9 @@ import {
     fetchUsersFailure,
     fetchUsersRequest,
     fetchUsersSuccess,
+    removeFriendFailure,
+    removeFriendRequest,
+    removeFriendSuccess,
     updateUserFailure,
     updateUserRequest,
     updateUserSuccess
@@ -139,6 +143,21 @@ function* handleAddFriend(action: any) {
     }
 }
 
+function* handleRemoveFriend(action: any) {
+    const { friendId, token } = action.payload;
+
+    try {
+        const response: AxiosResponse<IFriend> = yield call(
+            removeFriendApi,
+            friendId,
+            token
+        );
+        yield put(removeFriendSuccess(response.data));
+    } catch (error: any) {
+        yield put(removeFriendFailure(error.message));
+    }
+}
+
 export default function* userSaga() {
     yield takeLatest(fetchAllUsersRequest.type, handleFetchAllUsers);
     yield takeLatest(fetchUsersRequest.type, handleFetchUsers);
@@ -147,4 +166,5 @@ export default function* userSaga() {
     yield takeLatest(updateUserRequest.type, handleUpdateUser);
     yield takeLatest(deleteUserRequest.type, handleDeleteUser);
     yield takeLatest(addFriendRequest.type, handleAddFriend);
+    yield takeLatest(removeFriendRequest.type, handleRemoveFriend);
 }

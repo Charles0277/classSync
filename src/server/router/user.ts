@@ -7,6 +7,7 @@ import {
     getAllUsers,
     getUser,
     getUsers,
+    removeFriend,
     updateUser
 } from '../controllers/user.js';
 import {
@@ -34,4 +35,5 @@ export default (router: express.Router) => {
     );
     router.put('/update-user/:id', authenticateToken, updateUser);
     router.post('/add-friend/:email', authenticateToken, addFriend);
+    router.delete('/remove-friend/:friendId', authenticateToken, removeFriend);
 };

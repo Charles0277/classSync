@@ -55,3 +55,12 @@ export const addFriendApi = (email: string, token: string) => {
         }
     );
 };
+
+export const removeFriendApi = (friendId: string, token: string) => {
+    return axios.delete<IFriend>(
+        `http://localhost:3000/remove-friend/${friendId}`,
+        {
+            headers: { Authorization: `Bearer ${token}` }
+        }
+    );
+};

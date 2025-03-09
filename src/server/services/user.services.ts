@@ -36,3 +36,6 @@ export const updateUserByEmail = (email: string, values: Record<string, any>) =>
 
 export const addFriendToUser = (id: string, friendId: Types.ObjectId) =>
     UserModel.findByIdAndUpdate(id, { $addToSet: { friends: friendId } });
+
+export const removeFriendFromUser = (id: string, friendId: Types.ObjectId) =>
+    UserModel.findByIdAndUpdate(id, { $pull: { friends: friendId } });
