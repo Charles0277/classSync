@@ -20,6 +20,7 @@ export const ManageFriends = () => {
 
     const handleAddFriend = () => {
         dispatch(addFriendRequest({ email, token }));
+        setEmail('');
     };
 
     return (
