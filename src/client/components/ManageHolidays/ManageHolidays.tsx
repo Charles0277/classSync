@@ -1,11 +1,15 @@
 import {
     deleteHolidayRequest,
-    getAllHolidaysRequest
+    getAllHolidaysRequest,
+    resetHolidayAdded,
+    resetHolidayDeleted,
+    resetHolidayUpdated
 } from '@/client/store/slices/holidaySlice';
 import { IHoliday } from '@/common/types/IHoliday';
 import { getIdString } from '@/common/utils';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import addIcon from '../../assets/addIcon.svg';
 import { RootState } from '../../store/store.ts';
 import Button from '../Button/Button.tsx';
@@ -19,9 +23,14 @@ export const ManageHolidays: React.FC<ManageHolidaysProps> = ({
     onAddEditHoliday
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const { holidays, loading } = useSelector(
-        (state: RootState) => state.holiday
-    );
+    const {
+        holidays,
+        loading,
+        isHolidayAdded,
+        isHolidayUpdated,
+        isHolidayDeleted,
+        error
+    } = useSelector((state: RootState) => state.holiday);
     const dispatch = useDispatch();
     const [holidayToDelete, setHolidayToDelete] = useState<IHoliday | null>(
         null
@@ -32,6 +41,26 @@ export const ManageHolidays: React.FC<ManageHolidaysProps> = ({
             dispatch(getAllHolidaysRequest({ token }));
         }
     }, [token]);
+
+    useEffect(() => {
+        if (isHolidayAdded) {
+            toast.success('Holiday added successfully! 🎉');
+            dispatch(resetHolidayAdded());
+        }
+        if (isHolidayUpdated) {
+            toast.success('Holiday updated successfully! 🎉');
+            dispatch(resetHolidayUpdated());
+        }
+        if (isHolidayDeleted) {
+            toast.success('Holiday deleted successfully! 🎉');
+            dispatch(resetHolidayDeleted());
+        }
+        if (error) {
+            toast.error(
+                `Holiday ${isHolidayAdded ? 'submission' : isHolidayUpdated ? 'update' : 'deletion'} failed: ${error}`
+            );
+        }
+    }, [isHolidayAdded, isHolidayUpdated, isHolidayDeleted, error]);
 
     const onDeleteHoliday = (holiday: IHoliday) => {
         if (token) {

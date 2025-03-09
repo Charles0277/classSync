@@ -8,9 +8,18 @@ interface holidayState {
     error?: string | null;
     loading: boolean;
     date?: DateRange;
+    isHolidayAdded: boolean;
+    isHolidayDeleted: boolean;
+    isHolidayUpdated: boolean;
 }
 
-const initialState: holidayState = { loading: false, holidays: [] };
+const initialState: holidayState = {
+    loading: false,
+    holidays: [],
+    isHolidayAdded: false,
+    isHolidayDeleted: false,
+    isHolidayUpdated: false
+};
 
 const holidaySlice = createSlice({
     name: 'holiday',
@@ -36,6 +45,7 @@ const holidaySlice = createSlice({
                 holiday._id === updatedHoliday._id ? updatedHoliday : holiday
             );
             state.loading = false;
+            state.isHolidayUpdated = true;
         },
         updateHolidayFailure: (state, action) => {
             state.error = action.payload;
@@ -50,6 +60,7 @@ const holidaySlice = createSlice({
             state.holiday = newHoliday;
             state.holidays = [newHoliday, ...state.holidays];
             state.loading = false;
+            state.isHolidayAdded = true;
         },
         createHolidayFailure: (state, action) => {
             state.loading = false;
@@ -66,10 +77,20 @@ const holidaySlice = createSlice({
                 (holiday) => holiday._id !== deletedHolidayId
             );
             state.loading = false;
+            state.isHolidayDeleted = true;
         },
         deleteHolidayFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        resetHolidayAdded: (state) => {
+            state.isHolidayAdded = false;
+        },
+        resetHolidayDeleted: (state) => {
+            state.isHolidayDeleted = false;
+        },
+        resetHolidayUpdated: (state) => {
+            state.isHolidayUpdated = false;
         }
     }
 });
@@ -86,7 +107,10 @@ export const {
     createHolidayFailure,
     deleteHolidayRequest,
     deleteHolidaySuccess,
-    deleteHolidayFailure
+    deleteHolidayFailure,
+    resetHolidayAdded,
+    resetHolidayDeleted,
+    resetHolidayUpdated
 } = holidaySlice.actions;
 
 export default holidaySlice.reducer;
