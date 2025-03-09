@@ -237,7 +237,7 @@ export async function generateGlobalSchedule(
         const globalSchedule = await scheduler.generateSchedule();
         createSchedule(globalSchedule);
 
-        return res.status(201).send(globalSchedule);
+        return res.status(201).send({ semester });
     } catch (error) {
         console.error('Failed to generate schedule:', error);
         return res.status(500).send({ error: 'Failed to generate schedule' });

@@ -26,6 +26,8 @@ interface scheduleState {
     isScheduleEntryUpdated: boolean;
     isScheduleEntryDeleted: boolean;
     isScheduleEntryAdded: boolean;
+    isSemester1GlobalScheduleGenerated: boolean;
+    isSemester2GlobalScheduleGenerated: boolean;
 }
 
 const initialState: scheduleState = {
@@ -36,7 +38,9 @@ const initialState: scheduleState = {
     checkingConflicts: false,
     isScheduleEntryUpdated: false,
     isScheduleEntryDeleted: false,
-    isScheduleEntryAdded: false
+    isScheduleEntryAdded: false,
+    isSemester1GlobalScheduleGenerated: false,
+    isSemester2GlobalScheduleGenerated: false
 };
 
 const scheduleSlice = createSlice({
@@ -89,6 +93,12 @@ const scheduleSlice = createSlice({
         generateGlobalScheduleSuccess: (state, action) => {
             state.generateSemester1Loading = false;
             state.generateSemester2Loading = false;
+            if (action.payload.semester === 1) {
+                state.isSemester1GlobalScheduleGenerated = true;
+            } else {
+                state.isSemester2GlobalScheduleGenerated = true;
+            }
+            state.globalSchedule = undefined;
         },
         generateGlobalScheduleFailure: (state, action) => {
             state.error = action.payload;
@@ -157,6 +167,12 @@ const scheduleSlice = createSlice({
         },
         resetScheduleEntryAdded: (state) => {
             state.isScheduleEntryAdded = false;
+        },
+        resetSemester1GlobalScheduleGenerated: (state) => {
+            state.isSemester1GlobalScheduleGenerated = false;
+        },
+        resetSemester2GlobalScheduleGenerated: (state) => {
+            state.isSemester2GlobalScheduleGenerated = false;
         }
     },
     extraReducers: (builder) => {
@@ -215,7 +231,9 @@ export const {
     checkForConflictsFailure,
     resetScheduleEntryUpdated,
     resetScheduleEntryDeleted,
-    resetScheduleEntryAdded
+    resetScheduleEntryAdded,
+    resetSemester1GlobalScheduleGenerated,
+    resetSemester2GlobalScheduleGenerated
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;
