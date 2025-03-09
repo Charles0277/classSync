@@ -7,6 +7,7 @@ import { convertRoomTypeToClassType } from '@/common/utils';
 import classTypeIcon from '../../assets/classTypeIcon.svg';
 import clockIcon from '../../assets/clockIcon.svg';
 import locationIcon from '../../assets/locationIcon.svg';
+import userIcon from '../../assets/userIcon.svg';
 import styles from './ScheduleEntry.module.css';
 
 interface SchedulEntryProps {
@@ -37,10 +38,14 @@ export const ScheduleEntry: React.FC<SchedulEntryProps> = ({
                     <div className={styles.classProperty}>
                         <img src={locationIcon} /> Room: {entry.roomName}
                     </div>
-                    {'type' in entry ? null : (
+                    {'instructorName' in entry ? (
                         <div className={styles.classProperty}>
                             <img src={clockIcon} />
                             Time: {entry.hour}:00
+                        </div>
+                    ) : (
+                        <div className={styles.classProperty}>
+                            <img src={userIcon} /> Friend: {entry.friendName}
                         </div>
                     )}
                 </div>
