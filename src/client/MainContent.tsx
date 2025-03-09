@@ -6,6 +6,7 @@ import { LoadingScreen } from './components/LoadingScreen/LoadingScreen';
 import Sidebar from './components/Sidebar/Sidebar';
 import Configuration from './containers/Configurations/Configuration';
 import { Feedback } from './containers/Feedback/Feedback';
+import { FriendsSchedule } from './containers/FriendsSchedule/FriendsSchedule';
 import Home from './containers/Home/Home';
 import { ManageFriends } from './containers/ManageFriends/ManageFriends';
 import Welcome from './containers/Welcome/Welcome';
@@ -49,6 +50,12 @@ function MainContent() {
                     <Route
                         path="/"
                         element={isAuthenticated ? <Home /> : <Welcome />}
+                    />
+                    <Route
+                        path="/friends-schedule"
+                        element={
+                            isAuthenticated ? <FriendsSchedule /> : <Welcome />
+                        }
                     />
                     <Route
                         path="/manage-friends"

@@ -3,10 +3,12 @@ import {
     convertClassTypeToRoomType,
     findLastDigit,
     generateTimeSlots,
+    getIdString,
     maxRoomSizeForRoomType,
     splitCourseUnitIntoClasses
 } from '@/common/utils.js';
 import express from 'express';
+import { Types } from 'mongoose';
 import { ILPScheduler } from '../scheduler/ilpScheduler.js';
 import { deleteAllClasses, fetchClasses } from '../services/class.services.js';
 import { fetchCourseUnits } from '../services/courseUnit.services.ts';
@@ -16,13 +18,15 @@ import {
     checkForConflicts,
     createSchedule,
     deleteScheduleEntryById,
+    fetchFriendsSchedule,
     fetchGlobalSchedule,
     fetchUserSchedule,
     updateScheduleEntryById
 } from '../services/schedule.services.js';
 import {
     fetchAllStudents,
-    fetchAllTeachers
+    fetchAllTeachers,
+    fetchUserById
 } from '../services/user.services.js';
 
 export const getGlobalSchedule = async (
@@ -252,6 +256,49 @@ export const checkScheduleConflict = async (
         const formData = req.body;
         const conflicts = await checkForConflicts(formData);
         return res.status(200).send({ conflicts });
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const getFriendsSchedule = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const friendIds: string[] = req.query.friendIds as string[];
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!friendIds) {
+            return res.status(400).send({ error: 'Missing friendIds.' });
+        }
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send('Missing userId or Role in the request.');
+        }
+
+        const currentUser = await fetchUserById(userId);
+
+        const currentUserFriendIds = (currentUser?.friends || []).map(
+            (friend) => getIdString(friend as Types.ObjectId)
+        );
+
+        const allFriends = friendIds.every((friendId) =>
+            currentUserFriendIds.includes(friendId)
+        );
+
+        if (!allFriends) {
+            return res.status(403).send({
+                error: 'Unauthorized. Not friends with all specified users.'
+            });
+        }
+
+        const friendsSchedule = await fetchFriendsSchedule(friendIds);
+        return res.status(200).send(friendsSchedule);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);

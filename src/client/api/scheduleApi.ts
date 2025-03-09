@@ -1,9 +1,11 @@
 import {
+    IFriendsScheduleEntry,
     IGlobalSchedule,
     IGlobalScheduleEntry,
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
 import axios from 'axios';
+import { Types } from 'mongoose';
 
 export const getGlobalScheduleApi = (token: string) => {
     return axios.get<IGlobalScheduleEntry[]>(
@@ -62,5 +64,18 @@ export const checkForConflictsApi = (token: string, formData: any) => {
         `http://localhost:3000/check-for-conflicts`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
+    );
+};
+
+export const getFriendsScheduleApi = (
+    token: string,
+    friendIds: Types.ObjectId[]
+) => {
+    return axios.get<IFriendsScheduleEntry[]>(
+        `http://localhost:3000/get-friends-schedule`,
+        {
+            params: { friendIds },
+            headers: { Authorization: `Bearer ${token}` }
+        }
     );
 };

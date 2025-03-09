@@ -9,6 +9,7 @@ import homeIcon from '../../assets/homeIcon.svg';
 import profileIcon from '../../assets/profileIcon.svg';
 import settingsIcon from '../../assets/settingsIcon.svg';
 import addFriendIcon from '../../assets/addFriendIcon.svg';
+import friendIcon from '../../assets/friendIcon.svg';
 import { RESET_STATE } from '../../store/rootReducer';
 import { logOut } from '../../store/slices/authSlice';
 import { RootState } from '../../store/store';
@@ -115,6 +116,17 @@ const Sidebar: React.FC = () => {
                         onClick={() => navigate('/')}
                     >
                         <img src={homeIcon} alt="Home" />
+                    </Button>
+                    <Button
+                        type="button"
+                        className={
+                            location.pathname === '/friends-schedule'
+                                ? 'sidebar activeSidebar'
+                                : 'sidebar'
+                        }
+                        onClick={() => navigate('/friends-schedule')}
+                    >
+                        <img src={friendIcon} alt="Friend" />
                     </Button>
                     <Button
                         type="button"

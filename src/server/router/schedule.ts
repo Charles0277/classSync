@@ -4,6 +4,7 @@ import {
     checkScheduleConflict,
     deleteGlobalScheduleEntry,
     generateGlobalSchedule,
+    getFriendsSchedule,
     getGlobalSchedule,
     getUserSchedule,
     updateGlobalScheduleEntry
@@ -51,4 +52,5 @@ export default (router: express.Router) => {
         checkAdmin,
         checkScheduleConflict
     );
+    router.get('/get-friends-schedule', authenticateToken, getFriendsSchedule);
 };

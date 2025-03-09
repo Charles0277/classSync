@@ -374,3 +374,62 @@ export const checkForConflicts = async (newEntry: IGlobalScheduleEntry) => {
         )
     };
 };
+
+export const fetchFriendsSchedule = async (friendIds: string[]) => {
+    const friendIdsArray = friendIds.map(
+        (id) => new mongoose.Types.ObjectId(id)
+    );
+
+    const friendsSchedule = await GlobalScheduleModel.aggregate([
+        { $match: { _id: 'GLOBAL_SCHEDULE' } },
+        { $match: { entries: { $exists: true } } },
+        { $project: { entriesArray: { $objectToArray: '$entries' } } },
+        { $unwind: '$entriesArray' },
+        { $replaceRoot: { newRoot: '$entriesArray.v' } },
+        { $match: { studentIds: { $in: friendIdsArray } } },
+
+        {
+            $lookup: {
+                from: 'classes',
+                let: { classId: '$classId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$classId'] } } },
+                    { $project: { name: 1, classTypes: 1 } }
+                ],
+                as: 'class'
+            }
+        },
+        {
+            $lookup: {
+                from: 'rooms',
+                let: { roomId: '$roomId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$roomId'] } } },
+                    { $project: { name: 1 } }
+                ],
+                as: 'room'
+            }
+        },
+
+        {
+            $addFields: {
+                className: { $arrayElemAt: ['$class.name', 0] },
+                classType: { $arrayElemAt: ['$class.classTypes', 0] },
+                roomName: { $arrayElemAt: ['$room.name', 0] }
+            }
+        },
+
+        {
+            $project: {
+                classId: 1,
+                className: 1,
+                classType: 1,
+                day: 1,
+                hour: 1,
+                roomName: 1
+            }
+        }
+    ]);
+
+    return friendsSchedule;
+};

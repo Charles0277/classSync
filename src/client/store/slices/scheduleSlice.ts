@@ -28,6 +28,7 @@ interface scheduleState {
     isScheduleEntryAdded: boolean;
     isSemester1GlobalScheduleGenerated: boolean;
     isSemester2GlobalScheduleGenerated: boolean;
+    friendsSchedule?: IGlobalScheduleEntry[];
 }
 
 const initialState: scheduleState = {
@@ -173,6 +174,19 @@ const scheduleSlice = createSlice({
         },
         resetSemester2GlobalScheduleGenerated: (state) => {
             state.isSemester2GlobalScheduleGenerated = false;
+        },
+        getFriendsScheduleRequest: (state, action) => {
+            state.loading = true;
+            state.error = null;
+        },
+        getFriendsScheduleSuccess: (state, action) => {
+            state.friendsSchedule = action.payload;
+            state.loading = false;
+            state.hasLoaded = true;
+        },
+        getFriendsScheduleFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -233,7 +247,10 @@ export const {
     resetScheduleEntryDeleted,
     resetScheduleEntryAdded,
     resetSemester1GlobalScheduleGenerated,
-    resetSemester2GlobalScheduleGenerated
+    resetSemester2GlobalScheduleGenerated,
+    getFriendsScheduleRequest,
+    getFriendsScheduleSuccess,
+    getFriendsScheduleFailure
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

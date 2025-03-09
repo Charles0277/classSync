@@ -33,4 +33,14 @@ export interface IUserScheduleEntry {
     studentIds?: string[];
 }
 
+export interface IFriendsScheduleEntry {
+    _id?: Types.ObjectId;
+    className: string;
+    classType: string[];
+    day: number;
+    hour: number;
+    roomName: string;
+    friendName?: string;
+}
+
 export interface IGlobalSchedule extends GlobalSchedule, Document {}

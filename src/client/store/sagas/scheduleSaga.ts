@@ -3,11 +3,13 @@ import {
     checkForConflictsApi,
     deleteGlobalScheduleEntryApi,
     generateGlobalScheduleApi,
+    getFriendsScheduleApi,
     getGlobalScheduleApi,
     getUserScheduleApi,
     updateGlobalScheduleEntryApi
 } from '@/client/api/scheduleApi';
 import {
+    IFriendsScheduleEntry,
     IGlobalSchedule,
     IGlobalScheduleEntry,
     IUserScheduleEntry
@@ -27,6 +29,9 @@ import {
     generateGlobalScheduleFailure,
     generateGlobalScheduleRequest,
     generateGlobalScheduleSuccess,
+    getFriendsScheduleFailure,
+    getFriendsScheduleRequest,
+    getFriendsScheduleSuccess,
     getGlobalScheduleFailure,
     getGlobalScheduleRequest,
     getGlobalScheduleSuccess,
@@ -137,6 +142,20 @@ function* checkForConflicts(action: any) {
     }
 }
 
+function* getFriendsSchedule(action: any) {
+    const { token, friendIds } = action.payload;
+    try {
+        const response: AxiosResponse<IFriendsScheduleEntry[]> = yield call(
+            getFriendsScheduleApi,
+            token,
+            friendIds
+        );
+        yield put(getFriendsScheduleSuccess(response.data));
+    } catch (error: any) {
+        yield put(getFriendsScheduleFailure(error.message));
+    }
+}
+
 export default function* scheduleSaga() {
     yield takeLatest(getGlobalScheduleRequest.type, getGlobalSchedule);
     yield takeLatest(getUserScheduleRequest.type, getUserSchedule);
@@ -157,4 +176,5 @@ export default function* scheduleSaga() {
         addGlobalScheduleEntry
     );
     yield takeLatest(checkForConflictsRequest.type, checkForConflicts);
+    yield takeLatest(getFriendsScheduleRequest.type, getFriendsSchedule);
 }

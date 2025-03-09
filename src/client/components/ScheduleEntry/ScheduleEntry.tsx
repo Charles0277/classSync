@@ -1,4 +1,5 @@
 import {
+    IFriendsScheduleEntry,
     IGlobalScheduleEntry,
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
@@ -9,7 +10,7 @@ import locationIcon from '../../assets/locationIcon.svg';
 import styles from './ScheduleEntry.module.css';
 
 interface SchedulEntryProps {
-    entry: IUserScheduleEntry | IGlobalScheduleEntry;
+    entry: IUserScheduleEntry | IGlobalScheduleEntry | IFriendsScheduleEntry;
     classType: string[];
     onClick: () => void;
 }
@@ -22,7 +23,7 @@ export const ScheduleEntry: React.FC<SchedulEntryProps> = ({
     return (
         <div
             onClick={onClick}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: `${'instructorName' in entry && 'pointer'}` }}
             className={`${'type' in entry ? styles.globalScheduleEntry : styles.scheduleEntry} ${styles[`${convertRoomTypeToClassType(classType)}`]}`}
             // className={`${styles.globalScheduleEntry} ${styles[`${convertRoomTypeToClassType(classType)}`]}`}
         >
@@ -36,10 +37,12 @@ export const ScheduleEntry: React.FC<SchedulEntryProps> = ({
                     <div className={styles.classProperty}>
                         <img src={locationIcon} /> Room: {entry.roomName}
                     </div>
-                    <div className={styles.classProperty}>
-                        <img src={clockIcon} />
-                        Time: {entry.hour}:00
-                    </div>
+                    {'type' in entry ? null : (
+                        <div className={styles.classProperty}>
+                            <img src={clockIcon} />
+                            Time: {entry.hour}:00
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

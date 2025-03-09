@@ -11,6 +11,7 @@ import {
 import { fetchAllStudentsRequest } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import {
+    IFriendsScheduleEntry,
     IGlobalScheduleEntry,
     IUserScheduleEntry
 } from '@/common/types/ISchedule';
@@ -18,22 +19,24 @@ import { convertRoomTypeToClassType, getIdString } from '@/common/utils';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
+import { toast } from 'sonner';
 import settingsIcon from '../../assets/settingsIcon.svg';
 import Button from '../Button/Button';
 import { ClassDetails } from '../ClassDetails/ClassDetails';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
 import { ScheduleEntry } from '../ScheduleEntry/ScheduleEntry';
 import styles from './Schedule.module.css';
-import { toast } from 'sonner';
 
 type ScheduleProps = {
     userSchedule?: IUserScheduleEntry[];
     globalSchedule?: IGlobalScheduleEntry[];
+    friendsSchedule?: IFriendsScheduleEntry[];
 };
 
 const Schedule: React.FC<ScheduleProps> = ({
     userSchedule,
-    globalSchedule
+    globalSchedule,
+    friendsSchedule
 }) => {
     const { token } = useSelector((state: RootState) => state.auth);
     const {
@@ -138,7 +141,9 @@ const Schedule: React.FC<ScheduleProps> = ({
         ? globalSchedule
         : userSchedule
           ? userSchedule
-          : [];
+          : friendsSchedule
+            ? friendsSchedule
+            : [];
 
     const studentOptions = students
         ? students.map((student) => ({
@@ -174,6 +179,7 @@ const Schedule: React.FC<ScheduleProps> = ({
               : selectedStudents.length > 0
                 ? schedule.filter(
                       (entry) =>
+                          'studentIds' in entry &&
                           entry.studentIds &&
                           entry.studentIds.some((studentId) =>
                               selectedStudents.includes(studentId)
@@ -182,7 +188,11 @@ const Schedule: React.FC<ScheduleProps> = ({
                 : schedule;
 
     const scheduleMap: {
-        [key: string]: (IUserScheduleEntry | IGlobalScheduleEntry)[];
+        [key: string]: (
+            | IUserScheduleEntry
+            | IGlobalScheduleEntry
+            | IFriendsScheduleEntry
+        )[];
     } = {};
 
     filteredSchedule.forEach((entry) => {
@@ -358,13 +368,18 @@ const Schedule: React.FC<ScheduleProps> = ({
                                                             classType={
                                                                 entry.classType
                                                             }
-                                                            onClick={() =>
-                                                                dispatch(
-                                                                    openPopUp(
-                                                                        entry
-                                                                    )
-                                                                )
-                                                            }
+                                                            onClick={() => {
+                                                                if (
+                                                                    'instructorName' in
+                                                                    entry
+                                                                ) {
+                                                                    dispatch(
+                                                                        openPopUp(
+                                                                            entry
+                                                                        )
+                                                                    );
+                                                                }
+                                                            }}
                                                         />
                                                     </div>
                                                 )
