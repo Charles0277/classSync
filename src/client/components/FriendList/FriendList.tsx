@@ -38,9 +38,13 @@ export const FriendList: React.FC<FriendsListProps> = ({
                     onClick={() => setSelectedTab('friendRequests')}
                 >
                     Friend Requests
+                    {friendRequests.length > 0 && (
+                        <span className={styles.notificationBadge}>
+                            {friendRequests.length}
+                        </span>
+                    )}
                 </button>
             </div>
-
             <div className={styles.friendsContainer}>
                 <div
                     className={styles.listsWrapper}

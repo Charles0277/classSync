@@ -156,24 +156,14 @@ const userSlice = createSlice({
         resetFriendError: (state) => {
             state.friendError = null;
         },
-        acceptFriendRequest: (state, action) => {
-            state.loading = true;
-        },
-        acceptFriendSuccess: (state, action) => {
-            state.loading = false;
-        },
+        acceptFriendRequest: (state, action) => {},
+        acceptFriendSuccess: (state, action) => {},
         acceptFriendFailure: (state, action) => {
-            state.loading = false;
             state.friendError = action.payload;
         },
-        declineFriendRequest: (state, action) => {
-            state.loading = true;
-        },
-        declineFriendSuccess: (state, action) => {
-            state.loading = false;
-        },
+        declineFriendRequest: (state, action) => {},
+        declineFriendSuccess: (state, action) => {},
         declineFriendFailure: (state, action) => {
-            state.loading = false;
             state.friendError = action.payload;
         }
     },
