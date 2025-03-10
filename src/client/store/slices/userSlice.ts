@@ -17,6 +17,8 @@ interface UserState {
     friendRequestSent: boolean;
     removeFriendSuccess: boolean;
     sendFriendRequestLoading: boolean;
+    acceptFriendRequestSuccess: boolean;
+    declineFriendRequestSuccess: boolean;
 }
 
 const initialState: UserState = {
@@ -31,7 +33,9 @@ const initialState: UserState = {
     isUserDeleted: false,
     friendRequestSent: false,
     removeFriendSuccess: false,
-    sendFriendRequestLoading: false
+    sendFriendRequestLoading: false,
+    acceptFriendRequestSuccess: false,
+    declineFriendRequestSuccess: false
 };
 
 const userSlice = createSlice({
@@ -159,14 +163,24 @@ const userSlice = createSlice({
             state.friendError = null;
         },
         acceptFriendRequest: (state, action) => {},
-        acceptFriendSuccess: (state, action) => {},
+        acceptFriendSuccess: (state, action) => {
+            state.acceptFriendRequestSuccess = true;
+        },
         acceptFriendFailure: (state, action) => {
             state.friendError = action.payload;
         },
         declineFriendRequest: (state, action) => {},
-        declineFriendSuccess: (state, action) => {},
+        declineFriendSuccess: (state, action) => {
+            state.declineFriendRequestSuccess = true;
+        },
         declineFriendFailure: (state, action) => {
             state.friendError = action.payload;
+        },
+        resetAcceptFriendRequestSuccess: (state) => {
+            state.acceptFriendRequestSuccess = false;
+        },
+        resetDeclineFriendRequestSuccess: (state) => {
+            state.declineFriendRequestSuccess = false;
         }
     },
     extraReducers(builder) {
@@ -212,7 +226,9 @@ export const {
     acceptFriendFailure,
     declineFriendRequest,
     declineFriendSuccess,
-    declineFriendFailure
+    declineFriendFailure,
+    resetAcceptFriendRequestSuccess,
+    resetDeclineFriendRequestSuccess
 } = userSlice.actions;
 
 export default userSlice.reducer;

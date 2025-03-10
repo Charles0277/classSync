@@ -6,6 +6,8 @@ import {
     acceptFriendRequest,
     declineFriendRequest,
     removeFriendRequest,
+    resetAcceptFriendRequestSuccess,
+    resetDeclineFriendRequestSuccess,
     resetFriendError,
     resetFriendRequestSent,
     resetRemoveFriendSuccess,
@@ -24,7 +26,9 @@ export const ManageFriends = () => {
         friendError,
         friendRequestSent,
         removeFriendSuccess,
-        sendFriendRequestLoading
+        sendFriendRequestLoading,
+        acceptFriendRequestSuccess,
+        declineFriendRequestSuccess
     } = useSelector((state: RootState) => state.user);
     const [email, setEmail] = useState('');
     const [showError, setShowError] = useState(false);
@@ -33,19 +37,33 @@ export const ManageFriends = () => {
 
     useEffect(() => {
         if (friendRequestSent) {
-            toast.success('Friend request sent successfully! 🆕');
+            toast.success('Friend request sent successfully! 🤝');
             dispatch(resetFriendRequestSent());
             dispatch(resetFriendError());
             setEmail('');
         }
         if (removeFriendSuccess) {
-            toast.success('Friend removed successfully! 🗑️');
+            toast.success('Friend removed successfully! ❌');
             dispatch(resetRemoveFriendSuccess());
+        }
+        if (acceptFriendRequestSuccess) {
+            toast.success('Friend request accepted successfully! ✅');
+            dispatch(resetAcceptFriendRequestSuccess());
+        }
+        if (declineFriendRequestSuccess) {
+            toast.success('Friend request declined successfully! ❌');
+            dispatch(resetDeclineFriendRequestSuccess());
         }
         if (friendError) {
             toast.error(`${friendError} ⚠️`);
         }
-    }, [friendRequestSent, removeFriendSuccess, friendError]);
+    }, [
+        friendRequestSent,
+        removeFriendSuccess,
+        friendError,
+        acceptFriendRequestSuccess,
+        declineFriendRequestSuccess
+    ]);
 
     const handleSendFriendRequest = () => {
         dispatch(sendFriendRequest({ email, token }));
