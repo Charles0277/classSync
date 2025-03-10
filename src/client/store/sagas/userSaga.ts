@@ -48,7 +48,7 @@ function* handleFetchAllUsers(action: any) {
         );
         yield put(fetchAllUsersSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchAllUsersFailure(error.message));
+        yield put(fetchAllUsersFailure(error.response.data.error));
     }
 }
 
@@ -63,7 +63,7 @@ function* handleFetchUsers(action: any) {
         );
         yield put(fetchUsersSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchUsersFailure(error.message));
+        yield put(fetchUsersFailure(error.response.data.error));
     }
 }
 
@@ -77,7 +77,7 @@ function* handleFetchAllTeachers(action: any) {
         );
         yield put(fetchAllTeachersSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchAllTeachersFailure(error.message));
+        yield put(fetchAllTeachersFailure(error.response.data.error));
     }
 }
 
@@ -91,7 +91,7 @@ function* handleFetchAllStudents(action: any) {
         );
         yield put(fetchAllStudentsSuccess(response.data));
     } catch (error: any) {
-        yield put(fetchAllStudentsFailure(error.message));
+        yield put(fetchAllStudentsFailure(error.response.data.error));
     }
 }
 
@@ -110,7 +110,7 @@ function* handleUpdateUser(action: any) {
         );
         yield put(updateUserSuccess(response.data));
     } catch (error: any) {
-        yield put(updateUserFailure(error.message));
+        yield put(updateUserFailure(error.response.data.error));
     }
 }
 
@@ -124,7 +124,7 @@ function* handleDeleteUser(action: any) {
         );
         yield put(deleteUserSuccess(response.data));
     } catch (error: any) {
-        yield put(deleteUserFailure(error.message));
+        yield put(deleteUserFailure(error.response.data.error));
     }
 }
 
@@ -139,7 +139,7 @@ function* handleAddFriend(action: any) {
         );
         yield put(addFriendSuccess(response.data));
     } catch (error: any) {
-        yield put(addFriendFailure(error.message));
+        yield put(addFriendFailure(error.response.data.error));
     }
 }
 
@@ -154,7 +154,7 @@ function* handleRemoveFriend(action: any) {
         );
         yield put(removeFriendSuccess(response.data));
     } catch (error: any) {
-        yield put(removeFriendFailure(error.message));
+        yield put(removeFriendFailure(error.response.data.error));
     }
 }
 

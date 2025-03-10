@@ -38,3 +38,9 @@
     justify-content: flex-end;
     align-items: center;
 }
+
+.error {
+    color: red;
+    font-weight: 600;
+    font-size: 0.9rem;
+}

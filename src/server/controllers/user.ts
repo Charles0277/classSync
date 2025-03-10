@@ -26,7 +26,7 @@ export const getAllUsers = async (
         return res.status(201).send(users);
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -38,7 +38,7 @@ export const getUsers = async (req: express.Request, res: express.Response) => {
         return res.status(201).send(users);
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -51,7 +51,7 @@ export const getAllTeachers = async (
         return res.status(200).send(teachers);
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -64,7 +64,7 @@ export const getAllStudents = async (
         return res.status(200).send(students);
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -75,7 +75,7 @@ export const getUser = async (req: express.Request, res: express.Response) => {
         return res.status(201).send(user);
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -90,7 +90,7 @@ export const deleteUser = async (
         return res.status(201).send(deletedUser);
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -145,14 +145,14 @@ export const updateUser = async (
             updatedValues.email &&
             !MANCHESTER_EMAIL_REGEX.test(updatedValues.email.toString())
         ) {
-            return res.status(400).json({ error: MANCHESTER_EMAIL_ERROR });
+            return res.status(400).send({ error: MANCHESTER_EMAIL_ERROR });
         }
 
         const updatedUser = await updateUserById(id, updatedValues);
 
         return res.status(201).send(updatedUser);
     } catch (error) {
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -168,28 +168,34 @@ export const addFriend = async (
         if (!userId || !role) {
             return res
                 .status(400)
-                .send('Missing userId or Role in the request.');
+                .send({ error: 'Missing userId or Role in the request.' });
         }
 
         const existingUser = await fetchUserByEmail(email);
         if (!existingUser) {
-            return res.status(409).json({
+            return res.status(409).send({
                 error: 'This user does not exist.'
             });
         }
         if (existingUser.role !== role) {
-            return res
-                .status(403)
-                .send('You are not authorized to add this user as a friend.');
+            return res.status(403).send({
+                error: 'You are not authorized to add this user as a friend.'
+            });
         }
 
         const currentUser = await fetchUserById(userId);
+
+        if (currentUser?.email === existingUser.email) {
+            return res
+                .status(409)
+                .send({ error: 'You cannot add yourself as a friend.' });
+        }
 
         const isAlreadyFriend = (
             currentUser?.friends as Types.ObjectId[]
         )?.some((friendId) => friendId.equals(existingUser._id));
         if (isAlreadyFriend) {
-            return res.status(409).json({ error: 'User is already a friend.' });
+            return res.status(409).send({ error: 'User is already a friend.' });
         }
 
         await addFriendToUser(userId, existingUser._id);
@@ -201,7 +207,7 @@ export const addFriend = async (
         });
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };
 
@@ -224,7 +230,7 @@ export const removeFriend = async (
         const friend = await fetchUserById(friendId);
 
         if (!currentUser || !friend) {
-            return res.status(404).json({ error: 'User not found.' });
+            return res.status(404).send({ error: 'User not found.' });
         }
 
         const isFriend = (currentUser?.friends as Types.ObjectId[])?.some(
@@ -232,7 +238,7 @@ export const removeFriend = async (
         );
 
         if (!isFriend) {
-            return res.status(404).json({ error: 'User is not a friend.' });
+            return res.status(404).send({ error: 'User is not a friend.' });
         }
 
         await removeFriendFromUser(userId, friend._id);
@@ -244,6 +250,6 @@ export const removeFriend = async (
         });
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.status(400).send(error);
     }
 };

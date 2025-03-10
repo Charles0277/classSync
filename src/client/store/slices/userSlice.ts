@@ -8,11 +8,13 @@ interface UserState {
     user?: IUser;
     loading: boolean;
     error: string | null;
+    friendError: string | null;
     students: IUser[];
     teachers: IUser[];
     studentsLoading?: boolean;
     isUserUpdated: boolean;
     isUserDeleted: boolean;
+    addFriendSuccess: boolean;
 }
 
 const initialState: UserState = {
@@ -22,8 +24,10 @@ const initialState: UserState = {
     teachers: [],
     loading: false,
     error: null,
+    friendError: null,
     isUserUpdated: false,
-    isUserDeleted: false
+    isUserDeleted: false,
+    addFriendSuccess: false
 };
 
 const userSlice = createSlice({
@@ -121,25 +125,29 @@ const userSlice = createSlice({
         },
         addFriendRequest: (state, action) => {
             state.loading = true;
-            state.error = null;
         },
         addFriendSuccess: (state, action) => {
             state.loading = false;
         },
         addFriendFailure: (state, action) => {
             state.loading = false;
-            state.error = action.payload;
+            state.friendError = action.payload;
         },
         removeFriendRequest: (state, action) => {
             state.loading = true;
-            state.error = null;
         },
         removeFriendSuccess: (state, action) => {
             state.loading = false;
         },
         removeFriendFailure: (state, action) => {
             state.loading = false;
-            state.error = action.payload;
+            state.friendError = action.payload;
+        },
+        resetAddFriendSuccess: (state) => {
+            state.addFriendSuccess = false;
+        },
+        resetFriendError: (state) => {
+            state.friendError = null;
         }
     },
     extraReducers(builder) {
@@ -176,7 +184,9 @@ export const {
     addFriendFailure,
     removeFriendRequest,
     removeFriendSuccess,
-    removeFriendFailure
+    removeFriendFailure,
+    resetAddFriendSuccess,
+    resetFriendError
 } = userSlice.actions;
 
 export default userSlice.reducer;

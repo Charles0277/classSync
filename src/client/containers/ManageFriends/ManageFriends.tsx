@@ -4,23 +4,37 @@ import { FriendList } from '@/client/components/FriendList/FriendList';
 import Input from '@/client/components/Input/Input';
 import {
     addFriendRequest,
-    removeFriendRequest
+    removeFriendRequest,
+    resetAddFriendSuccess,
+    resetFriendError
 } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import { IFriend } from '@/common/types/IUser';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './ManageFriends.module.css';
 
 export const ManageFriends = () => {
     const { user, token } = useSelector((state: RootState) => state.auth);
+    const { friendError, addFriendSuccess } = useSelector(
+        (state: RootState) => state.user
+    );
     const [email, setEmail] = useState('');
+    const [showError, setShowError] = useState(false);
 
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        if (addFriendSuccess) {
+            setEmail('');
+            dispatch(resetAddFriendSuccess());
+            dispatch(resetFriendError());
+        }
+    }, [addFriendSuccess]);
+
     const handleAddFriend = () => {
         dispatch(addFriendRequest({ email, token }));
-        setEmail('');
+        setShowError(true);
     };
 
     return (
@@ -45,8 +59,13 @@ export const ManageFriends = () => {
                         value={email}
                         onChange={(e) => {
                             setEmail(e.target.value);
+                            setShowError(false);
+                            dispatch(resetFriendError());
                         }}
                     />
+                    {friendError && showError && (
+                        <div className={styles.error}>{friendError}</div>
+                    )}
                     <div className={styles.addFriendButton}>
                         <Button
                             className="classDetailsSave"
