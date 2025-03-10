@@ -394,6 +394,13 @@ const Schedule: React.FC<ScheduleProps> = ({
                     className={styles.actionBar}
                     style={{ width: `${globalSchedule && '1229px'}` }}
                 >
+                    {globalSchedule && (
+                        <div className={styles.editClasses}>
+                            <Button onClick={handleAddClass}>
+                                Add a Class
+                            </Button>
+                        </div>
+                    )}
                     <div className={styles.weekControls}>
                         <Button
                             onClick={() => handleWeekChange(-1)}
@@ -422,18 +429,6 @@ const Schedule: React.FC<ScheduleProps> = ({
                             }}
                         >
                             →
-                        </Button>
-                    </div>
-                    {globalSchedule && (
-                        <div className={styles.editClasses}>
-                            <Button onClick={handleAddClass}>
-                                Add a Class
-                            </Button>
-                        </div>
-                    )}
-                    <div className={styles.settings}>
-                        <Button>
-                            <img src={settingsIcon} alt="Settings" />
                         </Button>
                     </div>
                 </div>

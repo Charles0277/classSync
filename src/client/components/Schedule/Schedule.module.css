@@ -110,19 +110,13 @@
 
 .weekControls {
     display: flex;
-    margin-right: auto;
+    margin-left: auto;
 }
 
 .editClasses {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-}
-
-.settings {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
 }
 
 .settings img {
