@@ -117,28 +117,32 @@ const Sidebar: React.FC = () => {
                     >
                         <img src={homeIcon} alt="Home" />
                     </Button>
-                    <Button
-                        type="button"
-                        className={
-                            location.pathname === '/friends-schedule'
-                                ? 'sidebar activeSidebar'
-                                : 'sidebar'
-                        }
-                        onClick={() => navigate('/friends-schedule')}
-                    >
-                        <img src={friendIcon} alt="Friend" />
-                    </Button>
-                    <Button
-                        type="button"
-                        className={
-                            location.pathname === '/manage-friends'
-                                ? 'sidebar activeSidebar'
-                                : 'sidebar'
-                        }
-                        onClick={() => navigate('/manage-friends')}
-                    >
-                        <img src={addFriendIcon} alt="Add Friend" />
-                    </Button>
+                    {user && user.role !== 'admin' && (
+                        <Button
+                            type="button"
+                            className={
+                                location.pathname === '/friends-schedule'
+                                    ? 'sidebar activeSidebar'
+                                    : 'sidebar'
+                            }
+                            onClick={() => navigate('/friends-schedule')}
+                        >
+                            <img src={friendIcon} alt="Friend" />
+                        </Button>
+                    )}
+                    {user && user.role !== 'admin' && (
+                        <Button
+                            type="button"
+                            className={
+                                location.pathname === '/manage-friends'
+                                    ? 'sidebar activeSidebar'
+                                    : 'sidebar'
+                            }
+                            onClick={() => navigate('/manage-friends')}
+                        >
+                            <img src={addFriendIcon} alt="Add Friend" />
+                        </Button>
+                    )}
                     <Button
                         type="button"
                         className={

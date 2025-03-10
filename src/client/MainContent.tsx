@@ -42,31 +42,37 @@ function MainContent() {
         return <LoadingScreen />;
     }
 
+    if (!isAuthenticated) {
+        return <Welcome />;
+    }
+
     return (
         <BrowserRouter>
             {isAuthenticated && <Sidebar />}
             <main className="layout">
                 <Routes>
-                    <Route
-                        path="/"
-                        element={isAuthenticated ? <Home /> : <Welcome />}
-                    />
+                    <Route path="/" element={<Home />} />
                     <Route
                         path="/friends-schedule"
                         element={
-                            isAuthenticated ? <FriendsSchedule /> : <Welcome />
+                            user?.role !== 'admin' ? (
+                                <FriendsSchedule />
+                            ) : (
+                                <Home />
+                            )
                         }
                     />
                     <Route
                         path="/manage-friends"
                         element={
-                            isAuthenticated ? <ManageFriends /> : <Welcome />
+                            user?.role !== 'admin' ? (
+                                <ManageFriends />
+                            ) : (
+                                <Home />
+                            )
                         }
                     />
-                    <Route
-                        path="/feedback"
-                        element={isAuthenticated ? <Feedback /> : <Welcome />}
-                    />
+                    <Route path="/feedback" element={<Feedback />} />
                     <Route
                         path="/configurations"
                         element={
