@@ -15,6 +15,7 @@ interface UserState {
     isUserUpdated: boolean;
     isUserDeleted: boolean;
     addFriendSuccess: boolean;
+    removeFriendSuccess: boolean;
 }
 
 const initialState: UserState = {
@@ -27,7 +28,8 @@ const initialState: UserState = {
     friendError: null,
     isUserUpdated: false,
     isUserDeleted: false,
-    addFriendSuccess: false
+    addFriendSuccess: false,
+    removeFriendSuccess: false
 };
 
 const userSlice = createSlice({
@@ -128,6 +130,7 @@ const userSlice = createSlice({
         },
         addFriendSuccess: (state, action) => {
             state.loading = false;
+            state.addFriendSuccess = true;
         },
         addFriendFailure: (state, action) => {
             state.loading = false;
@@ -138,6 +141,7 @@ const userSlice = createSlice({
         },
         removeFriendSuccess: (state, action) => {
             state.loading = false;
+            state.removeFriendSuccess = true;
         },
         removeFriendFailure: (state, action) => {
             state.loading = false;
@@ -145,6 +149,9 @@ const userSlice = createSlice({
         },
         resetAddFriendSuccess: (state) => {
             state.addFriendSuccess = false;
+        },
+        resetRemoveFriendSuccess: (state) => {
+            state.removeFriendSuccess = false;
         },
         resetFriendError: (state) => {
             state.friendError = null;
@@ -186,6 +193,7 @@ export const {
     removeFriendSuccess,
     removeFriendFailure,
     resetAddFriendSuccess,
+    resetRemoveFriendSuccess,
     resetFriendError
 } = userSlice.actions;
 

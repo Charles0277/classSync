@@ -6,17 +6,19 @@ import {
     addFriendRequest,
     removeFriendRequest,
     resetAddFriendSuccess,
-    resetFriendError
+    resetFriendError,
+    resetRemoveFriendSuccess
 } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import { IFriend } from '@/common/types/IUser';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import styles from './ManageFriends.module.css';
 
 export const ManageFriends = () => {
     const { user, token } = useSelector((state: RootState) => state.auth);
-    const { friendError, addFriendSuccess } = useSelector(
+    const { friendError, addFriendSuccess, removeFriendSuccess } = useSelector(
         (state: RootState) => state.user
     );
     const [email, setEmail] = useState('');
@@ -26,11 +28,21 @@ export const ManageFriends = () => {
 
     useEffect(() => {
         if (addFriendSuccess) {
-            setEmail('');
+            toast.success('Friend added successfully! 🆕');
             dispatch(resetAddFriendSuccess());
             dispatch(resetFriendError());
+            setEmail('');
         }
-    }, [addFriendSuccess]);
+        if (removeFriendSuccess) {
+            toast.success('Friend removed successfully! 🗑️');
+            dispatch(resetRemoveFriendSuccess());
+        }
+        if (friendError) {
+            toast.error(
+                `Friend ${addFriendSuccess ? 'add' : 'remove'} failed: ${friendError} ⚠️`
+            );
+        }
+    }, [addFriendSuccess, removeFriendSuccess, friendError]);
 
     const handleAddFriend = () => {
         dispatch(addFriendRequest({ email, token }));
