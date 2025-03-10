@@ -389,9 +389,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                             <Button
                                 type="button"
                                 onClick={() => {
-                                    mode === 'signUp'
-                                        ? dispatch(setMode(undefined))
-                                        : handleBack?.();
+                                    handleBack
+                                        ? handleBack()
+                                        : dispatch(setMode(undefined));
                                 }}
                                 className="back"
                             >
