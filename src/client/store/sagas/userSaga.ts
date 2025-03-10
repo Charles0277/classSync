@@ -2,19 +2,24 @@ import { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { IFriend, IUser } from '../../../common/types/IUser';
 import {
-    addFriendApi,
+    acceptFriendRequestApi,
+    declineFriendRequestApi,
     deleteUserApi,
     getAllStudentsApi,
     getAllTeachersApi,
     getAllUsersApi,
     getUsersApi,
     removeFriendApi,
+    sendFriendRequestApi,
     updateUserApi
 } from '../../api/userApi';
 import {
-    addFriendFailure,
-    addFriendRequest,
-    addFriendSuccess,
+    acceptFriendFailure,
+    acceptFriendRequest,
+    acceptFriendSuccess,
+    declineFriendFailure,
+    declineFriendRequest,
+    declineFriendSuccess,
     deleteUserFailure,
     deleteUserRequest,
     deleteUserSuccess,
@@ -33,6 +38,9 @@ import {
     removeFriendFailure,
     removeFriendRequest,
     removeFriendSuccess,
+    sendFriendFailure,
+    sendFriendRequest,
+    sendFriendSuccess,
     updateUserFailure,
     updateUserRequest,
     updateUserSuccess
@@ -128,18 +136,18 @@ function* handleDeleteUser(action: any) {
     }
 }
 
-function* handleAddFriend(action: any) {
+function* handleSendFriendRequest(action: any) {
     const { email, token } = action.payload;
 
     try {
         const response: AxiosResponse<IFriend> = yield call(
-            addFriendApi,
+            sendFriendRequestApi,
             email,
             token
         );
-        yield put(addFriendSuccess(response.data));
+        yield put(sendFriendSuccess(response.data));
     } catch (error: any) {
-        yield put(addFriendFailure(error.response.data.error));
+        yield put(sendFriendFailure(error.response.data.error));
     }
 }
 
@@ -158,6 +166,36 @@ function* handleRemoveFriend(action: any) {
     }
 }
 
+function* handleAcceptFriendRequest(action: any) {
+    const { friendId, token } = action.payload;
+
+    try {
+        const response: AxiosResponse<IFriend> = yield call(
+            acceptFriendRequestApi,
+            friendId,
+            token
+        );
+        yield put(acceptFriendSuccess(response.data));
+    } catch (error: any) {
+        yield put(acceptFriendFailure(error.response.data.error));
+    }
+}
+
+function* handleDeclineFriendRequest(action: any) {
+    const { friendId, token } = action.payload;
+
+    try {
+        const response: AxiosResponse<IFriend> = yield call(
+            declineFriendRequestApi,
+            friendId,
+            token
+        );
+        yield put(declineFriendSuccess(response.data));
+    } catch (error: any) {
+        yield put(declineFriendFailure(error.response.data.error));
+    }
+}
+
 export default function* userSaga() {
     yield takeLatest(fetchAllUsersRequest.type, handleFetchAllUsers);
     yield takeLatest(fetchUsersRequest.type, handleFetchUsers);
@@ -165,6 +203,8 @@ export default function* userSaga() {
     yield takeLatest(fetchAllStudentsRequest.type, handleFetchAllStudents);
     yield takeLatest(updateUserRequest.type, handleUpdateUser);
     yield takeLatest(deleteUserRequest.type, handleDeleteUser);
-    yield takeLatest(addFriendRequest.type, handleAddFriend);
     yield takeLatest(removeFriendRequest.type, handleRemoveFriend);
+    yield takeLatest(sendFriendRequest.type, handleSendFriendRequest);
+    yield takeLatest(acceptFriendRequest.type, handleAcceptFriendRequest);
+    yield takeLatest(declineFriendRequest.type, handleDeclineFriendRequest);
 }

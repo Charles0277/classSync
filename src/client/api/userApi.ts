@@ -46,9 +46,9 @@ export const deleteUserApi = (id: string, token: string) => {
     });
 };
 
-export const addFriendApi = (email: string, token: string) => {
+export const sendFriendRequestApi = (email: string, token: string) => {
     return axios.post<IFriend>(
-        `http://localhost:3000/add-friend/${email}`,
+        `http://localhost:3000/send-friend-request/${email}`,
         {},
         {
             headers: { Authorization: `Bearer ${token}` }
@@ -62,5 +62,21 @@ export const removeFriendApi = (friendId: string, token: string) => {
         {
             headers: { Authorization: `Bearer ${token}` }
         }
+    );
+};
+
+export const acceptFriendRequestApi = (friendId: string, token: string) => {
+    return axios.post<IFriend>(
+        `http://localhost:3000/accept-friend-request`,
+        { friendId },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+};
+
+export const declineFriendRequestApi = (friendId: string, token: string) => {
+    return axios.post<IFriend>(
+        `http://localhost:3000/decline-friend-request`,
+        { friendId },
+        { headers: { Authorization: `Bearer ${token}` } }
     );
 };

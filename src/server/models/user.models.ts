@@ -90,6 +90,9 @@ const UserSchema: Schema<IUser> = new Schema(
         ],
         friends: [
             { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true }
+        ],
+        friendRequests: [
+            { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true }
         ]
     },
     { timestamps: true }

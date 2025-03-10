@@ -80,17 +80,6 @@ export const FriendList: React.FC<FriendsListProps> = ({
                                 <div className={styles.friendRequestsActions}>
                                     <Button
                                         type="button"
-                                        className={styles.acceptButton}
-                                        onClick={() =>
-                                            onAcceptFriend(
-                                                getIdString(friend._id)
-                                            )
-                                        }
-                                    >
-                                        ✓
-                                    </Button>
-                                    <Button
-                                        type="button"
                                         className={styles.declineButton}
                                         onClick={() =>
                                             onDeclineFriend(
@@ -99,6 +88,17 @@ export const FriendList: React.FC<FriendsListProps> = ({
                                         }
                                     >
                                         ✕
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        className={styles.acceptButton}
+                                        onClick={() =>
+                                            onAcceptFriend(
+                                                getIdString(friend._id)
+                                            )
+                                        }
+                                    >
+                                        ✓
                                     </Button>
                                 </div>
                             </div>

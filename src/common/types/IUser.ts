@@ -18,4 +18,5 @@ export interface IUser extends Document {
     courseUnits: Types.ObjectId[];
     schedule?: Types.ObjectId[];
     friends?: Types.ObjectId[] | IFriend[];
+    friendRequests?: Types.ObjectId[] | IFriend[];
 }

@@ -18,6 +18,7 @@ export const fetchUserByEmail = (email: string) =>
         .populate('course')
         .populate('courseUnits')
         .populate('friends', '_id firstName lastName')
+        .populate('friendRequests', '_id firstName lastName')
         .exec();
 
 export const createUser = (values: Record<string, any>) =>
@@ -37,8 +38,44 @@ export const deleteUserByEmail = (email: string) =>
 export const updateUserByEmail = (email: string, values: Record<string, any>) =>
     UserModel.findOneAndUpdate({ email }, values, { new: true });
 
-export const addFriendToUser = (id: string, friendId: Types.ObjectId) =>
-    UserModel.findByIdAndUpdate(id, { $addToSet: { friends: friendId } });
+export const sendFriendRequestToUser = (id: string, friendId: Types.ObjectId) =>
+    UserModel.findByIdAndUpdate(friendId, {
+        $addToSet: { friendRequests: id }
+    });
 
-export const removeFriendFromUser = (id: string, friendId: Types.ObjectId) =>
-    UserModel.findByIdAndUpdate(id, { $pull: { friends: friendId } });
+export const removeFriendFromUser = async (
+    id: Types.ObjectId,
+    friendId: Types.ObjectId
+) => {
+    await UserModel.findByIdAndUpdate(id, { $pull: { friends: friendId } });
+    await UserModel.findByIdAndUpdate(friendId, { $pull: { friends: id } });
+};
+
+export const acceptFriendRequestToUser = async (
+    id: Types.ObjectId,
+    friendId: Types.ObjectId
+) => {
+    // Update current user: add friend and remove from their requests
+    await UserModel.findByIdAndUpdate(
+        id,
+        {
+            $addToSet: { friends: friendId },
+            $pull: { friendRequests: friendId }
+        },
+        { upsert: true }
+    );
+
+    // Update friend: add current user to their friends
+    await UserModel.findByIdAndUpdate(
+        friendId,
+        {
+            $addToSet: { friends: id }
+        },
+        { upsert: true }
+    );
+};
+
+export const declineFriendRequestToUser = async (
+    id: string,
+    friendId: Types.ObjectId
+) => UserModel.findByIdAndUpdate(id, { $pull: { friendRequests: friendId } });

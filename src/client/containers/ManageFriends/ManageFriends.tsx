@@ -3,11 +3,13 @@ import PageContainer from '@/client/components/Common/PageContainer/PageContaine
 import { FriendList } from '@/client/components/FriendList/FriendList';
 import Input from '@/client/components/Input/Input';
 import {
-    addFriendRequest,
+    acceptFriendRequest,
+    declineFriendRequest,
     removeFriendRequest,
-    resetAddFriendSuccess,
     resetFriendError,
-    resetRemoveFriendSuccess
+    resetFriendRequestSent,
+    resetRemoveFriendSuccess,
+    sendFriendRequest
 } from '@/client/store/slices/userSlice';
 import { RootState } from '@/client/store/store';
 import { IFriend } from '@/common/types/IUser';
@@ -18,18 +20,17 @@ import styles from './ManageFriends.module.css';
 
 export const ManageFriends = () => {
     const { user, token } = useSelector((state: RootState) => state.auth);
-    const { friendError, addFriendSuccess, removeFriendSuccess } = useSelector(
-        (state: RootState) => state.user
-    );
+    const { friendError, friendRequestSent, removeFriendSuccess, loading } =
+        useSelector((state: RootState) => state.user);
     const [email, setEmail] = useState('');
     const [showError, setShowError] = useState(false);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (addFriendSuccess) {
-            toast.success('Friend added successfully! 🆕');
-            dispatch(resetAddFriendSuccess());
+        if (friendRequestSent) {
+            toast.success('Friend request sent successfully! 🆕');
+            dispatch(resetFriendRequestSent());
             dispatch(resetFriendError());
             setEmail('');
         }
@@ -38,14 +39,12 @@ export const ManageFriends = () => {
             dispatch(resetRemoveFriendSuccess());
         }
         if (friendError) {
-            toast.error(
-                `Friend ${addFriendSuccess ? 'add' : 'remove'} failed: ${friendError} ⚠️`
-            );
+            toast.error(`${friendError} ⚠️`);
         }
-    }, [addFriendSuccess, removeFriendSuccess, friendError]);
+    }, [friendRequestSent, removeFriendSuccess, friendError]);
 
-    const handleAddFriend = () => {
-        dispatch(addFriendRequest({ email, token }));
+    const handleSendFriendRequest = () => {
+        dispatch(sendFriendRequest({ email, token }));
         setShowError(true);
     };
 
@@ -63,17 +62,17 @@ export const ManageFriends = () => {
                             (user?.friendRequests as IFriend[]) || []
                         }
                         onAcceptFriend={(friendId) => {
-                            console.log('accept friend', friendId);
-                            // dispatch(acceptFriendRequest({ friendId, token }));
+                            dispatch(acceptFriendRequest({ friendId, token }));
                         }}
                         onDeclineFriend={(friendId) => {
-                            console.log('decline friend', friendId);
-                            // dispatch(declineFriendRequest({ friendId, token }));
+                            dispatch(declineFriendRequest({ friendId, token }));
                         }}
                     />
                 </div>
-                <div className={styles.addFriends}>
-                    <div className={styles.addFriendsTitle}>Add Friends</div>
+                <div className={styles.sendFriendRequest}>
+                    <div className={styles.sendFriendRequestTitle}>
+                        Send Friend Request
+                    </div>
                     <label htmlFor="email">Email:</label>
                     <Input
                         type="email"
@@ -88,14 +87,16 @@ export const ManageFriends = () => {
                         }}
                     />
                     {friendError && showError && (
-                        <div className={styles.error}>{friendError}</div>
+                        <div className={styles.error}>{friendError}.</div>
                     )}
-                    <div className={styles.addFriendButton}>
+                    <div className={styles.sendFriendRequestButton}>
                         <Button
                             className="classDetailsSave"
-                            onClick={handleAddFriend}
+                            onClick={handleSendFriendRequest}
+                            disabled={!email}
+                            loading={loading}
                         >
-                            Add Friend
+                            Send Friend Request
                         </Button>
                     </div>
                 </div>

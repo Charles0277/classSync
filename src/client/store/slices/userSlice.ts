@@ -14,7 +14,7 @@ interface UserState {
     studentsLoading?: boolean;
     isUserUpdated: boolean;
     isUserDeleted: boolean;
-    addFriendSuccess: boolean;
+    friendRequestSent: boolean;
     removeFriendSuccess: boolean;
 }
 
@@ -28,7 +28,7 @@ const initialState: UserState = {
     friendError: null,
     isUserUpdated: false,
     isUserDeleted: false,
-    addFriendSuccess: false,
+    friendRequestSent: false,
     removeFriendSuccess: false
 };
 
@@ -125,14 +125,14 @@ const userSlice = createSlice({
         resetUserDeleted: (state) => {
             state.isUserDeleted = false;
         },
-        addFriendRequest: (state, action) => {
+        sendFriendRequest: (state, action) => {
             state.loading = true;
         },
-        addFriendSuccess: (state, action) => {
+        sendFriendSuccess: (state, action) => {
             state.loading = false;
-            state.addFriendSuccess = true;
+            state.friendRequestSent = true;
         },
-        addFriendFailure: (state, action) => {
+        sendFriendFailure: (state, action) => {
             state.loading = false;
             state.friendError = action.payload;
         },
@@ -147,14 +147,34 @@ const userSlice = createSlice({
             state.loading = false;
             state.friendError = action.payload;
         },
-        resetAddFriendSuccess: (state) => {
-            state.addFriendSuccess = false;
+        resetFriendRequestSent: (state) => {
+            state.friendRequestSent = false;
         },
         resetRemoveFriendSuccess: (state) => {
             state.removeFriendSuccess = false;
         },
         resetFriendError: (state) => {
             state.friendError = null;
+        },
+        acceptFriendRequest: (state, action) => {
+            state.loading = true;
+        },
+        acceptFriendSuccess: (state, action) => {
+            state.loading = false;
+        },
+        acceptFriendFailure: (state, action) => {
+            state.loading = false;
+            state.friendError = action.payload;
+        },
+        declineFriendRequest: (state, action) => {
+            state.loading = true;
+        },
+        declineFriendSuccess: (state, action) => {
+            state.loading = false;
+        },
+        declineFriendFailure: (state, action) => {
+            state.loading = false;
+            state.friendError = action.payload;
         }
     },
     extraReducers(builder) {
@@ -186,15 +206,21 @@ export const {
     resetStudents,
     resetUserUpdated,
     resetUserDeleted,
-    addFriendRequest,
-    addFriendSuccess,
-    addFriendFailure,
+    sendFriendRequest,
+    sendFriendSuccess,
+    sendFriendFailure,
     removeFriendRequest,
     removeFriendSuccess,
     removeFriendFailure,
-    resetAddFriendSuccess,
+    resetFriendRequestSent,
     resetRemoveFriendSuccess,
-    resetFriendError
+    resetFriendError,
+    acceptFriendRequest,
+    acceptFriendSuccess,
+    acceptFriendFailure,
+    declineFriendRequest,
+    declineFriendSuccess,
+    declineFriendFailure
 } = userSlice.actions;
 
 export default userSlice.reducer;

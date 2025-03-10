@@ -5,7 +5,8 @@ import {
 import express from 'express';
 import { Types } from 'mongoose';
 import {
-    addFriendToUser,
+    acceptFriendRequestToUser,
+    declineFriendRequestToUser,
     deleteUserById,
     fetchAllStudents,
     fetchAllTeachers,
@@ -14,6 +15,7 @@ import {
     fetchUserById,
     fetchUsers,
     removeFriendFromUser,
+    sendFriendRequestToUser,
     updateUserById
 } from '../services/user.services.js';
 
@@ -156,7 +158,7 @@ export const updateUser = async (
     }
 };
 
-export const addFriend = async (
+export const sendFriendRequest = async (
     req: express.Request,
     res: express.Response
 ) => {
@@ -168,18 +170,18 @@ export const addFriend = async (
         if (!userId || !role) {
             return res
                 .status(400)
-                .send({ error: 'Missing userId or Role in the request.' });
+                .send({ error: 'Missing userId or Role in the request' });
         }
 
         const existingUser = await fetchUserByEmail(email);
         if (!existingUser) {
             return res.status(409).send({
-                error: 'This user does not exist.'
+                error: 'This user does not exist'
             });
         }
         if (existingUser.role !== role) {
             return res.status(403).send({
-                error: 'You are not authorized to add this user as a friend.'
+                error: 'You are not authorized to add this user as a friend'
             });
         }
 
@@ -188,17 +190,27 @@ export const addFriend = async (
         if (currentUser?.email === existingUser.email) {
             return res
                 .status(409)
-                .send({ error: 'You cannot add yourself as a friend.' });
+                .send({ error: 'You cannot add yourself as a friend' });
+        }
+
+        if (
+            existingUser.friendRequests?.some((request) =>
+                (request as Types.ObjectId).equals(userId)
+            )
+        ) {
+            return res
+                .status(409)
+                .send({ error: 'Friend request already sent' });
         }
 
         const isAlreadyFriend = (
             currentUser?.friends as Types.ObjectId[]
         )?.some((friendId) => friendId.equals(existingUser._id));
         if (isAlreadyFriend) {
-            return res.status(409).send({ error: 'User is already a friend.' });
+            return res.status(409).send({ error: 'User is already a friend' });
         }
 
-        await addFriendToUser(userId, existingUser._id);
+        await sendFriendRequestToUser(userId, existingUser._id);
 
         return res.status(200).send({
             _id: existingUser._id,
@@ -241,7 +253,101 @@ export const removeFriend = async (
             return res.status(404).send({ error: 'User is not a friend.' });
         }
 
-        await removeFriendFromUser(userId, friend._id);
+        await removeFriendFromUser(currentUser._id, friend._id);
+
+        return res.status(200).send({
+            _id: friend._id,
+            firstName: friend.firstName,
+            lastName: friend.lastName
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send(error);
+    }
+};
+
+export const acceptFriendRequest = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { friendId } = req.body;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send({ error: 'Missing userId or Role in the request' });
+        }
+
+        const currentUser = await fetchUserById(userId);
+        const friend = await fetchUserById(friendId);
+
+        if (!currentUser || !friend) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+
+        const isFriendRequest = (
+            currentUser?.friendRequests as Types.ObjectId[]
+        )?.some((requestId) => requestId.equals(friend._id));
+
+        if (!isFriendRequest) {
+            return res.status(404).send({ error: 'Friend request not found' });
+        }
+
+        await acceptFriendRequestToUser(currentUser._id, friend._id);
+
+        return res.status(200).send({
+            _id: friend._id,
+            firstName: friend.firstName,
+            lastName: friend.lastName
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send(error);
+    }
+};
+
+export const declineFriendRequest = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { friendId } = req.body;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send({ error: 'Missing userId or Role in the request' });
+        }
+
+        const currentUser = await fetchUserById(userId);
+        const friend = await fetchUserById(friendId);
+
+        if (!currentUser || !friend) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+
+        const isFriendRequest = (
+            currentUser?.friendRequests as Types.ObjectId[]
+        )?.some((requestId) => requestId.equals(friend._id));
+
+        if (!isFriendRequest) {
+            return res.status(404).send({ error: 'Friend request not found' });
+        }
+
+        const isFriend = (friend?.friends as Types.ObjectId[])?.some(
+            (friendId) => friendId.equals(currentUser._id)
+        );
+
+        if (isFriend) {
+            return res.status(409).send({ error: 'User is already a friend' });
+        }
+
+        await declineFriendRequestToUser(userId, friend._id);
 
         return res.status(200).send({
             _id: friend._id,

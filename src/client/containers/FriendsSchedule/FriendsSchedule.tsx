@@ -30,7 +30,7 @@ export const FriendsSchedule = () => {
 
     useEffect(() => {
         if (
-            user?.friends &&
+            user?.friends?.length &&
             token &&
             (!friendsSchedule?.length || isAnyFriendMissingSchedule)
         ) {

@@ -1,6 +1,7 @@
 import express from 'express';
 import {
-    addFriend,
+    acceptFriendRequest,
+    declineFriendRequest,
     deleteUser,
     getAllStudents,
     getAllTeachers,
@@ -8,6 +9,7 @@ import {
     getUser,
     getUsers,
     removeFriend,
+    sendFriendRequest,
     updateUser
 } from '../controllers/user.js';
 import {
@@ -34,6 +36,20 @@ export default (router: express.Router) => {
         deleteUser
     );
     router.put('/update-user/:id', authenticateToken, updateUser);
-    router.post('/add-friend/:email', authenticateToken, addFriend);
+    router.post(
+        '/send-friend-request/:email',
+        authenticateToken,
+        sendFriendRequest
+    );
     router.delete('/remove-friend/:friendId', authenticateToken, removeFriend);
+    router.post(
+        '/accept-friend-request',
+        authenticateToken,
+        acceptFriendRequest
+    );
+    router.post(
+        '/decline-friend-request',
+        authenticateToken,
+        declineFriendRequest
+    );
 };

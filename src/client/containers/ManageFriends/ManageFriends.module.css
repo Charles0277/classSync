@@ -24,12 +24,12 @@
     border: 1px solid var(--darkBlue-color);
 }
 
-.addFriendsTitle {
+.sendFriendRequestTitle {
     font-size: 1.1rem;
     font-weight: 500;
 }
 
-.addFriends {
+.sendFriendRequest {
     display: flex;
     flex-direction: column;
     width: 30%;
@@ -40,7 +40,7 @@
     border: 1px solid var(--darkBlue-color);
 }
 
-.addFriendButton {
+.sendFriendRequestButton {
     display: flex;
     justify-content: flex-end;
     align-items: center;

@@ -81,19 +81,27 @@
 
 .friendRequestsActions {
     display: flex;
-    gap: 8px;
+    gap: 1.5rem;
+}
+
+.friendRequestsActions button {
+    display: flex;
+    color: black;
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    border-radius: 50%;
 }
 
 .acceptButton {
     color: #28a745;
     border: 1px solid #28a745;
-    padding: 4px 8px;
 }
 
 .declineButton {
     color: #dc3545;
     border: 1px solid #dc3545;
-    padding: 4px 8px;
 }
 
 .acceptButton:hover {
