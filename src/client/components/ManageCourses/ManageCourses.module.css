@@ -31,25 +31,6 @@
     transition: background-color 0.3s ease;
 }
 
-/* Filter Buttons */
-.filterButtons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.filterButtons button {
-    background-color: #dddddd;
-    border: 3px solid transparent;
-    transition: all 0.2s ease;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.filterButtons button:hover {
-    background-color: rgb(122, 122, 122);
-}
-
 /* Search Bar */
 .searchBar {
     padding: 0 0.5rem;
