@@ -25,7 +25,6 @@ export const ScheduleEntry: React.FC<SchedulEntryProps> = ({
         <div
             onClick={onClick}
             style={{ cursor: `${'instructorName' in entry && 'pointer'}` }}
-            // className={`${'type' in entry ? styles.globalScheduleEntry : styles.scheduleEntry} ${styles[`${convertRoomTypeToClassType(classType)}`]}`}
             className={`${styles.globalScheduleEntry} ${styles[`${convertRoomTypeToClassType(classType)}`]}`}
         >
             <div className={styles.entryContent}>
