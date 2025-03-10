@@ -253,10 +253,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                     />
                 </PopUpCard>
             )}
-            <div
-                className={styles.scheduleContainer}
-                style={{ width: `${globalSchedule && '1229px'}` }}
-            >
+            <div className={styles.scheduleContainer}>
                 {globalSchedule && (
                     <div className={styles.filterContainer}>
                         <div className={styles.filterLabel}>
@@ -315,7 +312,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                 )}
                 <div
                     className={`${styles.scheduleGrid} ${animationClass}`}
-                    style={{ gap: `${globalSchedule && '5px'}` }}
+                    style={{ gap: '2.5px' }}
                 >
                     <div
                         className={`${styles.gridCell} ${styles.hourLabel}`}
@@ -390,10 +387,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                         </React.Fragment>
                     ))}
                 </div>
-                <div
-                    className={styles.actionBar}
-                    style={{ width: `${globalSchedule && '1229px'}` }}
-                >
+                <div className={styles.actionBar}>
                     {globalSchedule && (
                         <div className={styles.editClasses}>
                             <Button onClick={handleAddClass}>
