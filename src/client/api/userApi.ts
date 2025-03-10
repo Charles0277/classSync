@@ -80,3 +80,11 @@ export const declineFriendRequestApi = (friendId: string, token: string) => {
         { headers: { Authorization: `Bearer ${token}` } }
     );
 };
+
+export const cancelFriendRequestApi = (friendId: string, token: string) => {
+    return axios.post<IFriend>(
+        `http://localhost:3000/cancel-friend-request`,
+        { friendId },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+};

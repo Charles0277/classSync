@@ -6,6 +6,7 @@
 .tabsContainer {
     display: flex;
     border-bottom: 1px solid #ccc;
+    position: relative;
 }
 
 .tabButton {
@@ -23,6 +24,10 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+}
+
+.tabButton:hover {
+    background-color: #f0f0f0;
 }
 
 .notificationBadge {
@@ -63,13 +68,12 @@
 
 .listsWrapper {
     display: flex;
-    width: 200%;
+    width: 300%;
     transition: transform 0.3s ease-in-out;
 }
 
 .list {
-    width: 50%;
-    padding: 0 8px;
+    width: 33.33%;
 }
 
 .friendItem {
@@ -101,35 +105,5 @@
 
 .friendRequestsActions {
     display: flex;
-    gap: 1.5rem;
-}
-
-.friendRequestsActions button {
-    display: flex;
-    color: black;
-    align-self: center;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    border-radius: 50%;
-}
-
-.acceptButton {
-    color: #28a745;
-    border: 1px solid #28a745;
-}
-
-.declineButton {
-    color: #dc3545;
-    border: 1px solid #dc3545;
-}
-
-.acceptButton:hover {
-    background-color: #28a745;
-    color: white;
-}
-
-.declineButton:hover {
-    background-color: #dc3545;
-    color: white;
+    gap: 1rem;
 }

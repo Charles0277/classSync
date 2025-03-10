@@ -2,8 +2,10 @@ import { createSlice } from '@reduxjs/toolkit';
 import { IFriend, IUser } from '../../../common/types/IUser';
 import {
     acceptFriendSuccess,
+    cancelFriendSuccess,
     declineFriendSuccess,
     removeFriendSuccess,
+    sendFriendSuccess,
     updateUserSuccess
 } from './userSlice';
 
@@ -114,6 +116,16 @@ const authSlice = createSlice({
                 if (state.user?.friendRequests) {
                     state.user.friendRequests = (
                         state.user.friendRequests as IFriend[]
+                    ).filter((friend) => friend._id !== action.payload._id);
+                }
+            })
+            .addCase(sendFriendSuccess, (state, action) => {
+                state.user?.sentRequests?.push(action.payload);
+            })
+            .addCase(cancelFriendSuccess, (state, action) => {
+                if (state.user?.sentRequests) {
+                    state.user.sentRequests = (
+                        state.user.sentRequests as IFriend[]
                     ).filter((friend) => friend._id !== action.payload._id);
                 }
             });

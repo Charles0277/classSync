@@ -178,3 +178,31 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.acceptButton {
+    color: #28a745;
+    border: 1px solid #28a745;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+}
+
+.declineButton {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+}
+
+.acceptButton:hover {
+    background-color: #28a745;
+    color: white;
+    scale: 1.2;
+}
+
+.declineButton:hover {
+    background-color: #dc3545;
+    color: white;
+    scale: 1.2;
+}

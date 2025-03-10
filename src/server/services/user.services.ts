@@ -19,6 +19,7 @@ export const fetchUserByEmail = (email: string) =>
         .populate('courseUnits')
         .populate('friends', '_id firstName lastName')
         .populate('friendRequests', '_id firstName lastName')
+        .populate('sentRequests', '_id firstName lastName')
         .exec();
 
 export const createUser = (values: Record<string, any>) =>
@@ -30,7 +31,10 @@ export const updateUserById = (id: string, values: Record<string, any>) =>
     UserModel.findByIdAndUpdate(id, values, {
         new: true,
         runValidators: true
-    }).populate('friends', '_id firstName lastName');
+    })
+        .populate('friends', '_id firstName lastName')
+        .populate('friendRequests', '_id firstName lastName')
+        .populate('sentRequests', '_id firstName lastName');
 
 export const deleteUserByEmail = (email: string) =>
     UserModel.findOneAndDelete({ email });
@@ -38,10 +42,25 @@ export const deleteUserByEmail = (email: string) =>
 export const updateUserByEmail = (email: string, values: Record<string, any>) =>
     UserModel.findOneAndUpdate({ email }, values, { new: true });
 
-export const sendFriendRequestToUser = (id: string, friendId: Types.ObjectId) =>
-    UserModel.findByIdAndUpdate(friendId, {
-        $addToSet: { friendRequests: id }
-    });
+export const sendFriendRequestToUser = async (
+    id: string,
+    friendId: Types.ObjectId
+) => {
+    await UserModel.findByIdAndUpdate(
+        friendId,
+        {
+            $addToSet: { friendRequests: id }
+        },
+        { upsert: true }
+    );
+    await UserModel.findByIdAndUpdate(
+        id,
+        {
+            $addToSet: { sentRequests: friendId }
+        },
+        { upsert: true }
+    );
+};
 
 export const removeFriendFromUser = async (
     id: Types.ObjectId,
@@ -69,7 +88,8 @@ export const acceptFriendRequestToUser = async (
     await UserModel.findByIdAndUpdate(
         friendId,
         {
-            $addToSet: { friends: id }
+            $addToSet: { friends: id },
+            $pull: { sentRequests: id }
         },
         { upsert: true }
     );
@@ -78,4 +98,23 @@ export const acceptFriendRequestToUser = async (
 export const declineFriendRequestToUser = async (
     id: string,
     friendId: Types.ObjectId
-) => UserModel.findByIdAndUpdate(id, { $pull: { friendRequests: friendId } });
+) => {
+    await UserModel.findByIdAndUpdate(id, {
+        $pull: { friendRequests: friendId }
+    });
+    await UserModel.findByIdAndUpdate(friendId, {
+        $pull: { sentRequests: id }
+    });
+};
+
+export const cancelFriendRequestToUser = async (
+    id: string,
+    friendId: Types.ObjectId
+) => {
+    await UserModel.findByIdAndUpdate(id, {
+        $pull: { sentRequests: friendId }
+    });
+    await UserModel.findByIdAndUpdate(friendId, {
+        $pull: { friendRequests: id }
+    });
+};

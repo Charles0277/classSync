@@ -3,6 +3,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { IFriend, IUser } from '../../../common/types/IUser';
 import {
     acceptFriendRequestApi,
+    cancelFriendRequestApi,
     declineFriendRequestApi,
     deleteUserApi,
     getAllStudentsApi,
@@ -17,6 +18,9 @@ import {
     acceptFriendFailure,
     acceptFriendRequest,
     acceptFriendSuccess,
+    cancelFriendFailure,
+    cancelFriendRequest,
+    cancelFriendSuccess,
     declineFriendFailure,
     declineFriendRequest,
     declineFriendSuccess,
@@ -196,6 +200,21 @@ function* handleDeclineFriendRequest(action: any) {
     }
 }
 
+function* handleCancelFriendRequest(action: any) {
+    const { friendId, token } = action.payload;
+
+    try {
+        const response: AxiosResponse<IFriend> = yield call(
+            cancelFriendRequestApi,
+            friendId,
+            token
+        );
+        yield put(cancelFriendSuccess(response.data));
+    } catch (error: any) {
+        yield put(cancelFriendFailure(error.response.data.error));
+    }
+}
+
 export default function* userSaga() {
     yield takeLatest(fetchAllUsersRequest.type, handleFetchAllUsers);
     yield takeLatest(fetchUsersRequest.type, handleFetchUsers);
@@ -207,4 +226,5 @@ export default function* userSaga() {
     yield takeLatest(sendFriendRequest.type, handleSendFriendRequest);
     yield takeLatest(acceptFriendRequest.type, handleAcceptFriendRequest);
     yield takeLatest(declineFriendRequest.type, handleDeclineFriendRequest);
+    yield takeLatest(cancelFriendRequest.type, handleCancelFriendRequest);
 }

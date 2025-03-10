@@ -93,6 +93,9 @@ const UserSchema: Schema<IUser> = new Schema(
         ],
         friendRequests: [
             { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true }
+        ],
+        sentRequests: [
+            { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true }
         ]
     },
     { timestamps: true }

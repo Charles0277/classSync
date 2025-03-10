@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     acceptFriendRequest,
+    cancelFriendRequest,
     declineFriendRequest,
     deleteUser,
     getAllStudents,
@@ -51,5 +52,10 @@ export default (router: express.Router) => {
         '/decline-friend-request',
         authenticateToken,
         declineFriendRequest
+    );
+    router.post(
+        '/cancel-friend-request',
+        authenticateToken,
+        cancelFriendRequest
     );
 };

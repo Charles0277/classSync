@@ -4,9 +4,11 @@ import { FriendList } from '@/client/components/FriendList/FriendList';
 import Input from '@/client/components/Input/Input';
 import {
     acceptFriendRequest,
+    cancelFriendRequest,
     declineFriendRequest,
     removeFriendRequest,
     resetAcceptFriendRequestSuccess,
+    resetCancelFriendRequestSuccess,
     resetDeclineFriendRequestSuccess,
     resetFriendError,
     resetFriendRequestSent,
@@ -28,7 +30,8 @@ export const ManageFriends = () => {
         removeFriendSuccess,
         sendFriendRequestLoading,
         acceptFriendRequestSuccess,
-        declineFriendRequestSuccess
+        declineFriendRequestSuccess,
+        cancelFriendRequestSuccess
     } = useSelector((state: RootState) => state.user);
     const [email, setEmail] = useState('');
     const [showError, setShowError] = useState(false);
@@ -51,8 +54,12 @@ export const ManageFriends = () => {
             dispatch(resetAcceptFriendRequestSuccess());
         }
         if (declineFriendRequestSuccess) {
-            toast.success('Friend request declined successfully! ❌');
+            toast.success('Friend request declined successfully! 🙅');
             dispatch(resetDeclineFriendRequestSuccess());
+        }
+        if (cancelFriendRequestSuccess) {
+            toast.success('Friend request cancelled successfully! ❌');
+            dispatch(resetCancelFriendRequestSuccess());
         }
         if (friendError) {
             toast.error(`${friendError} ⚠️`);
@@ -62,7 +69,8 @@ export const ManageFriends = () => {
         removeFriendSuccess,
         friendError,
         acceptFriendRequestSuccess,
-        declineFriendRequestSuccess
+        declineFriendRequestSuccess,
+        cancelFriendRequestSuccess
     ]);
 
     const handleSendFriendRequest = () => {
@@ -88,6 +96,10 @@ export const ManageFriends = () => {
                         }}
                         onDeclineFriend={(friendId) => {
                             dispatch(declineFriendRequest({ friendId, token }));
+                        }}
+                        sentRequests={(user?.sentRequests as IFriend[]) || []}
+                        onCancelFriendRequest={(friendId) => {
+                            dispatch(cancelFriendRequest({ friendId, token }));
                         }}
                     />
                 </div>

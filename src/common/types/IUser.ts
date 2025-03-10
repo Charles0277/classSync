@@ -19,4 +19,5 @@ export interface IUser extends Document {
     schedule?: Types.ObjectId[];
     friends?: Types.ObjectId[] | IFriend[];
     friendRequests?: Types.ObjectId[] | IFriend[];
+    sentRequests?: Types.ObjectId[] | IFriend[];
 }

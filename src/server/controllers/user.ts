@@ -6,6 +6,7 @@ import express from 'express';
 import { Types } from 'mongoose';
 import {
     acceptFriendRequestToUser,
+    cancelFriendRequestToUser,
     declineFriendRequestToUser,
     deleteUserById,
     fetchAllStudents,
@@ -348,6 +349,49 @@ export const declineFriendRequest = async (
         }
 
         await declineFriendRequestToUser(userId, friend._id);
+
+        return res.status(200).send({
+            _id: friend._id,
+            firstName: friend.firstName,
+            lastName: friend.lastName
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send(error);
+    }
+};
+
+export const cancelFriendRequest = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { friendId } = req.body;
+        const userId = req.user?.userId;
+        const role = req.user?.userRole;
+
+        if (!userId || !role) {
+            return res
+                .status(400)
+                .send({ error: 'Missing userId or Role in the request' });
+        }
+
+        const currentUser = await fetchUserById(userId);
+        const friend = await fetchUserById(friendId);
+
+        if (!currentUser || !friend) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+
+        const hasFriendRequested = (
+            currentUser?.sentRequests as Types.ObjectId[]
+        )?.some((requestId) => requestId.equals(friend._id));
+
+        if (!hasFriendRequested) {
+            return res.status(404).send({ error: 'Friend request not found' });
+        }
+
+        await cancelFriendRequestToUser(userId, friend._id);
 
         return res.status(200).send({
             _id: friend._id,
