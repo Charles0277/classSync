@@ -24,13 +24,20 @@
     border: 1px solid var(--darkBlue-color);
 }
 
+.addFriendsTitle {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
 .addFriends {
     display: flex;
     flex-direction: column;
     width: 30%;
-    height: 90%;
     border-radius: 12px;
     gap: 0.5rem;
+    padding: 1rem;
+    background-color: white;
+    border: 1px solid var(--darkBlue-color);
 }
 
 .addFriendButton {

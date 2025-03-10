@@ -59,9 +59,21 @@ export const ManageFriends = () => {
                         onRemoveFriend={(friendId) => {
                             dispatch(removeFriendRequest({ friendId, token }));
                         }}
+                        friendRequests={
+                            (user?.friendRequests as IFriend[]) || []
+                        }
+                        onAcceptFriend={(friendId) => {
+                            console.log('accept friend', friendId);
+                            // dispatch(acceptFriendRequest({ friendId, token }));
+                        }}
+                        onDeclineFriend={(friendId) => {
+                            console.log('decline friend', friendId);
+                            // dispatch(declineFriendRequest({ friendId, token }));
+                        }}
                     />
                 </div>
                 <div className={styles.addFriends}>
+                    <div className={styles.addFriendsTitle}>Add Friends</div>
                     <label htmlFor="email">Email:</label>
                     <Input
                         type="email"
