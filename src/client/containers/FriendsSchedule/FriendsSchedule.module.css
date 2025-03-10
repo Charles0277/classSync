@@ -6,3 +6,19 @@
     text-align: center;
     margin-bottom: -2rem;
 }
+
+.notFoundContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    margin-bottom: 3rem;
+    gap: 3rem;
+}
+
+.notFoundContainer button {
+    background-color: var(--darkBlue-color);
+    padding: 0.5rem 1rem;
+}
