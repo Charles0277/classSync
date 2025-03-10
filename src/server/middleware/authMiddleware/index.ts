@@ -11,7 +11,9 @@ export const authenticateToken = (
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ msg: 'No token, authorisation denied' });
+        return res
+            .status(401)
+            .send({ error: 'No token, authorisation denied' });
     }
 
     jwt.verify(
@@ -19,7 +21,7 @@ export const authenticateToken = (
         process.env.JWT_SECRET as string,
         (err: any, decoded: any) => {
             if (err) {
-                return res.status(403).json({ msg: 'Token is not valid' });
+                return res.status(403).send({ error: 'Token is not valid' });
             }
 
             req.user = decoded as IDecodedToken; // Attach verified token payload
@@ -34,13 +36,15 @@ export const checkAdmin = (
     next: express.NextFunction
 ) => {
     if (!req.user) {
-        return res.status(401).send('Unauthorised: No token provided');
+        return res
+            .status(401)
+            .send({ error: 'Unauthorised: No token provided' });
     }
 
     if (req.user.userRole === 'admin') {
         next();
     } else {
-        res.status(403).send('Forbidden: Admins only');
+        res.status(403).send({ error: 'Forbidden: Admins only' });
     }
 };
 
@@ -50,12 +54,14 @@ export const checkTeacher = (
     next: express.NextFunction
 ) => {
     if (!req.user) {
-        return res.status(401).send('Unauthorised: No token provided');
+        return res
+            .status(401)
+            .send({ error: 'Unauthorised: No token provided' });
     }
 
     if (req.user.userRole === 'teacher' || req.user.userRole === 'admin') {
         next();
     } else {
-        res.status(403).send('Forbidden: Teachers and Admins only');
+        res.status(403).send({ error: 'Forbidden: Teachers and Admins only' });
     }
 };

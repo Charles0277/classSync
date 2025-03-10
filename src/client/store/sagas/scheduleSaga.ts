@@ -52,7 +52,7 @@ function* getGlobalSchedule(action: any) {
         );
         yield put(getGlobalScheduleSuccess(response.data));
     } catch (error: any) {
-        yield put(getGlobalScheduleFailure(error.message));
+        yield put(getGlobalScheduleFailure(error.response.data.error));
     }
 }
 
@@ -67,7 +67,7 @@ function* getUserSchedule(action: any) {
         );
         yield put(getUserScheduleSuccess(response.data));
     } catch (error: any) {
-        yield put(getUserScheduleFailure(error.message));
+        yield put(getUserScheduleFailure(error.response.data.error));
     }
 }
 
@@ -81,7 +81,7 @@ function* generateGlobalSchedule(action: any) {
         );
         yield put(generateGlobalScheduleSuccess(response.data));
     } catch (error: any) {
-        yield put(generateGlobalScheduleFailure(error.message));
+        yield put(generateGlobalScheduleFailure(error.response.data.error));
     }
 }
 
@@ -96,7 +96,7 @@ function* updateGlobalScheduleEntry(action: any) {
         );
         yield put(updateGlobalScheduleEntrySuccess(response.data));
     } catch (error: any) {
-        yield put(updateGlobalScheduleEntryFailure(error.message));
+        yield put(updateGlobalScheduleEntryFailure(error.response.data.error));
     }
 }
 
@@ -110,7 +110,7 @@ function* deleteGlobalScheduleEntry(action: any) {
         );
         yield put(deleteGlobalScheduleEntrySuccess(response.data));
     } catch (error: any) {
-        yield put(deleteGlobalScheduleEntryFailure(error.message));
+        yield put(deleteGlobalScheduleEntryFailure(error.response.data.error));
     }
 }
 
@@ -124,7 +124,7 @@ function* addGlobalScheduleEntry(action: any) {
         );
         yield put(addGlobalScheduleEntrySuccess(response.data));
     } catch (error: any) {
-        yield put(addGlobalScheduleEntryFailure(error.message));
+        yield put(addGlobalScheduleEntryFailure(error.response.data.error));
     }
 }
 
@@ -138,7 +138,7 @@ function* checkForConflicts(action: any) {
         );
         yield put(checkForConflictsSuccess(response.data));
     } catch (error: any) {
-        yield put(checkForConflictsFailure(error.message));
+        yield put(checkForConflictsFailure(error.response.data.error));
     }
 }
 
@@ -152,7 +152,7 @@ function* getFriendsSchedule(action: any) {
         );
         yield put(getFriendsScheduleSuccess(response.data));
     } catch (error: any) {
-        yield put(getFriendsScheduleFailure(error.message));
+        yield put(getFriendsScheduleFailure(error.response.data.error));
     }
 }
 

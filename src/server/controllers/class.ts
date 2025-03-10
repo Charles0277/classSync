@@ -66,7 +66,7 @@ export const updateClass = async (
         if (!userId || !role) {
             return res
                 .status(400)
-                .send('Missing userId or Role in the request.');
+                .send({ error: 'Missing userId or Role in the request.' });
         }
 
         const classEntity = await fetchClassById(id, role);
@@ -75,11 +75,9 @@ export const updateClass = async (
             getIdString(classEntity?.instructor) !== userId &&
             role !== 'admin'
         ) {
-            return res
-                .status(401)
-                .send(
-                    'Permission denied: You are not the teacher of this class'
-                );
+            return res.status(401).send({
+                error: 'Permission denied: You are not the teacher of this class'
+            });
         }
 
         const allowedFields = [
@@ -99,7 +97,7 @@ export const updateClass = async (
         if (invalidFields.length > 0) {
             return res
                 .status(400)
-                .send(`Invalid fields: ${invalidFields.join(', ')}`);
+                .send({ error: `Invalid fields: ${invalidFields.join(', ')}` });
         }
 
         const updatedValues = Object.fromEntries(

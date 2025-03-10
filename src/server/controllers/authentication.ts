@@ -31,14 +31,14 @@ export const signUp = async (req: express.Request, res: express.Response) => {
             !course ||
             !courseUnits
         ) {
-            return res.status(400).json({
+            return res.status(400).send({
                 error: 'Please fill in all required fields.'
             });
         }
 
         // Validate Manchester email
         if (!MANCHESTER_EMAIL_REGEX.test(email)) {
-            return res.status(400).json({
+            return res.status(400).send({
                 error: { MANCHESTER_EMAIL_ERROR }
             });
         }
@@ -46,7 +46,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
         // Check if user already exists
         const existingUser = await fetchUserByEmail(email);
         if (existingUser) {
-            return res.status(409).json({
+            return res.status(409).send({
                 error: 'An account with this email already exists.'
             });
         }
@@ -65,7 +65,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
         return res.status(201).json(newUser);
     } catch (error) {
         console.error('Sign up error:', error);
-        return res.status(500).json({
+        return res.status(500).send({
             error: 'Something went wrong during sign up. Please try again.'
         });
     }
@@ -77,7 +77,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
         // Validate required fields
         if (!email || !password) {
-            return res.status(400).json({
+            return res.status(400).send({
                 error: 'Please provide both email and password.'
             });
         }
@@ -85,7 +85,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         // Fetch user and check existence
         const user = await fetchUserByEmail(email.toLowerCase());
         if (!user) {
-            return res.status(401).json({
+            return res.status(401).send({
                 error: 'Email does not exist.'
             });
         }
@@ -93,7 +93,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         // Verify password
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).json({
+            return res.status(401).send({
                 error: 'Incorrect password.'
             });
         }
@@ -105,13 +105,13 @@ export const login = async (req: express.Request, res: express.Response) => {
             { expiresIn: '30d' }
         );
 
-        return res.status(200).json({
+        return res.status(200).send({
             user,
             token
         });
     } catch (error) {
         console.error('Login error:', error);
-        return res.status(500).json({
+        return res.status(500).send({
             error: 'An error occurred during login. Please try again.'
         });
     }

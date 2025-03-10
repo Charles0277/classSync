@@ -32,7 +32,7 @@ function* fetchClass(action: any) {
         );
         yield put(getClassSuccess(response.data));
     } catch (error: any) {
-        yield put(getClassFailure(error.message));
+        yield put(getClassFailure(error.response.data.error));
     }
 }
 
@@ -47,7 +47,7 @@ function* updateClass(action: any) {
         );
         yield put(updateClassSuccess(response.data));
     } catch (error: any) {
-        yield put(updateClassFailure(error.message));
+        yield put(updateClassFailure(error.response.data.error));
     }
 }
 
@@ -61,7 +61,7 @@ function* deleteClass(action: any) {
         );
         yield put(deleteClassSuccess(response.data));
     } catch (error: any) {
-        yield put(deleteClassFailure(error.message));
+        yield put(deleteClassFailure(error.response.data.error));
     }
 }
 
@@ -75,7 +75,7 @@ function* createClass(action: any) {
         );
         yield put(createClassSuccess(response.data));
     } catch (error: any) {
-        yield put(createClassFailure(error.message));
+        yield put(createClassFailure(error.response.data.error));
     }
 }
 

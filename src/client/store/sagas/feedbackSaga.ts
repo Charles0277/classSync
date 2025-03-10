@@ -36,7 +36,7 @@ function* handleGetAllFeedback(action: any) {
         );
         yield put(getAllFeedbackSuccess(response.data));
     } catch (error: any) {
-        yield put(getAllFeedbackFailure(error.message));
+        yield put(getAllFeedbackFailure(error.response.data.error));
     }
 }
 
@@ -51,7 +51,7 @@ function* handleGetUserFeedback(action: any) {
         );
         yield put(getUserFeedbackSuccess(response.data));
     } catch (error: any) {
-        yield put(getUserFeedbackFailure(error.message));
+        yield put(getUserFeedbackFailure(error.response.data.error));
     }
 }
 
@@ -65,7 +65,7 @@ function* handleDeleteFeedback(action: any) {
         );
         yield put(deleteFeedbackSuccess(response.data));
     } catch (error: any) {
-        yield put(deleteFeedbackFailure(error.message));
+        yield put(deleteFeedbackFailure(error.response.data.error));
     }
 }
 
@@ -80,7 +80,7 @@ function* handleUpdateFeedback(action: any) {
         );
         yield put(updateFeedbackSuccess(response.data));
     } catch (error: any) {
-        yield put(updateFeedbackFailure(error.message));
+        yield put(updateFeedbackFailure(error.response.data.error));
     }
 }
 
@@ -94,7 +94,7 @@ function* handleCreateFeedback(action: any) {
         );
         yield put(createFeedbackSuccess(response.data));
     } catch (error: any) {
-        yield put(createFeedbackFailure(error.message));
+        yield put(createFeedbackFailure(error.response.data.error));
     }
 }
 
