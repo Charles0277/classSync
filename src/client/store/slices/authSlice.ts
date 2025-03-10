@@ -89,8 +89,9 @@ const authSlice = createSlice({
         builder
             .addCase(updateUserSuccess, (state, action) => {
                 const updatedUser = action.payload;
-                if (state.user?._id === updatedUser._id) {
-                    state.user = updatedUser;
+                const currentUser = state.user;
+                if (currentUser?._id === updatedUser._id) {
+                    state.user = { ...currentUser, ...updatedUser };
                 }
             })
             .addCase(addFriendSuccess, (state, action) => {

@@ -26,7 +26,10 @@ export const createUser = (values: Record<string, any>) =>
 export const deleteUserById = (id: string) => UserModel.findByIdAndDelete(id);
 
 export const updateUserById = (id: string, values: Record<string, any>) =>
-    UserModel.findByIdAndUpdate(id, values, { new: true, runValidators: true });
+    UserModel.findByIdAndUpdate(id, values, {
+        new: true,
+        runValidators: true
+    }).populate('friends', '_id firstName lastName');
 
 export const deleteUserByEmail = (email: string) =>
     UserModel.findOneAndDelete({ email });
