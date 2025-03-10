@@ -11,17 +11,21 @@
 .actionButtonGroup {
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: flex-end;
     gap: 1rem;
     width: 100%;
+}
+
+.actionButtonGroup button {
+    width: 6rem;
+    height: 2.5rem;
 }
 
 .formContainer {
     display: flex;
     flex-direction: column;
     justify-self: center;
-    width: 75%;
-    padding-right: 1.25rem;
+    width: 90%;
     display: flex;
     justify-content: center;
     gap: 0.5rem;
@@ -38,7 +42,7 @@
 
 .select {
     display: flex;
-    width: 110%;
+    width: 100%;
     padding: 12px;
     border: 1px solid var(--darkBlue-color);
     border-radius: 10px;
@@ -71,7 +75,7 @@
 }
 
 .datePicker {
-    width: 110%;
+    width: 100%;
 }
 
 .errorMessage {

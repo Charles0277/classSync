@@ -204,13 +204,6 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                     value={selectedTeacher}
                     onChange={handleTeacherChange}
                     placeholder="Select an Instructor"
-                    styles={{
-                        container: (base) => ({
-                            ...base,
-                            width: '110%'
-                        })
-                    }}
-                    maxMenuHeight={200}
                 />
 
                 <label htmlFor="classType">Class Type:</label>
@@ -220,19 +213,7 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                     value={selectedClassTypes}
                     onChange={handleClassTypesChange}
                     placeholder="Select at least one Class Type"
-                    styles={{
-                        container: (base) => ({
-                            ...base,
-                            width: '110%'
-                        }),
-                        valueContainer: (base) => ({
-                            ...base,
-                            maxHeight: '150px',
-                            overflowY: 'auto'
-                        })
-                    }}
                     isMulti
-                    maxMenuHeight={150}
                 />
                 {error && showResponseError && (
                     <span className={styles.errorMessage}>{error}</span>

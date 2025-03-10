@@ -358,9 +358,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
                     options={courseUnitOptions}
                     value={selectedCourseUnitOptions}
                     onChange={handleCourseUnitsChange}
-                    isDisabled={!formData.course}
+                    isDisabled={!formData.course || !formData.yearOfStudy}
                     styles={{
-                        container: (base) => ({ ...base, width: '110%' }),
                         valueContainer: (base) => ({
                             ...base,
                             maxHeight: '175px',

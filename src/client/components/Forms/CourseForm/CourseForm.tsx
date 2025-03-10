@@ -121,10 +121,6 @@ const CourseForm: React.FC<CourseFormProps> = ({
                     onChange={handleSelectedChange}
                     placeholder="Select Course Units"
                     styles={{
-                        container: (base) => ({
-                            ...base,
-                            width: '110%'
-                        }),
                         valueContainer: (base) => ({
                             ...base,
                             maxHeight: '200px',
