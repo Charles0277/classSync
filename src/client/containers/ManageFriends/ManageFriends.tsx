@@ -20,8 +20,12 @@ import styles from './ManageFriends.module.css';
 
 export const ManageFriends = () => {
     const { user, token } = useSelector((state: RootState) => state.auth);
-    const { friendError, friendRequestSent, removeFriendSuccess, loading } =
-        useSelector((state: RootState) => state.user);
+    const {
+        friendError,
+        friendRequestSent,
+        removeFriendSuccess,
+        sendFriendRequestLoading
+    } = useSelector((state: RootState) => state.user);
     const [email, setEmail] = useState('');
     const [showError, setShowError] = useState(false);
 
@@ -94,7 +98,7 @@ export const ManageFriends = () => {
                             className="classDetailsSave"
                             onClick={handleSendFriendRequest}
                             disabled={!email}
-                            loading={loading}
+                            loading={sendFriendRequestLoading}
                         >
                             Send Friend Request
                         </Button>

@@ -16,6 +16,7 @@ interface UserState {
     isUserDeleted: boolean;
     friendRequestSent: boolean;
     removeFriendSuccess: boolean;
+    sendFriendRequestLoading: boolean;
 }
 
 const initialState: UserState = {
@@ -29,7 +30,8 @@ const initialState: UserState = {
     isUserUpdated: false,
     isUserDeleted: false,
     friendRequestSent: false,
-    removeFriendSuccess: false
+    removeFriendSuccess: false,
+    sendFriendRequestLoading: false
 };
 
 const userSlice = createSlice({
@@ -126,14 +128,14 @@ const userSlice = createSlice({
             state.isUserDeleted = false;
         },
         sendFriendRequest: (state, action) => {
-            state.loading = true;
+            state.sendFriendRequestLoading = true;
         },
         sendFriendSuccess: (state, action) => {
-            state.loading = false;
+            state.sendFriendRequestLoading = false;
             state.friendRequestSent = true;
         },
         sendFriendFailure: (state, action) => {
-            state.loading = false;
+            state.sendFriendRequestLoading = false;
             state.friendError = action.payload;
         },
         removeFriendRequest: (state, action) => {
