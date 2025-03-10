@@ -103,35 +103,37 @@ export const ManageFriends = () => {
                         }}
                     />
                 </div>
-                <div className={styles.sendFriendRequest}>
-                    <div className={styles.sendFriendRequestTitle}>
-                        Send Friend Request
-                    </div>
-                    <label htmlFor="email">Email:</label>
-                    <Input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => {
-                            setEmail(e.target.value);
-                            setShowError(false);
-                            dispatch(resetFriendError());
-                        }}
-                    />
-                    {friendError && showError && (
-                        <div className={styles.error}>{friendError}.</div>
-                    )}
-                    <div className={styles.sendFriendRequestButton}>
-                        <Button
-                            className="classDetailsSave"
-                            onClick={handleSendFriendRequest}
-                            disabled={!email}
-                            loading={sendFriendRequestLoading}
-                        >
+                <div className={styles.sendFriendRequestContainer}>
+                    <div className={styles.sendFriendRequestForm}>
+                        <div className={styles.sendFriendRequestTitle}>
                             Send Friend Request
-                        </Button>
+                        </div>
+                        <label htmlFor="email">Email:</label>
+                        <Input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                setShowError(false);
+                                dispatch(resetFriendError());
+                            }}
+                        />
+                        {friendError && showError && (
+                            <div className={styles.error}>{friendError}.</div>
+                        )}
+                        <div className={styles.sendFriendRequestButton}>
+                            <Button
+                                className="classDetailsSave"
+                                onClick={handleSendFriendRequest}
+                                disabled={!email}
+                                loading={sendFriendRequestLoading}
+                            >
+                                Send Friend Request
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

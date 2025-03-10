@@ -29,15 +29,19 @@
     font-weight: 500;
 }
 
-.sendFriendRequest {
+.sendFriendRequestContainer {
+    width: 35%;
+    height: 90%;
+}
+
+.sendFriendRequestForm {
     display: flex;
     flex-direction: column;
-    width: 30%;
-    border-radius: 12px;
     gap: 0.5rem;
-    padding: 1rem;
+    border-radius: 12px;
     background-color: white;
     border: 1px solid var(--darkBlue-color);
+    padding: 2rem;
 }
 
 .sendFriendRequestButton {
