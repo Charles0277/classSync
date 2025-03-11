@@ -8,6 +8,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@/client/containers/Home/Home', () => ({
     default: () => <div>Home</div>
 }));
+vi.mock('@/client/components/LoadingScreen/LoadingScreen', () => ({
+    LoadingScreen: () => <div>LoadingScreen</div>
+}));
 vi.mock('@/client/containers/Welcome/Welcome', () => ({
     default: () => <div>Welcome</div>
 }));
@@ -71,7 +74,7 @@ describe('MainContent', () => {
         expect(screen.queryByText('Welcome')).toBeNull();
     });
 
-    it('renders Home on "/" route when isLoading is true', () => {
+    it('renders LoadingScreen on "/" route when isLoading is true', () => {
         const store = createTestStore({
             isAuthenticated: false,
             isLoading: true,
@@ -84,7 +87,7 @@ describe('MainContent', () => {
             </Provider>
         );
 
-        expect(screen.getByText('Home')).toBeDefined();
+        expect(screen.getByText('LoadingScreen')).toBeDefined();
         expect(screen.queryByText('Sidebar')).toBeNull();
     });
 
@@ -149,6 +152,6 @@ describe('MainContent', () => {
             </Provider>
         );
 
-        expect(screen.getByText('Configuration')).toBeDefined();
+        expect(screen.getByText('LoadingScreen')).toBeDefined();
     });
 });

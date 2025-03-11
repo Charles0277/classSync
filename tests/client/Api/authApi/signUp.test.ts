@@ -12,7 +12,6 @@ describe('signUpApi', () => {
         email: 'john.doe@example.com',
         password: 'password123',
         confirmPassword: 'password123',
-        role: 'student',
         yearOfStudy: 2,
         course: 'Computer Science',
         courseUnits: 'CS101,CS102'
@@ -24,7 +23,6 @@ describe('signUpApi', () => {
         email,
         password,
         confirmPassword,
-        role,
         yearOfStudy,
         course,
         courseUnits
@@ -49,7 +47,6 @@ describe('signUpApi', () => {
             email,
             password,
             confirmPassword,
-            role,
             yearOfStudy,
             course,
             courseUnits
@@ -74,7 +71,6 @@ describe('signUpApi', () => {
                 email,
                 password,
                 confirmPassword,
-                role,
                 yearOfStudy,
                 course,
                 courseUnits
