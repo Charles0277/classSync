@@ -355,10 +355,10 @@ const Schedule: React.FC<ScheduleProps> = ({
                                             scheduleMap[key].map(
                                                 (entry, idx, arr) => (
                                                     <div
+                                                        className={
+                                                            styles.entryWrapper
+                                                        }
                                                         key={idx}
-                                                        style={{
-                                                            width: `${100 / arr.length}%`
-                                                        }}
                                                     >
                                                         <ScheduleEntry
                                                             entry={entry}

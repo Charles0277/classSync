@@ -49,6 +49,19 @@
     border-style: solid;
     border-radius: 6px;
     border-width: 1px;
+    overflow: visible !important;
+    gap: 2px;
+}
+
+.entryWrapper {
+    flex: 1;
+    min-width: 0;
+    transition: flex 0.2s ease-out;
+}
+
+.entryWrapper:hover {
+    flex: 3;
+    z-index: 1;
 }
 
 .dayHeader {
