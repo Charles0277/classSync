@@ -20,7 +20,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { toast } from 'sonner';
-import settingsIcon from '../../assets/settingsIcon.svg';
 import Button from '../Button/Button';
 import { ClassDetails } from '../ClassDetails/ClassDetails';
 import { PopUpCard } from '../ManageConfigCard/PopUpCard';
@@ -274,7 +273,8 @@ const Schedule: React.FC<ScheduleProps> = ({
                             styles={{
                                 container: (base) => ({
                                     ...base,
-                                    minWidth: '17rem'
+                                    minWidth: '17rem',
+                                    zIndex: 10
                                 })
                             }}
                             noOptionsMessage={() => {
@@ -300,7 +300,8 @@ const Schedule: React.FC<ScheduleProps> = ({
                             styles={{
                                 container: (base) => ({
                                     ...base,
-                                    minWidth: '17rem'
+                                    minWidth: '17rem',
+                                    zIndex: 10
                                 })
                             }}
                             noOptionsMessage={() => {
