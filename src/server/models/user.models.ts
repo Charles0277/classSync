@@ -49,8 +49,7 @@ const UserSchema: Schema<IUser> = new Schema(
             validate: {
                 validator: (email: string) =>
                     MANCHESTER_EMAIL_REGEX.test(email),
-                message: (props) =>
-                    `${props.value} is not a valid University of Manchester email address. ${MANCHESTER_EMAIL_ERROR}`
+                message: `${MANCHESTER_EMAIL_ERROR}`
             }
         },
         role: {
