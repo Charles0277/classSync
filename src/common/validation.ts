@@ -18,7 +18,17 @@ export const isValidCourse = async (courseId: string): Promise<boolean> => {
         const course = await fetchCourseById(courseId);
         return !!course;
     } catch {
-        console.log('in catch');
+        return false;
+    }
+};
+
+export const isValidCourseUnit = async (
+    courseUnitId: string
+): Promise<boolean> => {
+    try {
+        const courseUnit = await fetchCourseUnitById(courseUnitId);
+        return !!courseUnit;
+    } catch {
         return false;
     }
 };

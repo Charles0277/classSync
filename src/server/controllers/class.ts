@@ -1,13 +1,15 @@
 import { getIdString } from '@/common/utils.ts';
+import { isValidCourseUnit } from '@/common/validation.ts';
 import express from 'express';
+import mongoose from 'mongoose';
 import {
     createClass,
     deleteClassById,
     fetchClassById,
-    fetchClassByName,
     fetchClasses,
     updateClassById
 } from '../services/class.services.js';
+import { fetchUserById } from '../services/user.services.ts';
 
 export const getAllClasses = async (
     req: express.Request,
@@ -80,15 +82,18 @@ export const updateClass = async (
             });
         }
 
-        const allowedFields = [
-            'name',
-            'courseUnit',
-            'instructor',
-            'classTypes',
-            'students',
-            'semester',
-            'description'
-        ];
+        const allowedFields =
+            role === 'admin'
+                ? [
+                      'name',
+                      'courseUnit',
+                      'instructor',
+                      'classTypes',
+                      'students',
+                      'semester',
+                      'description'
+                  ]
+                : ['description'];
 
         const invalidFields = Object.keys(req.body).filter(
             (key) => !allowedFields.includes(key)
@@ -135,6 +140,25 @@ export const createNewClass = async (
         if (!name || !courseUnit || !instructor || !classTypes || !students) {
             return res.status(400).send({
                 error: 'Please provide a name, courseUnit, instructor, class type, and at least 1 student'
+            });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(courseUnit)) {
+            return res.status(400).send({
+                error: 'Invalid Course Unit'
+            });
+        }
+
+        if (!(await isValidCourseUnit(courseUnit))) {
+            return res.status(400).send({
+                error: `Invalid Course ID ${courseUnit}`
+            });
+        }
+
+        const instructorExists = await fetchUserById(instructor);
+        if (!instructorExists || instructorExists.role !== 'teacher') {
+            return res.status(400).send({
+                error: 'Teacher does not exist.'
             });
         }
 

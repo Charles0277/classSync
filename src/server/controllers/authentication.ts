@@ -106,7 +106,7 @@ export const signUp = async (req: express.Request, res: express.Response) => {
 
         if (!mongoose.Types.ObjectId.isValid(course)) {
             return res.status(400).send({
-                error: 'Invalid course ID format'
+                error: 'Invalid course ID'
             });
         }
 
