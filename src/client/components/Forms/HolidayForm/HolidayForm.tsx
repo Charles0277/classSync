@@ -111,6 +111,7 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
                     setDate={setDate}
                     hiddenDates={hiddenDates}
                     className={styles.datePicker}
+                    id="date"
                 />
                 {error && showResponseError && (
                     <span className={styles.errorMessage}>{error}</span>

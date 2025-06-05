@@ -128,6 +128,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                         })
                     }}
                     maxMenuHeight={200}
+                    id="courseUnits"
                 />
                 {error && showResponseError && (
                     <span className={styles.errorMessage}>{error}</span>
