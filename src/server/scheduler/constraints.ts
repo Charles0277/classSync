@@ -31,6 +31,8 @@ export const generateModel = async (vars: SchedulingVariables) => {
     console.log('Generating model with:', {
         classes: vars.classes.length,
         rooms: vars.rooms.length,
+        students: vars.students.length,
+        instructors: vars.instructors.length,
         timeSlots: vars.timeSlots.length
     });
 

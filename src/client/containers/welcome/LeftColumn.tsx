@@ -13,12 +13,12 @@ const LeftColumn: React.FC = () => {
                 />
                 <div className={styles.textContainer}>
                     <h1 className={styles.title}>
-                        Welcome to Scheduler <br />
+                        Welcome to ClassSync <br />
                         Simplifying Academic Scheduling for Everyone.
                     </h1>
                     <p className={styles.description}>
                         Streamline your scheduling process with our automated
-                        system, designed to minimize conflicts and maximize
+                        system, designed to minimise conflicts and maximise
                         efficiency.
                     </p>
                 </div>

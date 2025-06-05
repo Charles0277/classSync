@@ -8,7 +8,7 @@ import {
 import { RootState } from '@/client/store/store';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PageContainer from '../../components/Common/PageContainer/PageContainer';
+import PageContainer from '../../components/PageContainer/PageContainer';
 import Schedule from '../../components/Schedule/Schedule';
 
 const Home = () => {

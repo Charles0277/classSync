@@ -95,7 +95,11 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
 
     return (
         <div className={`${styles.formContainer} ${styles.notSignUp}`}>
-            <form className={styles.formGroup} onSubmit={handleSubmit}>
+            <form
+                className={styles.formGroup}
+                onSubmit={handleSubmit}
+                data-testid="holiday-form"
+            >
                 <label htmlFor="name">Name:</label>
                 <Input
                     type="text"
@@ -105,7 +109,7 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
                     value={formData.name}
                     onChange={handleInputChange}
                 />
-                <label htmlFor="type">Start/End Date:</label>
+                <label htmlFor="date">Start/End Date:</label>
                 <RangeDatePicker
                     date={date!}
                     setDate={setDate}

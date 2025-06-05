@@ -1,5 +1,5 @@
 import Card from '../../components/Card/Card';
-import PageContainer from '../../components/Common/PageContainer/PageContainer';
+import PageContainer from '../../components/PageContainer/PageContainer';
 import Panel from '../../components/Panels/Panel';
 
 const Configuration = () => {

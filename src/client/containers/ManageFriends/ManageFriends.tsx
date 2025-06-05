@@ -1,5 +1,5 @@
 import Button from '@/client/components/Button/Button';
-import PageContainer from '@/client/components/Common/PageContainer/PageContainer';
+import PageContainer from '@/client/components/PageContainer/PageContainer';
 import { FriendList } from '@/client/components/FriendList/FriendList';
 import Input from '@/client/components/Input/Input';
 import {
