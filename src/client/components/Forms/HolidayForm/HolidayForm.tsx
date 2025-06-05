@@ -95,11 +95,7 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
 
     return (
         <div className={`${styles.formContainer} ${styles.notSignUp}`}>
-            <form
-                className={styles.formGroup}
-                onSubmit={handleSubmit}
-                data-testid="holiday-form"
-            >
+            <form className={styles.formGroup} onSubmit={handleSubmit}>
                 <label htmlFor="name">Name:</label>
                 <Input
                     type="text"
