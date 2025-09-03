@@ -8,7 +8,6 @@ This repository contains the source code for "Revolutionising Academic Schedulin
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
-- [Setup and Installation](#setup-and-installation)
 - [Known Limitations](#known-limitations)
 - [Future Work](#future-work)
 - [Author](#author)
