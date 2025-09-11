@@ -50,7 +50,9 @@ const Schedule: React.FC<ScheduleProps> = ({
     const { students, studentsLoading } = useSelector(
         (state: RootState) => state.user
     );
-    const { holidays } = useSelector((state: RootState) => state.holiday);
+    const { holidays, loading: holidayLoading } = useSelector(
+        (state: RootState) => state.holiday
+    );
     const dispatch = useDispatch();
 
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
@@ -256,7 +258,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                 {globalSchedule && (
                     <div className={styles.filterContainer}>
                         <div className={styles.filterLabel}>
-                            Filter by Student:
+                            Filter by Students:
                         </div>
                         <Select
                             options={studentOptions}
@@ -283,7 +285,7 @@ const Schedule: React.FC<ScheduleProps> = ({
                             }}
                         />
                         <div className={styles.filterLabel}>
-                            Filter by Room:
+                            Filter by Rooms:
                         </div>
                         <Select
                             options={roomOptions}
@@ -347,11 +349,13 @@ const Schedule: React.FC<ScheduleProps> = ({
                                         key={dayIndex}
                                         className={styles.gridCell}
                                     >
-                                        {!holidayDates.some(
-                                            (holiday) =>
-                                                day.date >= holiday.from &&
-                                                day.date <= holiday.to
-                                        ) &&
+                                        {!holidayLoading &&
+                                            holidays.length > 0 &&
+                                            !holidayDates.some(
+                                                (holiday) =>
+                                                    day.date >= holiday.from &&
+                                                    day.date <= holiday.to
+                                            ) &&
                                             scheduleMap[key] &&
                                             scheduleMap[key].map(
                                                 (entry, idx, arr) => (

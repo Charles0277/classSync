@@ -50,7 +50,9 @@ const userSlice = createSlice({
         },
         fetchAllUsersSuccess: (state, action) => {
             state.loading = false;
-            state.allUsers = action.payload;
+            state.allUsers = action.payload.filter(
+                (user: IUser) => user.role !== 'admin'
+            );
         },
         fetchAllUsersFailure: (state, action) => {
             state.loading = false;
