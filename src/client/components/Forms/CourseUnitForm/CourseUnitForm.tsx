@@ -204,6 +204,7 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                     value={selectedTeacher}
                     onChange={handleTeacherChange}
                     placeholder="Select an Instructor"
+                    id="instructor"
                 />
 
                 <label htmlFor="classType">Class Type:</label>
@@ -214,6 +215,7 @@ const CourseUnitForm: React.FC<CourseUnitFormProps> = ({
                     onChange={handleClassTypesChange}
                     placeholder="Select at least one Class Type"
                     isMulti
+                    id="classType"
                 />
                 {error && showResponseError && (
                     <span className={styles.errorMessage}>{error}</span>

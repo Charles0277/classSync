@@ -105,12 +105,13 @@ export const HolidayForm: React.FC<HolidayFormProps> = ({
                     value={formData.name}
                     onChange={handleInputChange}
                 />
-                <label htmlFor="type">Start/End Date:</label>
+                <label htmlFor="date">Start/End Date:</label>
                 <RangeDatePicker
                     date={date!}
                     setDate={setDate}
                     hiddenDates={hiddenDates}
                     className={styles.datePicker}
+                    id="date"
                 />
                 {error && showResponseError && (
                     <span className={styles.errorMessage}>{error}</span>
